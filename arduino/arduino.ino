@@ -55,6 +55,11 @@ void loop(){
     analogWrite(LED_GREEN, 0);
     analogWrite(LED_YELLOW, 0);
   }
+  Serial.print("{direction: '");
+  Serial.print(clockWiseDirection);
+  Serial.print("', speed: '");
+  Serial.print(rotarySpeed);
+  Serial.println("'}");
   delay(100);
 }
 
