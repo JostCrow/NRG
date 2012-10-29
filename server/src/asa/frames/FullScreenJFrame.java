@@ -11,17 +11,14 @@ import javax.swing.JPanel;
 
 public class FullScreenJFrame extends JFrame {
 
-    JPanel rootPanel = new JPanel();
-    JButton closeButton = new JButton("Close");
+    JPanel rootPanel;
+    JButton closeButton;
 
     public FullScreenJFrame(String title) {
 	super(title);
-	setLayout();
-	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	setUndecorated(true);
-	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	setBounds(0, 0, screenSize.width, screenSize.height);
-
+	
+	rootPanel = new JPanel();
+	closeButton = new JButton("Close");
 	closeButton.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent ae) {
@@ -29,6 +26,12 @@ public class FullScreenJFrame extends JFrame {
 		dispose();
 	    }
 	});
+	
+	setLayout();
+	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setUndecorated(true);
+	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	setBounds(0, 0, screenSize.width, screenSize.height);
     }
 
     private void setLayout() {
