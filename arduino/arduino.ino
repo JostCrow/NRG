@@ -38,12 +38,17 @@ void loop(){
   
   // Calculate speed led brightness
   int maxValue = 30;
-  if(rotarySpeed > maxValue) rotarySpeed = maxValue;
+  //if(rotarySpeed > maxValue) rotarySpeed = maxValue;
   int brightness = rotarySpeed * ( 255 / maxValue);
   analogWrite(LED_RED, brightness);
   
   // Display direction
   if(brightness){
+    Serial.print("{direction: '");
+    Serial.print(clockWiseDirection);
+    Serial.print("', speed: '");
+    Serial.print(rotarySpeed);
+    Serial.println("'}");
     if(clockWiseDirection){
       analogWrite(LED_GREEN, 255);
       analogWrite(LED_YELLOW, 0);
@@ -55,12 +60,7 @@ void loop(){
     analogWrite(LED_GREEN, 0);
     analogWrite(LED_YELLOW, 0);
   }
-  Serial.print("{direction: '");
-  Serial.print(clockWiseDirection);
-  Serial.print("', speed: '");
-  Serial.print(rotarySpeed);
-  Serial.println("'}");
-  delay(100);
+  //delay(50);
 }
 
 void updateEncoder(){
