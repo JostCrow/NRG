@@ -10,29 +10,32 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class FullScreenJFrame extends JFrame {
+    
+    JPanel rootPanel = new JPanel();
+    JButton closeButton = new JButton("Close");
 
     public FullScreenJFrame(String title) {
 	super(title);
-
+	setLayout();
 	this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 //	setUndecorated(true);
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	setBounds(0, 0, screenSize.width, screenSize.height);
 	
-	JButton closeButton = new JButton("Close");
-	closeButton.setSize(100, 100);
 	closeButton.addActionListener(new ActionListener() {
+	    @Override
 	    public void actionPerformed(ActionEvent ae) {
 		System.out.println("Close button Pressed");
 		FullScreenJFrame.this.setVisible(false);
 		System.exit(0);
 	    }
 	});
+    }
+    
+    private void setLayout(){
 	
-	JPanel jPanel1 = new JPanel();
-
-        GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
+	GroupLayout jPanel1Layout = new GroupLayout(rootPanel);
+        rootPanel.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -52,11 +55,11 @@ public class FullScreenJFrame extends JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(rootPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(rootPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }
 
