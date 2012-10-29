@@ -10,57 +10,51 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class FullScreenJFrame extends JFrame {
-    
+
     JPanel rootPanel = new JPanel();
     JButton closeButton = new JButton("Close");
 
     public FullScreenJFrame(String title) {
 	super(title);
 	setLayout();
-	this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//	setUndecorated(true);
+	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setUndecorated(true);
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	setBounds(0, 0, screenSize.width, screenSize.height);
-	
+
 	closeButton.addActionListener(new ActionListener() {
 	    @Override
 	    public void actionPerformed(ActionEvent ae) {
 		System.out.println("Close button Pressed");
-		FullScreenJFrame.this.setVisible(false);
-		System.exit(0);
+		dispose();
 	    }
 	});
     }
-    
-    private void setLayout(){
+
+    private void setLayout() {
+	GroupLayout rootPanelLayout = new GroupLayout(rootPanel);
+	rootPanel.setLayout(rootPanelLayout);
+	GroupLayout.SequentialGroup rootPanelHorLayout = rootPanelLayout.createSequentialGroup();
+	rootPanelHorLayout.addContainerGap(290, Short.MAX_VALUE);
+	rootPanelHorLayout.addComponent(closeButton);
+	rootPanelHorLayout.addContainerGap(290, Short.MAX_VALUE);
+	rootPanelLayout.setHorizontalGroup(rootPanelHorLayout);
+
+	GroupLayout.SequentialGroup rootPanelVerLayout = rootPanelLayout.createSequentialGroup();
+	rootPanelVerLayout.addContainerGap(185, Short.MAX_VALUE);
+	rootPanelVerLayout.addComponent(closeButton);
+	rootPanelVerLayout.addContainerGap(186, Short.MAX_VALUE);
+	rootPanelLayout.setVerticalGroup(rootPanelVerLayout);
+
+	GroupLayout layout = new GroupLayout(getContentPane());
+	getContentPane().setLayout(layout);
 	
-	GroupLayout jPanel1Layout = new GroupLayout(rootPanel);
-        rootPanel.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(290, Short.MAX_VALUE)
-                .addComponent(closeButton)
-                .addContainerGap(290, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(185, Short.MAX_VALUE)
-                .addComponent(closeButton)
-                .addContainerGap(186, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(rootPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(rootPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+	GroupLayout.ParallelGroup horLayout = layout.createParallelGroup(GroupLayout.Alignment.LEADING);
+	horLayout.addComponent(rootPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+	layout.setHorizontalGroup(horLayout);
+	
+	GroupLayout.ParallelGroup verLayout = layout.createParallelGroup(GroupLayout.Alignment.LEADING);
+	verLayout.addComponent(rootPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+	layout.setVerticalGroup(verLayout);
     }
-
 }
