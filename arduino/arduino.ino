@@ -1,31 +1,24 @@
-//From bildr article: http://bildr.org/2012/08/rotary-encoder-arduino/
-
-//these pins can not be changed 2/3 are special pins
+// Rotery encoder pins
 int ENCODER_A = 2;
 int ENCODER_B = 3;
+
+// Led pins
 int LED_YELLOW= 10;
 int LED_RED = 11;
 int LED_GREEN = 12;
 
-//From bildr article: http://bildr.org/2012/08/rotary-encoder-arduino/
-
+// Vars for realtime measurement
 volatile int lastEncoded = 0;
 volatile long encoderValue = 0;
-volatile long rotaryValue = 0;
-
 volatile long intervalEncoderValue = 0;
 volatile long lastIntervalEncoderValue = 0;
-long lastencoderValue = 0;
+
+// Vars for direction
 boolean clockWiseDirection = false;
 
 // Speed
 int rotaryPosition = 0;
 int lastRotaryPosition = 0;
-
-
-int DEBUG;
-int lastMSB = 0;
-int lastLSB = 0;
 
 void setup() {
   Serial.begin (9600);
@@ -38,14 +31,12 @@ void setup() {
 }
 
 void loop(){
-  //Serial.println(DEBUG);
   // Calculate speed
   rotaryPosition = encoderValue;
   int rotarySpeed = abs(rotaryPosition - lastRotaryPosition);
-  
   lastRotaryPosition = rotaryPosition;
   
-  // Display speed
+  // Calculate speed led brightness
   int maxValue = 30;
   if(rotarySpeed > maxValue) rotarySpeed = maxValue;
   int brightness = rotarySpeed * ( 255 / maxValue);
@@ -64,13 +55,11 @@ void loop(){
     analogWrite(LED_GREEN, 0);
     analogWrite(LED_YELLOW, 0);
   }
-  
-
   delay(100);
 }
 
-
 void updateEncoder(){
+  // Read rotery encoder
   int MSB = digitalRead(ENCODER_A); //MSB = most significant bit
   int LSB = digitalRead(ENCODER_B); //LSB = least significant bit
   int encoded = (MSB << 1) |LSB; //converting the 2 pin value to single number

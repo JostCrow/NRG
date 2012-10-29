@@ -1,0 +1,4 @@
+client/bin
+server/bin
+.classpath
+.project
