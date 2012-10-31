@@ -9,10 +9,12 @@ public class Main {
 	public static void main(String[] args) {
 		System.out.println("ASA client application");
 		
-		List<CommPortIdentifier> availablePorts = SimpleRead.getComPorts();
-		new SimpleRead(availablePorts.get(0));
+		List<CommPortIdentifier> availablePorts = ComPortReader.getComPorts();
+		ComPortReader simpleRead = new ComPortReader(availablePorts.get(0));
 		
 		FullScreenJFrame frame = new FullScreenJFrame("PSA");
 		frame.setVisible(true);
+		simpleRead.addObserver(frame);
+		
 	}
 }

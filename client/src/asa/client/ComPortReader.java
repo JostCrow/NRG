@@ -12,9 +12,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.TooManyListenersException;
 
-public class SimpleRead implements Runnable, SerialPortEventListener {
+public class ComPortReader extends Observable implements Runnable, SerialPortEventListener {
 
 	InputStream inputStream;
 	SerialPort serialPort;
@@ -38,7 +40,7 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 		return portList;
 	}
 
-	public SimpleRead(CommPortIdentifier portId) {
+	public ComPortReader(CommPortIdentifier portId) {
 		try {
 			serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
 			inputStream = serialPort.getInputStream();
@@ -82,8 +84,8 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 							jsonString = String.valueOf(character);
 						} else if (character == '}') {
 							jsonString += String.valueOf(character);
-							// TODO: add event
-							System.out.println(jsonString);
+							setChanged();
+							notifyObservers(jsonString);
 						} else {
 							jsonString += String.valueOf(character);
 						}
