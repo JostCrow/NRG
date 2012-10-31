@@ -24,8 +24,6 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 	int bufferIndex;
 	int bufferLast;
 	String jsonString;
-	
-	final static int NEW_LINE_ASCII = 10;
 
 	public static void main(String[] args) {
 		portList = CommPortIdentifier.getPortIdentifiers();
@@ -87,11 +85,11 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 							buffer = temp;
 						}
 						char character = (char) inputStream.read();
-						if(character == '{'){
+						if (character == '{') {
 							jsonString = String.valueOf(character);
-						} else if (character == '}'){
+						} else if (character == '}') {
 							jsonString += String.valueOf(character);
-							System.out.println(jsonString + "#");
+							System.out.println(jsonString);
 						} else {
 							jsonString += String.valueOf(character);
 						}
@@ -105,4 +103,5 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 		// System.out.println("out of");
 		// System.err.println("out of event " + serialEvent.getEventType());
 	}
+	
 }
