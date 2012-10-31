@@ -57,8 +57,13 @@ void loop(){
       analogWrite(LED_YELLOW, 255);
     }
   } else {
-    analogWrite(LED_GREEN, 0);
-    analogWrite(LED_YELLOW, 0);
+    //Serial.print("{direction: '");
+    //Serial.print(clockWiseDirection);
+    //Serial.print("', speed: '");
+    //Serial.print(0);
+    //Serial.println("'}");
+    //analogWrite(LED_GREEN, 0);
+    //analogWrite(LED_YELLOW, 0);
   }
   //delay(50);
 }
