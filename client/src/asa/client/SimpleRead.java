@@ -6,6 +6,7 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -62,6 +63,32 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
             Thread.sleep(20000);
         } catch (InterruptedException e) {System.out.println(e);}
     }
+    
+//    public void serialEvent(SerialPortEvent evt) {
+//        if (evt.getEventType() == SerialPortEvent.DATA_AVAILABLE)
+//        {
+//            try
+//            {
+//                byte singleData = (byte)input.read();
+//
+//                if (singleData != NEW_LINE_ASCII)
+//                {
+//                    logText = new String(new byte[] {singleData});
+//                    window.txtLog.append(logText);
+//                }
+//                else
+//                {
+//                    window.txtLog.append("\n");
+//                }
+//            }
+//            catch (Exception e)
+//            {
+//                logText = "Failed to read data. (" + e.toString() + ")";
+//                window.txtLog.setForeground(Color.red);
+//                window.txtLog.append(logText + "\n");
+//            }
+//        }
+//    }
 
     @Override
     public void serialEvent(SerialPortEvent evt) {
