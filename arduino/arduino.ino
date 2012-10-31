@@ -15,6 +15,7 @@ volatile long lastIntervalEncoderValue = 0;
 
 // Vars for direction
 boolean clockWiseDirection = false;
+boolean change = true;
 
 // Speed
 int rotaryPosition = 0;
@@ -39,33 +40,26 @@ void loop(){
   // Calculate speed led brightness
   int maxValue = 30;
   //if(rotarySpeed > maxValue) rotarySpeed = maxValue;
-  int brightness = rotarySpeed * ( 255 / maxValue);
+  int brightness = rotarySpeed;
   analogWrite(LED_RED, brightness);
   
   // Display direction
-  if(brightness){
     Serial.print("{direction: '");
     Serial.print(clockWiseDirection);
     Serial.print("', speed: '");
     Serial.print(rotarySpeed);
-    Serial.print("'}");
+    Serial.println("'}");
     if(clockWiseDirection){
-      analogWrite(LED_GREEN, 255);
+      analogWrite(LED_GREEN, brightness);
       analogWrite(LED_YELLOW, 0);
     } else {
       analogWrite(LED_GREEN, 0);
-      analogWrite(LED_YELLOW, 255);
+      analogWrite(LED_YELLOW, brightness);
     }
-  } else {
-    //Serial.print("{direction: '");
-    //Serial.print(clockWiseDirection);
-    //Serial.print("', speed: '");
-    //Serial.print(0);
-    //Serial.println("'}");
-    //analogWrite(LED_GREEN, 0);
-    //analogWrite(LED_YELLOW, 0);
-  }
-  //delay(50);
+    if(rotarySpeed == 0){
+      change = false;
+    }
+  delay(80);
 }
 
 void updateEncoder(){
@@ -81,6 +75,7 @@ void updateEncoder(){
   intervalEncoderValue = encoderValue;
   int difference = abs(intervalEncoderValue - lastIntervalEncoderValue);
   if(difference >= 2){
+    change = true;
     clockWiseDirection = intervalEncoderValue <= lastIntervalEncoderValue;
     lastIntervalEncoderValue = intervalEncoderValue;
   }
