@@ -9,12 +9,12 @@ import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.TooManyListenersException;
 
 public class SimpleRead implements Runnable, SerialPortEventListener {
-	static CommPortIdentifier portId;
-	static Enumeration portList;
 
 	InputStream inputStream;
 	SerialPort serialPort;
@@ -26,40 +26,38 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 	String jsonString;
 
 	public static void main(String[] args) {
-		portList = CommPortIdentifier.getPortIdentifiers();
-		while (portList.hasMoreElements()) {
-			portId = (CommPortIdentifier) portList.nextElement();
-			if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-				if (portId.getName().equals("COM3")) {
-					// if (portId.getName().equals("/dev/term/a")) {
-					SimpleRead reader = new SimpleRead();
-				}
-			}
-		}
+		List<CommPortIdentifier> availablePorts = SimpleRead.getComPorts();
+		new SimpleRead(availablePorts.get(0));
 	}
 
-	public SimpleRead() {
+	public static List<CommPortIdentifier> getComPorts() {
+		List<CommPortIdentifier> portList = new ArrayList<CommPortIdentifier>();
+		@SuppressWarnings("rawtypes")
+		Enumeration ports = CommPortIdentifier.getPortIdentifiers();
+		while (ports.hasMoreElements()) {
+			CommPortIdentifier currentPort = (CommPortIdentifier) ports.nextElement();
+			if (currentPort.getPortType() == CommPortIdentifier.PORT_SERIAL) {
+				portList.add(currentPort);
+			}
+		}
+		return portList;
+	}
+
+	public SimpleRead(CommPortIdentifier portId) {
 		try {
 			serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
-		} catch (PortInUseException e) {
-			System.out.println(e);
-		}
-		try {
 			inputStream = serialPort.getInputStream();
-		} catch (IOException e) {
-			System.out.println(e);
-		}
-		try {
 			serialPort.addEventListener(this);
-		} catch (TooManyListenersException e) {
-			System.out.println(e);
-		}
-		serialPort.notifyOnDataAvailable(true);
-		try {
-			serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8,
-					SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-		} catch (UnsupportedCommOperationException e) {
-			System.out.println(e);
+			serialPort.notifyOnDataAvailable(true);
+			serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+		} catch (IOException e){
+			System.out.println("IOException: " + e);
+		} catch (PortInUseException e){
+			System.out.println("PortInUseException: " + e);
+		} catch (TooManyListenersException e){
+			System.out.println("TooManyListenersException: " + e);
+		} catch (UnsupportedCommOperationException e){
+			System.out.println("UnsupportedCommOperationException: " + e);
 		}
 		readThread = new Thread(this);
 		readThread.start();
@@ -89,6 +87,7 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 							jsonString = String.valueOf(character);
 						} else if (character == '}') {
 							jsonString += String.valueOf(character);
+							// TODO: add event
 							System.out.println(jsonString);
 						} else {
 							jsonString += String.valueOf(character);
@@ -103,5 +102,5 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 		// System.out.println("out of");
 		// System.err.println("out of event " + serialEvent.getEventType());
 	}
-	
+
 }
