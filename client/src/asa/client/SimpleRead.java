@@ -25,11 +25,6 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 	int bufferLast;
 	String jsonString;
 
-	public static void main(String[] args) {
-		List<CommPortIdentifier> availablePorts = SimpleRead.getComPorts();
-		new SimpleRead(availablePorts.get(0));
-	}
-
 	public static List<CommPortIdentifier> getComPorts() {
 		List<CommPortIdentifier> portList = new ArrayList<CommPortIdentifier>();
 		@SuppressWarnings("rawtypes")
@@ -99,8 +94,6 @@ public class SimpleRead implements Runnable, SerialPortEventListener {
 			} catch (Exception e) {
 			}
 		}
-		// System.out.println("out of");
-		// System.err.println("out of event " + serialEvent.getEventType());
 	}
 
 }
