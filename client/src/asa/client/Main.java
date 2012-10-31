@@ -1,11 +1,7 @@
 package asa.client;
 
 import asa.client.frames.FullScreenJFrame;
-import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import java.awt.Color;
 import java.util.List;
 
 public class Main {
