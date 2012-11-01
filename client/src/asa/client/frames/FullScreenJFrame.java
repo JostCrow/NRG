@@ -1,10 +1,8 @@
 package asa.client.frames;
 
-import com.google.gson.Gson;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -14,7 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import org.netbeans.lib.awtextra.AbsoluteConstraints;
+
+import com.google.gson.Gson;
 
 public class FullScreenJFrame extends JFrame implements Observer{
 
@@ -24,35 +23,31 @@ public class FullScreenJFrame extends JFrame implements Observer{
 	JLabel direction;
 	
 	int topSpeed = 25;
-
+	InformationPanel informationPanel;
+	
 	public FullScreenJFrame(String title) {
 		super(title);
-
-		rootPanel = new JPanel();
-		progres = new JProgressBar();
-		direction = new JLabel();
-		closeButton = new JButton("Topspeed = " + topSpeed);
-		closeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				System.out.println("Close button Pressed");
-				dispose();
-				System.exit(0);
-			}
-		});
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        getContentPane().add(progres, new AbsoluteConstraints(0, 0, screenSize.width, 50));
-		getContentPane().add(direction, new AbsoluteConstraints(0, 50, screenSize.width, 50));
-		getContentPane().add(closeButton, new AbsoluteConstraints(0, 100, screenSize.width, 50));
-
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setUndecorated(true);
 		
-		setBounds(0, 0, screenSize.width, screenSize.height);
-	}
+		GamePanel gamePanel = new GamePanel();
+		informationPanel = new InformationPanel();
+		
+		this.getRootPane().add(gamePanel);
+		this.getContentPane().add(informationPanel);
 
+		this.getRootPane().setVisible(true);
+		this.getContentPane().setVisible(true);
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.setFullscreen();
+	}
+	
+	private void setFullscreen(){
+	      setUndecorated(true);
+	      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	      setBounds(0,0,screenSize.width, screenSize.height);
+	}
+	
 	@Override
 	public void update(Observable observable, Object object) {
 		String jsonString = (String) object;
@@ -64,6 +59,10 @@ public class FullScreenJFrame extends JFrame implements Observer{
 			direction.setText("Counter Clockwise");
 		}
 		int speed = Integer.valueOf(test.get("speed"));
+		if(speed == 0 && informationPanel.isVisible()) {
+			informationPanel.setVisible(false);
+			informationPanel.repaint();
+		}
 		progres.setMaximum(topSpeed);
 		progres.setValue(speed);
 		progres.repaint();
