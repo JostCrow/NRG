@@ -50,11 +50,11 @@ void loop(){
     Serial.print(rotarySpeed);
     Serial.println("'}");
     if(clockWiseDirection){
-      analogWrite(LED_GREEN, brightness);
+      analogWrite(LED_GREEN, 255);
       analogWrite(LED_YELLOW, 0);
     } else {
       analogWrite(LED_GREEN, 0);
-      analogWrite(LED_YELLOW, brightness);
+      analogWrite(LED_YELLOW, 255);
     }
     if(rotarySpeed == 0){
       change = false;
