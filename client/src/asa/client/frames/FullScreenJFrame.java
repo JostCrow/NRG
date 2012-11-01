@@ -37,6 +37,7 @@ public class FullScreenJFrame extends JFrame implements Observer{
 			public void actionPerformed(ActionEvent ae) {
 				System.out.println("Close button Pressed");
 				dispose();
+				System.exit(0);
 			}
 		});
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

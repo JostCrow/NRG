@@ -84,24 +84,37 @@ public class ComPortReader extends Observable implements Runnable, SerialPortEve
 	private void simulationLoop(){
 		boolean loop = true;
 		
-		int direction = 0;
+		int direction = 1;
 		int speed = 0;
+		boolean add = true;
 		Random rand = new Random();
 		int random = rand.nextInt(100);
 		while(loop){
 			try {
-				if(direction == 0){
+				if(add){
 					speed++;
 				} else {
 					speed--;
 				}
-				if(speed >= random || speed <= 0){
+				if(speed == 0){
 					if(direction == 0){
 						direction = 1;
 					} else {
 						direction = 0;
 					}
+					if(add){
+						add = false;
+					} else{
+						add = true;
+					}
 					random = rand.nextInt(100);
+				}
+				if(speed == random && add){
+					if(add){
+						add = false;
+					} else{
+						add = true;
+					}
 				}
 				String jsonString = "{direction = '" + direction + "', speed = '" + speed + "'}";
 				this.setChanged();
