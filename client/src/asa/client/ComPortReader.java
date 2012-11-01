@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Observable;
+import java.util.Random;
 import java.util.TooManyListenersException;
 
 public class ComPortReader extends Observable implements Runnable, SerialPortEventListener {
@@ -85,6 +86,8 @@ public class ComPortReader extends Observable implements Runnable, SerialPortEve
 		
 		int direction = 0;
 		int speed = 0;
+		Random rand = new Random();
+		int random = rand.nextInt(100);
 		while(loop){
 			try {
 				if(direction == 0){
@@ -92,12 +95,13 @@ public class ComPortReader extends Observable implements Runnable, SerialPortEve
 				} else {
 					speed--;
 				}
-				if(speed >= 100 || speed <= 0){
+				if(speed >= random || speed <= 0){
 					if(direction == 0){
 						direction = 1;
 					} else {
 						direction = 0;
 					}
+					random = rand.nextInt(100);
 				}
 				String jsonString = "{direction = '" + direction + "', speed = '" + speed + "'}";
 				this.setChanged();

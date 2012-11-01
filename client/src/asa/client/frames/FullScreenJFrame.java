@@ -55,7 +55,6 @@ public class FullScreenJFrame extends JFrame implements Observer{
 	@Override
 	public void update(Observable observable, Object object) {
 		String jsonString = (String) object;
-		System.out.println(jsonString);
 		Gson gson = new Gson();
 		HashMap<String, String> test = gson.fromJson(jsonString, HashMap.class);
 		if(Integer.valueOf(test.get("direction")) == 1){
