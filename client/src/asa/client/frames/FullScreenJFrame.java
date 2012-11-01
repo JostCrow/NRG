@@ -18,8 +18,7 @@ public class FullScreenJFrame extends JFrame implements Observer{
 
 	private static int GAMEMODE = 0;
 	private static int INFORMATIONMODE = 1;
-	
-	private static int SPEEDTRIGGER = 10;
+	private static int SPEEDTRIGGER = 1;
 	
 	JPanel rootPanel;
 	JButton closeButton;
@@ -34,11 +33,8 @@ public class FullScreenJFrame extends JFrame implements Observer{
 	
 	public FullScreenJFrame(String title) {
 		super(title);
-		
 		this.getContentPane().add(informationPanel);
-		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		this.setFullscreen();
 	}
 	
@@ -52,8 +48,11 @@ public class FullScreenJFrame extends JFrame implements Observer{
 	public void update(Observable observable, Object object) {
 		String jsonString = (String) object;
 		Gson gson = new Gson();
-		HashMap<String, String> test = gson.fromJson(jsonString, HashMap.class);		
+		HashMap<String, String> test = gson.fromJson(jsonString, HashMap.class);
 		int speed = Integer.valueOf(test.get("speed"));
+		int direction = Integer.valueOf(test.get("direction"));
+		gamePanel.setSpeed(speed);
+		gamePanel.setDirection(direction);
 		if(speed > SPEEDTRIGGER && MODE == INFORMATIONMODE) {
 			this.getContentPane().remove(informationPanel);
 			this.getContentPane().add(gamePanel);
@@ -66,13 +65,6 @@ public class FullScreenJFrame extends JFrame implements Observer{
 			this.revalidate();
 			this.repaint();
 			MODE = INFORMATIONMODE;
-		}
-//		progres.setMaximum(topSpeed);
-//		progres.setValue(speed);
-//		progres.repaint();
-		if(topSpeed < speed){
-			topSpeed = speed;
-//			closeButton.setText("Topspeed = " + topSpeed);
 		}
 	}
 }
