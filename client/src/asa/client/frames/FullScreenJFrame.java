@@ -23,7 +23,7 @@ public class FullScreenJFrame extends JFrame implements Observer{
 	JProgressBar progres;
 	JLabel direction;
 	
-	int topSpeed = 125;
+	int topSpeed = 25;
 
 	public FullScreenJFrame(String title) {
 		super(title);
@@ -31,7 +31,7 @@ public class FullScreenJFrame extends JFrame implements Observer{
 		rootPanel = new JPanel();
 		progres = new JProgressBar();
 		direction = new JLabel();
-		closeButton = new JButton("Close");
+		closeButton = new JButton("Topspeed = " + topSpeed);
 		closeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ae) {
@@ -68,8 +68,7 @@ public class FullScreenJFrame extends JFrame implements Observer{
 		progres.repaint();
 		if(topSpeed < speed){
 			topSpeed = speed;
+			closeButton.setText("Topspeed = " + topSpeed);
 		}
-		closeButton.setText("Topspeed = " + topSpeed);
-		setTitle(test.get("direction") + " " + topSpeed);
 	}
 }
