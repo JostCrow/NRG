@@ -51,8 +51,7 @@ public class FullScreenJFrame extends JFrame implements Observer{
 		HashMap<String, String> test = gson.fromJson(jsonString, HashMap.class);
 		int speed = Integer.valueOf(test.get("speed"));
 		int direction = Integer.valueOf(test.get("direction"));
-		gamePanel.setSpeed(speed);
-		gamePanel.setDirection(direction);
+		gamePanel.updateImage(speed, direction);
 		if(speed > SPEEDTRIGGER && MODE == INFORMATIONMODE) {
 			this.getContentPane().remove(informationPanel);
 			this.getContentPane().add(gamePanel);
