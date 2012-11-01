@@ -11,11 +11,18 @@ public class Main {
 		System.out.println("ASA client application");
 		
 		List<CommPortIdentifier> availablePorts = ComPortReader.getComPorts();
-		ComPortReader simpleRead = new ComPortReader(availablePorts.get(0));
+		ComPortReader comportReader;
+		
+		// If no ports found, run the comportreader in simulation
+		if(availablePorts.size() >= 1){
+			comportReader = new ComPortReader(availablePorts.get(0));
+		} else {
+			comportReader = new ComPortReader();
+		}
 		
 		FullScreenJFrame frame = new FullScreenJFrame("PSA");
 		frame.setVisible(true);
-		simpleRead.addObserver(frame);
+		comportReader.addObserver(frame);
 		
 	}
 }

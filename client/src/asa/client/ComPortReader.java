@@ -1,5 +1,6 @@
 package asa.client;
 
+import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
@@ -9,6 +10,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.TooManyListenersException;
 
 public class ComPortReader extends Observable implements Runnable, SerialPortEventListener {
 
+	private boolean simulationMode = false;
+	
 	InputStream inputStream;
 	SerialPort serialPort;
 	Thread readThread;
@@ -39,6 +43,13 @@ public class ComPortReader extends Observable implements Runnable, SerialPortEve
 		return portList;
 	}
 
+	// No portId given, simulate!
+	public ComPortReader(){
+		this.simulationMode = true;
+		readThread = new Thread(this);
+		readThread.start();
+	}
+	
 	public ComPortReader(CommPortIdentifier portId) {
 		try {
 			serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
@@ -62,12 +73,43 @@ public class ComPortReader extends Observable implements Runnable, SerialPortEve
 	@Override
 	public void run() {
 		try {
+			if(simulationMode) simulationLoop();
 			Thread.sleep(20000);
 		} catch (InterruptedException e) {
 			System.out.println(e);
 		}
 	}
 
+	private void simulationLoop(){
+		boolean loop = true;
+		
+		int direction = 0;
+		int speed = 0;
+		while(loop){
+			try {
+				if(direction == 0){
+					speed++;
+				} else {
+					speed--;
+				}
+				if(speed >= 100 || speed <= 0){
+					if(direction == 0){
+						direction = 1;
+					} else {
+						direction = 0;
+					}
+				}
+				String jsonString = "{direction = '" + direction + "', speed = '" + speed + "'}";
+				this.setChanged();
+				this.notifyObservers(jsonString);
+				Thread.sleep(50);
+			} catch (InterruptedException e){
+				loop = false;
+				System.out.println(e);
+			}
+		}
+	}
+	
 	synchronized public void serialEvent(SerialPortEvent serialEvent) {
 		if (serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
