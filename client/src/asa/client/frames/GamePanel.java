@@ -14,6 +14,5 @@ public class GamePanel extends JPanel{
 	public GamePanel(){
 		this.setLayout(new BorderLayout());
 		this.add(testLabel, BorderLayout.NORTH);
-		this.setPreferredSize(new Dimension(0, 0));
 	}
 }

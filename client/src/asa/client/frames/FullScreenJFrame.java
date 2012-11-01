@@ -1,6 +1,5 @@
 package asa.client.frames;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.HashMap;
@@ -17,25 +16,26 @@ import com.google.gson.Gson;
 
 public class FullScreenJFrame extends JFrame implements Observer{
 
+	private static int GAMEMODE = 0;
+	private static int INFORMATIONMODE = 1;
+	
+	private static int SPEEDTRIGGER = 10;
+	
 	JPanel rootPanel;
 	JButton closeButton;
 	JProgressBar progres;
 	JLabel direction;
 	
 	int topSpeed = 25;
-	InformationPanel informationPanel;
+	int MODE =  INFORMATIONMODE;
+	
+	InformationPanel informationPanel = new InformationPanel();
+	GamePanel gamePanel = new GamePanel();
 	
 	public FullScreenJFrame(String title) {
 		super(title);
 		
-		GamePanel gamePanel = new GamePanel();
-		informationPanel = new InformationPanel();
-		
-		this.getRootPane().add(gamePanel);
 		this.getContentPane().add(informationPanel);
-
-		this.getRootPane().setVisible(true);
-		this.getContentPane().setVisible(true);
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -52,23 +52,27 @@ public class FullScreenJFrame extends JFrame implements Observer{
 	public void update(Observable observable, Object object) {
 		String jsonString = (String) object;
 		Gson gson = new Gson();
-		HashMap<String, String> test = gson.fromJson(jsonString, HashMap.class);
-		if(Integer.valueOf(test.get("direction")) == 1){
-			direction.setText("Clockwise");
-		} else {
-			direction.setText("Counter Clockwise");
-		}
+		HashMap<String, String> test = gson.fromJson(jsonString, HashMap.class);		
 		int speed = Integer.valueOf(test.get("speed"));
-		if(speed == 0 && informationPanel.isVisible()) {
-			informationPanel.setVisible(false);
-			informationPanel.repaint();
+		if(speed > SPEEDTRIGGER && MODE == INFORMATIONMODE) {
+			this.getContentPane().remove(informationPanel);
+			this.getContentPane().add(gamePanel);
+			this.revalidate();
+			this.repaint();
+			MODE = GAMEMODE;
+		} else if(speed <= SPEEDTRIGGER && MODE == GAMEMODE){
+			this.getContentPane().remove(gamePanel);
+			this.getContentPane().add(informationPanel);
+			this.revalidate();
+			this.repaint();
+			MODE = INFORMATIONMODE;
 		}
-		progres.setMaximum(topSpeed);
-		progres.setValue(speed);
-		progres.repaint();
+//		progres.setMaximum(topSpeed);
+//		progres.setValue(speed);
+//		progres.repaint();
 		if(topSpeed < speed){
 			topSpeed = speed;
-			closeButton.setText("Topspeed = " + topSpeed);
+//			closeButton.setText("Topspeed = " + topSpeed);
 		}
 	}
 }
