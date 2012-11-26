@@ -21,6 +21,9 @@ boolean change = true;
 int rotaryPosition = 0;
 int lastRotaryPosition = 0;
 
+// MessageControl
+boolean showMessage = true;
+
 void setup() {
   Serial.begin (9600);
   pinMode(ENCODER_A, INPUT); 
@@ -29,21 +32,28 @@ void setup() {
   digitalWrite(ENCODER_B, HIGH);
   attachInterrupt(0, updateEncoder, CHANGE); 
   attachInterrupt(1, updateEncoder, CHANGE);
+  
+  analogWrite(LED_GREEN, 255);
+  analogWrite(LED_RED, 255);
+  analogWrite(LED_YELLOW, 255);
+  delay(500);
+  analogWrite(LED_GREEN, 0);
+  analogWrite(LED_RED, 0);
+  analogWrite(LED_YELLOW, 0);
 }
 
 void loop(){
+  
   // Calculate speed
   rotaryPosition = encoderValue;
   int rotarySpeed = abs(rotaryPosition - lastRotaryPosition);
   lastRotaryPosition = rotaryPosition;
   
   // Calculate speed led brightness
-  int maxValue = 30;
-  //if(rotarySpeed > maxValue) rotarySpeed = maxValue;
-  int brightness = rotarySpeed;
-  analogWrite(LED_RED, brightness);
+  analogWrite(LED_RED, rotarySpeed);
   
-  // Display direction
+  // Console messages
+  if(showMessage){
     Serial.print("{direction: '");
     Serial.print(clockWiseDirection);
     Serial.print("', speed: '");
@@ -56,9 +66,13 @@ void loop(){
       analogWrite(LED_GREEN, 0);
       analogWrite(LED_YELLOW, 255);
     }
-    if(rotarySpeed == 0){
-      change = false;
-    }
+    if(rotarySpeed == 0) showMessage = false;
+  } else {
+    analogWrite(LED_GREEN, 0);
+    analogWrite(LED_YELLOW, 0);
+    if(rotarySpeed > 0) showMessage = true;
+  }
+  
   delay(80);
 }
 
