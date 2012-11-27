@@ -5,6 +5,8 @@ import java.net.URL;
 public class Resource {
 
 	public static final String RESOURCE_PATH = "/asa/client/resources/";
+	public static final String LOGCONFIG = RESOURCE_PATH + "log4j.properties";
+	public static final String BACKGROUND = "../src/asa/client/resources/gearsanimation/00.png";
 	public static final String[] GEARS_SEQUENCE = {
 		RESOURCE_PATH + "gearsanimation/00.png",
 		RESOURCE_PATH + "gearsanimation/01.png",
