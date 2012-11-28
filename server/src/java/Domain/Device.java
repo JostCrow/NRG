@@ -4,17 +4,23 @@ public class Device {
 	private int id;
 	private String name;
 	private String photo_url;
-	private double average_watt;
+	private double watt_total;
+	private int divide_by;
 	private String sensor;
 	
 	public Device(){
 	}
 
-	public Device(int id, String name, String photo_url, double average_watt, String sensor) {
+	public Device(int id) {
+		this.id = id;
+	}
+
+	public Device(int id, String name, String photo_url, double watt_total, int divide_by, String sensor) {
 		this.id = id;
 		this.name = name;
 		this.photo_url = photo_url;
-		this.average_watt = average_watt;
+		this.watt_total = watt_total;
+		this.divide_by = divide_by;
 		this.sensor = sensor;
 	}
 
@@ -34,12 +40,20 @@ public class Device {
 		this.photo_url = photo_url;
 	}
 
-	public double getAverage_watt() {
-		return average_watt;
+	public double getWatt_total() {
+		return watt_total;
 	}
 
-	public void setAverage_watt(double average_watt) {
-		this.average_watt = average_watt;
+	public void setWatt_total(double watt_total) {
+		this.watt_total = watt_total;
+	}
+
+	public int getDivide_by() {
+		return divide_by;
+	}
+
+	public void setDivide_by(int divide_by) {
+		this.divide_by = divide_by;
 	}
 
 	public String getSensor() {
