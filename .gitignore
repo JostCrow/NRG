@@ -5,3 +5,7 @@
 /Java/AsaServer/Glassfish/build/
 /Java/AsaServer/Client/nbproject/private/
 /Java/AsaServer/Client/build/
+client/bin
+server/bin
+.classpath
+.project
