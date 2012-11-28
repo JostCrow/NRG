@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TooManyListenersException;
 
 import org.apache.log4j.Logger;
+
+import com.google.gson.Gson;
 
 public class Arduino extends KeyAdapter implements Runnable, SerialPortEventListener, KeyListener{
 
@@ -36,6 +39,11 @@ public class Arduino extends KeyAdapter implements Runnable, SerialPortEventList
 	private byte buffer[] = new byte[32768];
 	private int bufferLast;
 	private String jsonString;
+	
+	private Gson gson = new Gson();
+	
+	private static String KEY_SPEED = "speed";
+	private static String KEY_DIRECTION = "direction";
 	
 	public static Arduino getInstance(){
 		if(Arduino._instance == null){
@@ -128,13 +136,23 @@ public class Arduino extends KeyAdapter implements Runnable, SerialPortEventList
 	}
 	
 	// TODO: needs proper event dispatch and keylisteners
-	public void dispatchEvent(String arduinoJsonString){
-		logger.debug("dispatchEvent" + arduinoJsonString);
-		for(ArduinoListener listener : listeners){
-			listener.WheelEvent(0, 0);
+	public void dispatchEvent(String jsonString){
+		@SuppressWarnings("unchecked")
+		HashMap<String, String> hashMap = gson.fromJson(jsonString, HashMap.class);
+		
+		if(hashMap.containsKey(KEY_DIRECTION) && hashMap.containsKey(KEY_SPEED)){
+			int direction = Integer.valueOf(hashMap.get(KEY_DIRECTION));
+			int speed = Integer.valueOf(hashMap.get(KEY_SPEED));
+			dispatchWheelEvent(direction, speed);
 		}
 	}
-
+	
+	public void dispatchWheelEvent(int direction, int speed){
+		for(ArduinoListener listener : listeners){
+			listener.wheelEvent(direction, speed);
+		}
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_LEFT){

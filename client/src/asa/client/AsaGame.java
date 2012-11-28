@@ -10,6 +10,7 @@ import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.util.Log;
 
 import asa.client.resources.Resource;
 
@@ -28,28 +29,17 @@ public class AsaGame extends StateBasedGame{
 	}
 	
 	private void setLog4jConfiguration(){
-		URL propertiesFile = Resource.get(Resource.LOGCONFIG);
+		URL propertiesFile = Resource.getURL(Resource.LOGCONFIG);
 		PropertyConfigurator.configure(propertiesFile);
+		Log.setLogSystem(new SlickLogger());
 	}
 	
 	private void printSystemInfo(){
-		Logger logger = Logger.getLogger(AsaGame.class);
 		Runtime runtime = Runtime.getRuntime();
-		
 		logger.debug("Available processors: " + runtime.availableProcessors());
 		logger.debug("Free memory: " + runtime.freeMemory());
 		logger.debug("Max memory: " + runtime.maxMemory());
 		logger.debug("Total memory: " + runtime.totalMemory());
-	}
-	
-	public static void main(String[] args) throws SlickException{
-		AppGameContainer application = new AppGameContainer(new AsaGame());
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		application.setDisplayMode(800,  500, false);
-		//application.setDisplayMode(screenSize.width,  screenSize.height, true);
-		application.start();
-		application.setTargetFrameRate(20);
-		Arduino arduino = Arduino.getInstance();
 	}
 	
 	@Override
@@ -57,5 +47,15 @@ public class AsaGame extends StateBasedGame{
 		this.addState(new InfoState(INFOSTATE));
 		this.addState(new GameState(GAMESTATE));
 		this.addState(new HighscoreState(HIGHSCORESTATE));
+	}
+	
+	public static void main(String[] args) throws SlickException{
+		AppGameContainer application = new AppGameContainer(new AsaGame());
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		application.setTargetFrameRate(100);
+		//application.setDisplayMode(800,  500, false);
+		application.setDisplayMode(screenSize.width,  screenSize.height, true);
+		//application.setMouseGrabbed(true);
+		application.start();
 	}
 }

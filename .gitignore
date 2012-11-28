@@ -1,4 +1,5 @@
 client/bin
+*.log*
 server/bin
 .classpath
 .project
