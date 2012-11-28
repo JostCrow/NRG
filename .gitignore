@@ -3,3 +3,6 @@ client/bin
 server/bin
 .classpath
 .project
+/server/nbproject/
+/server/build/
+/server/build.xml
