@@ -3,6 +3,7 @@ package DBConnection.MySQL;
 import Domain.Device;
 import Domain.Highscore;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,25 +42,21 @@ public class HighscoreTable {
 		return highscores;
 	}
 	
-	public boolean addNewHighscore()
+	public void addHighscore(Highscore highscore)
 	{
-		ArrayList<Highscore> highscores = new ArrayList<Highscore>();		
-		try {
-			Statement statement = connection.createStatement();
+		try {			
+			String query = "INSERT INTO Highscore (score, photo_url) VALUES(?, ?)";
 			
-			String query = "SELECT *"
-					+ "FROM Highscore";
+			PreparedStatement statement = connection.prepareStatement(query);
 			
-			ResultSet resultSet = statement.executeQuery(query);
+			statement.setDouble (1, highscore.getScore());
+			statement.setString (2, highscore.getFoto());
 			
-			while(resultSet.next()){
-				Highscore h = new Highscore(resultSet.getInt("id"), resultSet.getDouble("score"), resultSet.getString("photo_url"), resultSet.getDate("timestamp"));
-				highscores.add(h);
-			}			
+			statement.execute();
 			
 		} catch (SQLException ex) {
 			Logger.getLogger(DeviceTable.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		return true;
+		
 	}
 }
