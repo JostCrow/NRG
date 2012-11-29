@@ -3,6 +3,7 @@ package DBConnection.MySQL;
 import Domain.Device;
 import Domain.Highscore;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,14 +27,15 @@ public class HighscoreTable {
 			Statement statement = connection.createStatement();
 			
 			String query = "SELECT *"
-					+ "FROM Highscore";
+					+ "FROM highscore";
 			
 			ResultSet resultSet = statement.executeQuery(query);
 			
 			while(resultSet.next()){
 				Highscore h = new Highscore(resultSet.getInt("id"), resultSet.getDouble("score"), resultSet.getString("photo_url"), resultSet.getDate("timestamp"));
 				highscores.add(h);
-			}			
+			}
+			statement.close();
 			
 		} catch (SQLException ex) {
 			Logger.getLogger(DeviceTable.class.getName()).log(Level.SEVERE, null, ex);
@@ -41,25 +43,21 @@ public class HighscoreTable {
 		return highscores;
 	}
 	
-	public boolean addNewHighscore()
+	public void addHighscore(Highscore highscore)
 	{
-		ArrayList<Highscore> highscores = new ArrayList<Highscore>();		
-		try {
+		try {			
+			String query = "INSERT INTO highscore (score, photo_url) "
+					+ "VALUES("
+					+ highscore.getScore() + ", "
+					+ "'" + highscore.getFoto() + "')";
+			System.out.println(query);
 			Statement statement = connection.createStatement();
-			
-			String query = "SELECT *"
-					+ "FROM Highscore";
-			
-			ResultSet resultSet = statement.executeQuery(query);
-			
-			while(resultSet.next()){
-				Highscore h = new Highscore(resultSet.getInt("id"), resultSet.getDouble("score"), resultSet.getString("photo_url"), resultSet.getDate("timestamp"));
-				highscores.add(h);
-			}			
+			statement.executeUpdate(query);
+			statement.close();
 			
 		} catch (SQLException ex) {
 			Logger.getLogger(DeviceTable.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		return true;
+		
 	}
 }

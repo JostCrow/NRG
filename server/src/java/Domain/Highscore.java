@@ -19,6 +19,11 @@ public class Highscore {
 		this.foto = foto;
 		this.timestamp = timestamp;
 	}
+	
+	public Highscore(Double score, String foto) {	
+		this.score = score;
+		this.foto = foto;
+	}
 
 	public Double getScore() {
 		return score;
