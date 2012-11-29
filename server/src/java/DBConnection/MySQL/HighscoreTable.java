@@ -1,6 +1,5 @@
 package DBConnection.MySQL;
 
-import Domain.Device;
 import Domain.Highscore;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +26,7 @@ public class HighscoreTable {
 			Statement statement = connection.createStatement();
 			
 			String query = "SELECT *"
-					+ "FROM Highscore";
+					+ "FROM highscore";
 			
 			ResultSet resultSet = statement.executeQuery(query);
 			
