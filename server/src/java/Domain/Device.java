@@ -1,6 +1,7 @@
 package Domain;
 
 public class Device {
+	
 	private int id;
 	private String name;
 	private String photo_url;
@@ -15,8 +16,7 @@ public class Device {
 		this.id = id;
 	}
 
-	public Device(int id, String name, String photo_url, double watt_total, int divide_by, String sensor) {
-		this.id = id;
+	public Device(String name, String photo_url, double watt_total, int divide_by, String sensor) {
 		this.name = name;
 		this.photo_url = photo_url;
 		this.watt_total = watt_total;
@@ -26,6 +26,10 @@ public class Device {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public void setId(int id){
+		this.id = id;
 	}
 
 	public String getName() {
@@ -66,5 +70,10 @@ public class Device {
 
 	public void setSensor(String sensor) {
 		this.sensor = sensor;
+	}
+	
+	@Override
+	public String toString(){
+		return "id = "+ id + "; Name = " + name + "; Watt total = " + watt_total + "; devide_by = " + divide_by + "; Sensor" + sensor;
 	}
 }

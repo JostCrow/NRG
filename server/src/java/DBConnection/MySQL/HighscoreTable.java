@@ -27,14 +27,15 @@ public class HighscoreTable {
 			Statement statement = connection.createStatement();
 			
 			String query = "SELECT *"
-					+ "FROM Highscore";
+					+ "FROM highscore";
 			
 			ResultSet resultSet = statement.executeQuery(query);
 			
 			while(resultSet.next()){
 				Highscore h = new Highscore(resultSet.getInt("id"), resultSet.getDouble("score"), resultSet.getString("photo_url"), resultSet.getDate("timestamp"));
 				highscores.add(h);
-			}			
+			}
+			statement.close();
 			
 		} catch (SQLException ex) {
 			Logger.getLogger(DeviceTable.class.getName()).log(Level.SEVERE, null, ex);
@@ -45,14 +46,14 @@ public class HighscoreTable {
 	public void addHighscore(Highscore highscore)
 	{
 		try {			
-			String query = "INSERT INTO Highscore (score, photo_url) VALUES(?, ?)";
-			
-			PreparedStatement statement = connection.prepareStatement(query);
-			
-			statement.setDouble (1, highscore.getScore());
-			statement.setString (2, highscore.getFoto());
-			
-			statement.execute();
+			String query = "INSERT INTO highscore (score, photo_url) "
+					+ "VALUES("
+					+ highscore.getScore() + ", "
+					+ "'" + highscore.getFoto() + "')";
+			System.out.println(query);
+			Statement statement = connection.createStatement();
+			statement.executeUpdate(query);
+			statement.close();
 			
 		} catch (SQLException ex) {
 			Logger.getLogger(DeviceTable.class.getName()).log(Level.SEVERE, null, ex);

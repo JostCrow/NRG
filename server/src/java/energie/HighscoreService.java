@@ -33,7 +33,7 @@ public class HighscoreService {
 	 */
 	@WebMethod(operationName = "AddHighscore")
 	public void AddHighscore(@WebParam(name = "highscore") Highscore highscore) {
-		//TODO write your implementation code here:
+		highscoreTable.addHighscore(highscore);
 	}
 
 	/**
