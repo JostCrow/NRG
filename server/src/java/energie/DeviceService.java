@@ -8,7 +8,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
-@WebService(serviceName = "Device")
+@WebService(serviceName = "Verbruik")
 public class DeviceService {
 	
 	ConnectMySQL connectMySQL;
@@ -35,49 +35,5 @@ public class DeviceService {
 	@WebMethod(operationName = "getDeviceById")
 	public Device getById(@WebParam(name = "deviceId") int id) {
 		return deviceTable.getById(id);
-	}
-
-	/**
-	 * Bla Bla Bla
-	 */
-	@WebMethod(operationName = "updateWattTotal")
-	public boolean updateWattTotal(@WebParam(name = "deviceId") int id, @WebParam(name = "watt") double watt) {
-		deviceTable.updateWattAmount(id, watt);
-		return true;
-	}
-	
-	/**
-	 * Bla Bla Bla
-	 */
-	@WebMethod(operationName = "addDevice")
-	public boolean addDevice(@WebParam(name = "device") Device device) {
-		deviceTable.addDevice(device);
-		return true;
-	}
-	
-	/**
-	 * Bla Bla Bla
-	 */
-	@WebMethod(operationName = "removeDevice")
-	public boolean removeDevice(@WebParam(name = "device") Device device) {
-		deviceTable.removeDevice(device);
-		return true;
-	}
-	
-	/**
-	 * Bla Bla Bla
-	 */
-	@WebMethod(operationName = "getLiveData")
-	public boolean getLiveData(@WebParam(name = "deviceId") int id) {
-		Device device = deviceTable.getById(id);
-		
-		return true;
-	}
-	
-	@WebMethod(operationName = "updateDevice")
-	public boolean updateDevice(@WebParam(name = "device") Device device) {
-//		Device device = deviceTable.getById(id);
-		
-		return true;
 	}
 }

@@ -23,10 +23,6 @@ public class Device {
 		this.divide_by = divide_by;
 		this.sensor = sensor;
 	}
-	
-	public int getId() {
-		return id;
-	}
 
 	public String getName() {
 		return name;

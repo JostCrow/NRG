@@ -5,6 +5,7 @@ import DBConnection.MySQL.HighscoreTable;
 import Domain.Highscore;
 import java.util.List;
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebService;
 
 @WebService(serviceName = "Highscore")
@@ -25,6 +26,14 @@ public class HighscoreService {
 	@WebMethod(operationName = "getAllHighscores")
 	public List<Highscore> getAllHighscores() {
 		return highscoreTable.getAllHighscores();
+	}
+
+	/**
+	 * Web service operation
+	 */
+	@WebMethod(operationName = "AddHighscore")
+	public void AddHighscore(@WebParam(name = "highscore") Highscore highscore) {
+		//TODO write your implementation code here:
 	}
 
 	/**
