@@ -2,6 +2,7 @@ package asa.client;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -20,6 +21,8 @@ public class InfoState extends ArduinoGameState {
 	Image background_spinner;
 	Image spinneroverlay;
 	
+	Logger logger = Logger.getLogger(this.getClass());
+	
 	List<WheelOption> wheelOptions = Arrays.asList(
 			new WheelOption("Koffie", Resource.ICON_KOFFIE, Resource.BACKGROUND_KOFFIE),
 			new WheelOption("Printer", Resource.ICON_PRINTER, Resource.BACKGROUND_PRINTER),
@@ -37,9 +40,11 @@ public class InfoState extends ArduinoGameState {
 	int tandwielOffset = 30;
 	
 	float rotation = 0;
+	float spinnerrotation = 0;
 	double rotationEase = 5.0;
 	
 	Dimension screenSize;
+	Dimension center;
 	
 	public InfoState(int stateID) {
 		super(stateID);
@@ -57,25 +62,24 @@ public class InfoState extends ArduinoGameState {
 			}
 		});
 		
+		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
+		
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
-		background = new Image(Resource.getPath(Resource.BACKGROUND_BEAMER));
+		background = new Image(Resource.getPath(Resource.BACKGROUND_KOFFIE));
 		
 	}
 
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
 		background.draw(0,0);
-		tandwiel1.draw(-tandwiel1.getWidth() / 2, gameContainer.getHeight() / 2 - tandwiel1.getHeight() / 2);
-		tandwiel2.draw(tandwiel1.getWidth()/2-tandwielOffset-40, gameContainer.getHeight() / 2 - tandwiel2.getHeight());
-		spinner.draw(gameContainer.getWidth() / 2 - spinner.getWidth() / 2 - 100, gameContainer.getHeight() / 2 - spinner.getHeight() / 2);
-		spinneroverlay.draw(gameContainer.getWidth() / 2 - spinner.getWidth() / 2 - 100, gameContainer.getHeight() / 2 - spinner.getHeight() / 2);
-		background_spinner.draw(gameContainer.getWidth() / 2 - background_spinner.getWidth() / 2 - 100, gameContainer.getHeight() / 2 - background_spinner.getHeight() / 2);
-		
-		Dimension center = new Dimension(gameContainer.getWidth() / 2 - 100, gameContainer.getHeight() / 2);
-		
+		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
+		tandwiel2.draw(tandwiel1.getWidth()/2-tandwielOffset-40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
+		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size()*i;
@@ -92,6 +96,7 @@ public class InfoState extends ArduinoGameState {
 			y = y - optionIcon.getHeight()/2;
 			option.getIcon().draw(x, y);
 		}
+		
 	}
 
 	public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
@@ -99,7 +104,7 @@ public class InfoState extends ArduinoGameState {
 		rotation += (targetrotation - rotation) / rotationEase;
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
-		spinner.setRotation((float) (rotation*1.5));
+		spinner.setRotation((float) (rotation));
 	}
 
 }
