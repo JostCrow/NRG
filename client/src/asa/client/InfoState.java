@@ -46,6 +46,10 @@ public class InfoState extends ArduinoGameState {
 	Dimension screenSize;
 	Dimension center;
 	
+	int selectionDegrees = 45;
+	int selectedOption = 0;
+	int oldSelectedOption = 0;
+	
 	public InfoState(int stateID) {
 		super(stateID);
 	}
@@ -63,7 +67,7 @@ public class InfoState extends ArduinoGameState {
 		});
 		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
-		
+		selectionDegrees = 360/wheelOptions.size();
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
@@ -82,8 +86,8 @@ public class InfoState extends ArduinoGameState {
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		
 		for(int i = 0; i < wheelOptions.size(); i++){
-			float offsetDegree = 360/wheelOptions.size()*i;
-			float degrees = (rotation + offsetDegree) % 360;
+			float offsetDegree = 360/wheelOptions.size();
+			float degrees = 270 + ((rotation + offsetDegree*i) % 360);
 			float rad = (float) (degrees * (Math.PI / 180));
 			float radius = 310;
 			
@@ -95,8 +99,19 @@ public class InfoState extends ArduinoGameState {
 			x = x - optionIcon.getWidth()/2;
 			y = y - optionIcon.getHeight()/2;
 			option.getIcon().draw(x, y);
+			
+			//TODO: find correct selection
+			//TODO: animate background switch
+			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
+				oldSelectedOption = selectedOption;
+				background = option.background();
+				selectedOption = i;
+			}
+			logger.debug(option.getDescription() + " : " + degrees);
 		}
 		
+		WheelOption option = wheelOptions.get(selectedOption);
+		logger.debug(option.getDescription());
 	}
 
 	public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
@@ -104,7 +119,7 @@ public class InfoState extends ArduinoGameState {
 		rotation += (targetrotation - rotation) / rotationEase;
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
-		spinner.setRotation((float) (rotation));
+		spinner.setRotation(rotation);
 	}
 
 }

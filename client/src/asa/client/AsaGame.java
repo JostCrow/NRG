@@ -23,8 +23,6 @@ public class AsaGame extends StateBasedGame{
 	
 	public static Dimension RESOLUTION;
 	public static final Dimension SOURCE_RESOLUTION = new Dimension(1920, 1080);
-	public static float SCALE_X;
-	public static float SCALE_Y;
 	
 	private Logger logger = Logger.getLogger(AsaGame.class);
 	
@@ -53,9 +51,6 @@ public class AsaGame extends StateBasedGame{
 	
 	public void setResolution(){
 		AsaGame.RESOLUTION = Toolkit.getDefaultToolkit().getScreenSize();
-		AsaGame.SCALE_X = (float) (SOURCE_RESOLUTION.getWidth() / AsaGame.RESOLUTION.width);
-		AsaGame.SCALE_Y = (float) (SOURCE_RESOLUTION.getHeight() / AsaGame.RESOLUTION.height);
-		logger.debug("SCALE_X: " + SCALE_X  + " ,SCALE_Y: " + SCALE_Y);
 	}
 	
 	@Override
