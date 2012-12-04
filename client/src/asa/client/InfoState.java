@@ -1,7 +1,8 @@
 package asa.client;
-import java.util.Arrays;
-import java.util.List;
 
+import asa.client.resources.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.GameContainer;
@@ -9,9 +10,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-
-import asa.client.resources.Resource;
-import java.util.ArrayList;
 import service.Device;
 
 public class InfoState extends ArduinoGameState {
@@ -23,6 +21,7 @@ public class InfoState extends ArduinoGameState {
 	Image spinner;
 	Image background_spinner;
 	Image spinneroverlay;
+	Image icon_background;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -69,6 +68,7 @@ public class InfoState extends ArduinoGameState {
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		background = new Image(Resource.getPath(Resource.BACKGROUND_KOFFIE));
+		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
 		
 	}
 
@@ -89,10 +89,13 @@ public class InfoState extends ArduinoGameState {
 			float x = (float) (center.getWidth() + radius * Math.cos(rad));
 			float y = (float) (center.getHeight() + radius * Math.sin(rad));
 			
+			
+			
 			WheelOption option = wheelOptions.get(i);
 			Image optionIcon = option.getIcon();
 			x = x - optionIcon.getWidth()/2;
 			y = y - optionIcon.getHeight()/2;
+			icon_background.draw(x, y);
 			option.getIcon().draw(x, y);
 			
 			//TODO: find correct selection
@@ -118,7 +121,6 @@ public class InfoState extends ArduinoGameState {
 	}
 
 	private void loadWheelOptions() {
-		//wheelOptions.clear();
 		List<Device> deviceList = server.getAllDevices();
 		for(Device device : deviceList){
 			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl()));
