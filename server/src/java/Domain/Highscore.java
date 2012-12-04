@@ -24,6 +24,14 @@ public class Highscore {
 		this.score = score;
 		this.foto = foto;
 	}
+	
+	public int getId(){
+		return id;
+	}
+	
+	public void setId(int id){
+		this.id = id;
+	}
 
 	public Double getScore() {
 		return score;

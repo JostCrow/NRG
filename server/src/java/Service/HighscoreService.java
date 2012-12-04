@@ -1,4 +1,4 @@
-package energie;
+package Service;
 
 import DBConnection.MySQL.ConnectMySQL;
 import DBConnection.MySQL.HighscoreTable;
@@ -20,16 +20,23 @@ public class HighscoreService {
 	}
 
 	/**
-	 * Met deze methode kan je alle devices ophalen die in de database zitten.
+	 * Met deze methode kan je alle highscores ophalen die in de database zitten.
 	 */
-	
 	@WebMethod(operationName = "getAllHighscores")
 	public List<Highscore> getAllHighscores() {
 		return highscoreTable.getAllHighscores();
 	}
+	
+	/**
+	 * Met deze methode kan je een gelimiteerde hoeveelheid highscores ophalen die in de database zitten.
+	 */
+	@WebMethod(operationName = "getLimitedHighscores")
+	public List<Highscore> getLimitedHighscores(@WebParam(name = "begin") int begin, @WebParam(name = "end") int end) {
+		return highscoreTable.getLimitedHighscores(begin, end);
+	}
 
 	/**
-	 * Web service operation
+	 * Met deze methode kan je een highscore toevoegen.
 	 */
 	@WebMethod(operationName = "AddHighscore")
 	public void AddHighscore(@WebParam(name = "highscore") Highscore highscore) {
@@ -37,11 +44,10 @@ public class HighscoreService {
 	}
 
 	/**
-	 * Met deze methode kan je 1 devices ophalen die in de database zit door middel van het id.
+	 * Met deze methode kan je een highscore verwijderen.
 	 */
-	
-//	@WebMethod(operationName = "getDeviceById")
-//	public Device getById(@WebParam(name = "deviceId") int id) {
-//		return highscoreTable.getById(id);
-//	}
+	@WebMethod(operationName = "DeleteHighscore")
+	public void DeleteHighscore(@WebParam(name = "highscore") Highscore highscore) {
+		highscoreTable.deleteHighscore(highscore);
+	}
 }

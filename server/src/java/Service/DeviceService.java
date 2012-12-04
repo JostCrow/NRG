@@ -1,4 +1,4 @@
-package energie;
+package Service;
 
 import DBConnection.MySQL.ConnectMySQL;
 import DBConnection.MySQL.DeviceTable;
@@ -33,51 +33,48 @@ public class DeviceService {
 	 */
 	
 	@WebMethod(operationName = "getDeviceById")
-	public Device getById(@WebParam(name = "deviceId") int id) {
+	public Device getById(@WebParam(name = "deviceId") int id){
 		return deviceTable.getById(id);
 	}
 
 	/**
-	 * Bla Bla Bla
+	 * Met deze methode kan je van een device het totaal verbruikte watt updaten voor een mooi gemiddelde.
 	 */
 	@WebMethod(operationName = "updateWattTotal")
-	public boolean updateWattTotal(@WebParam(name = "deviceId") int id, @WebParam(name = "watt") double watt) {
+	public boolean updateWattTotal(@WebParam(name = "deviceId") int id, @WebParam(name = "watt") double watt){
 		deviceTable.updateWattAmount(id, watt);
 		return true;
 	}
 	
 	/**
-	 * Bla Bla Bla
+	 * Met deze methode kan je een device toevoegen.
 	 */
 	@WebMethod(operationName = "addDevice")
-	public boolean addDevice(@WebParam(name = "device") Device device) {
+	public void addDevice(@WebParam(name = "device") Device device) {
 		deviceTable.addDevice(device);
-		return true;
 	}
 	
 	/**
-	 * Bla Bla Bla
+	 * Met deze methode kan je een device verwijderen.
 	 */
 	@WebMethod(operationName = "removeDevice")
-	public boolean removeDevice(@WebParam(name = "device") Device device) {
+	public void removeDevice(@WebParam(name = "device") Device device) {
 		deviceTable.removeDevice(device);
+	}
+	
+	/**
+	 * Met deze methode kan je live data opvragen van een device naar keuze.
+	 */
+	@WebMethod(operationName = "getLiveData")
+	public boolean getLiveData(@WebParam(name = "deviceId") int id){		
 		return true;
 	}
 	
 	/**
-	 * Bla Bla Bla
+	 * Met deze methode kan je een device in zijn geheel updaten.
 	 */
-	@WebMethod(operationName = "getLiveData")
-	public boolean getLiveData(@WebParam(name = "deviceId") int id) {
-		Device device = deviceTable.getById(id);
-		
-		return true;
-	}
-	
 	@WebMethod(operationName = "updateDevice")
-	public boolean updateDevice(@WebParam(name = "device") Device device) {
-//		Device device = deviceTable.getById(id);
-		
-		return true;
+	public void updateDevice(@WebParam(name = "device") Device device) {
+		deviceTable.updateDevice(device);
 	}
 }

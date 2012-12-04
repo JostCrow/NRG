@@ -45,7 +45,7 @@ public class DeviceTable {
 		return devices;
 	}
 
-	public Device getById(int id) {
+	public Device getById(int id){
 		Device device;
 		try {
 			Statement statement = connection.createStatement();
@@ -72,7 +72,7 @@ public class DeviceTable {
 		return device;
 	}
 
-	public void updateWattAmount(int id, double watt) {
+	public void updateWattAmount(int id, double watt){
 		Device device = getById(id);
 		
 		try {
@@ -120,6 +120,31 @@ public class DeviceTable {
 			String query = "DELETE FROM device "
 					+ "WHERE id = " + device.getId() + ";";
 			
+			statement.executeUpdate(query);
+			statement.close();
+			
+		} catch (SQLException ex) {
+			Logger.getLogger(DeviceTable.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	/**
+	 * Not tested Yet
+	 * @param device 
+	 */
+	public void updateDevice(Device device){
+		
+		try {
+			Statement statement = connection.createStatement();
+			
+			String query = "UPDATE device SET "
+					+ "name = '" + device.getName() + "', "
+					+ "photo_url = '" + device.getPhoto_url() + "', "
+					+ "watt_total = " + device.getWatt_total() + ", "
+					+ "devide_by = " + device.getDivide_by() + ", "
+					+ "sensor = '" + device.getSensor() + "' "
+					+ "WHERE id = " + device.getId() + ";";
+			System.out.println(query);
 			statement.executeUpdate(query);
 			statement.close();
 			
