@@ -11,9 +11,12 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import asa.client.resources.Resource;
+import java.util.ArrayList;
+import service.Device;
 
 public class InfoState extends ArduinoGameState {
 
+	ServerAdapter server;
 	Image tandwiel1;
 	Image tandwiel2;
 	Image background;
@@ -23,17 +26,7 @@ public class InfoState extends ArduinoGameState {
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
-	List<WheelOption> wheelOptions = Arrays.asList(
-			new WheelOption("Koffie", Resource.ICON_KOFFIE, Resource.BACKGROUND_KOFFIE),
-			new WheelOption("Printer", Resource.ICON_PRINTER, Resource.BACKGROUND_PRINTER),
-			new WheelOption("Koffie", Resource.ICON_KOFFIE, Resource.BACKGROUND_KOFFIE),
-			new WheelOption("Printer", Resource.ICON_PRINTER, Resource.BACKGROUND_PRINTER),
-			new WheelOption("Koffie", Resource.ICON_KOFFIE, Resource.BACKGROUND_KOFFIE),
-			new WheelOption("Printer", Resource.ICON_PRINTER, Resource.BACKGROUND_PRINTER),
-			new WheelOption("Koffie", Resource.ICON_KOFFIE, Resource.BACKGROUND_KOFFIE),
-			new WheelOption("Printer", Resource.ICON_PRINTER, Resource.BACKGROUND_PRINTER),
-			new WheelOption("Cola", Resource.ICON_AUTOMAAT, Resource.BACKGROUND_AUTOMAAT)
-	);
+	List<WheelOption> wheelOptions = new ArrayList<WheelOption>();
 			
 	
 	int targetrotation = 0;
@@ -50,8 +43,10 @@ public class InfoState extends ArduinoGameState {
 	int selectedOption = 0;
 	int oldSelectedOption = 0;
 	
-	public InfoState(int stateID) {
+	public InfoState(int stateID, ServerAdapter server) {
 		super(stateID);
+		this.server = server;
+		loadWheelOptions();
 	}
 
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
@@ -120,6 +115,14 @@ public class InfoState extends ArduinoGameState {
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
 		spinner.setRotation(rotation);
+	}
+
+	private void loadWheelOptions() {
+		//wheelOptions.clear();
+		List<Device> deviceList = server.getAllDevices();
+		for(Device device : deviceList){
+			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl()));
+		}
 	}
 
 }

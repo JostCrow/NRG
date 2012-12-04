@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://145.89.154.19:8080/server/Device?wsdl" uri="wsdl/145.89.154.19_8080/server/Device.wsdl"/>
+    <system systemId="http://145.89.154.19:8080/server/Device?xsd=1" uri="wsdl/145.89.154.19_8080/server/Device.xsd_1.xsd"/>
+    <system systemId="http://145.89.154.19:8080/server/Highscore?wsdl" uri="wsdl/145.89.154.19_8080/server/Highscore.wsdl"/>
+    <system systemId="http://145.89.154.19:8080/server/Highscore?xsd=1" uri="wsdl/145.89.154.19_8080/server/Highscore.xsd_1.xsd"/>
+</catalog>

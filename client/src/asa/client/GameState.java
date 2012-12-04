@@ -6,10 +6,12 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class GameState extends BasicGameState {
-
+	
+	ServerAdapter server;
 	int stateID = -1;
 
-	public GameState(int stateID) {
+	public GameState(int stateID, ServerAdapter server) {
+		this.server = server;
 		this.stateID = stateID;
 	}
 

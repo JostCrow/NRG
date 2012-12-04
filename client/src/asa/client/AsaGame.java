@@ -16,7 +16,8 @@ import org.newdawn.slick.util.Log;
 import asa.client.resources.Resource;
 
 public class AsaGame extends StateBasedGame{
-
+	private ServerAdapter server;
+	
 	public static final int INFOSTATE = 0;
 	public static final int GAMESTATE = 1;
 	public static final int HIGHSCORESTATE = 2;
@@ -26,10 +27,11 @@ public class AsaGame extends StateBasedGame{
 	
 	private Logger logger = Logger.getLogger(AsaGame.class);
 	
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	public AsaGame() {
 		super("ASA-Game");
+		this.server = new ServerAdapter();
 		setLog4jConfiguration();
 		printSystemInfo();
 		setResolution();
@@ -55,8 +57,8 @@ public class AsaGame extends StateBasedGame{
 	
 	@Override
 	public void initStatesList(GameContainer gameContainer) throws SlickException{
-		this.addState(new InfoState(INFOSTATE));
-		this.addState(new GameState(GAMESTATE));
+		this.addState(new InfoState(INFOSTATE, this.server));
+		this.addState(new GameState(GAMESTATE, this.server));
 		this.addState(new HighscoreState(HIGHSCORESTATE));
 	}
 	

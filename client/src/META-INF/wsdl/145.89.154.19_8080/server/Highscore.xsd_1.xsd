@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is Metro/2.2.0-1 (tags/2.2.0u1-7139; 2012-06-02T10:55:19+0000) JAXWS-RI/2.2.6-2 JAXWS/2.2 svn-revision#unknown. --><xs:schema xmlns:tns="http://Service/" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0" targetNamespace="http://Service/">
+
+<xs:element name="AddHighscore" type="tns:AddHighscore"/>
+
+<xs:element name="AddHighscoreResponse" type="tns:AddHighscoreResponse"/>
+
+<xs:element name="DeleteHighscore" type="tns:DeleteHighscore"/>
+
+<xs:element name="DeleteHighscoreResponse" type="tns:DeleteHighscoreResponse"/>
+
+<xs:element name="getAllHighscores" type="tns:getAllHighscores"/>
+
+<xs:element name="getAllHighscoresResponse" type="tns:getAllHighscoresResponse"/>
+
+<xs:element name="getLimitedHighscores" type="tns:getLimitedHighscores"/>
+
+<xs:element name="getLimitedHighscoresResponse" type="tns:getLimitedHighscoresResponse"/>
+
+<xs:complexType name="getAllHighscores">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="getAllHighscoresResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:highscore" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="highscore">
+<xs:sequence>
+<xs:element name="foto" type="xs:string" minOccurs="0"/>
+<xs:element name="id" type="xs:int"/>
+<xs:element name="score" type="xs:double" minOccurs="0"/>
+<xs:element name="timestamp" type="xs:dateTime" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="AddHighscore">
+<xs:sequence>
+<xs:element name="highscore" type="tns:highscore" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="AddHighscoreResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="DeleteHighscore">
+<xs:sequence>
+<xs:element name="highscore" type="tns:highscore" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="DeleteHighscoreResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="getLimitedHighscores">
+<xs:sequence>
+<xs:element name="begin" type="xs:int"/>
+<xs:element name="end" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="getLimitedHighscoresResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:highscore" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+</xs:schema>
