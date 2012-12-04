@@ -42,6 +42,6 @@ public class Resource {
 	
 	public static String getPath(String path){
 		String filepath = Resource.class.getResource(RESOURCE_PATH + path).toString();
-		return filepath.split(":")[1];
+		return filepath.substring(5);
 	}
 }
