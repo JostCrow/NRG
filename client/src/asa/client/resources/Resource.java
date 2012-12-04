@@ -41,6 +41,7 @@ public class Resource {
 	}
 	
 	public static String getPath(String path){
-		return "C:/Users/Rene van Aerle/Git/PhysicASA/client/src" + RESOURCE_PATH + path;
+		String filepath = Resource.class.getResource(RESOURCE_PATH + path).toString();
+		return filepath.split(":")[1];
 	}
 }
