@@ -1,6 +1,8 @@
 package asa.client.resources;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 public class Resource {
 
@@ -40,8 +42,8 @@ public class Resource {
 		return resourceUrl;
 	}
 	
-	public static String getPath(String path){
-		String filepath = Resource.class.getResource(RESOURCE_PATH + path).toString();
-		return filepath.substring(5);
+	public static String getPath(String path) throws UnsupportedEncodingException{
+		String filepath = Resource.class.getResource(RESOURCE_PATH + path).getFile();
+		return URLDecoder.decode(filepath, "UTF-8").toString();
 	}
 }
