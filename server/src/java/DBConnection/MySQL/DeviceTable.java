@@ -32,6 +32,7 @@ public class DeviceTable {
 				Device device = new Device(resultSet.getInt("id"));
 				device.setName(resultSet.getString("name"));
 				device.setPhoto_url(resultSet.getString("photo_url"));
+				device.setLogo_url(resultSet.getString("logo_url"));
 				device.setWatt_total(resultSet.getDouble("watt_total"));
 				device.setDivide_by(resultSet.getInt("devide_by"));
 				device.setSensor(resultSet.getString("sensor"));
@@ -60,6 +61,7 @@ public class DeviceTable {
 			device = new Device(resultSet.getInt("id"));
 			device.setName(resultSet.getString("name"));
 			device.setPhoto_url(resultSet.getString("photo_url"));
+			device.setLogo_url(resultSet.getString("logo_url"));
 			device.setWatt_total(resultSet.getDouble("watt_total"));
 			device.setDivide_by(resultSet.getInt("devide_by"));
 			device.setSensor(resultSet.getString("sensor"));
@@ -100,6 +102,7 @@ public class DeviceTable {
 					+ "VALUES (null, "
 					+ "'" + device.getName() + "', "
 					+ "'" + device.getPhoto_url() + "', "
+					+ "'" + device.getLogo_url() + "', "
 					+ device.getWatt_total() + ", "
 					+ device.getDivide_by() + ", "
 					+ "'" + device.getSensor() + "');";
@@ -140,6 +143,7 @@ public class DeviceTable {
 			String query = "UPDATE device SET "
 					+ "name = '" + device.getName() + "', "
 					+ "photo_url = '" + device.getPhoto_url() + "', "
+					+ "logo_url = '" + device.getLogo_url() + "', "
 					+ "watt_total = " + device.getWatt_total() + ", "
 					+ "devide_by = " + device.getDivide_by() + ", "
 					+ "sensor = '" + device.getSensor() + "' "

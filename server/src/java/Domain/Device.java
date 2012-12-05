@@ -5,6 +5,7 @@ public class Device {
 	private int id;
 	private String name;
 	private String photo_url;
+	private String logo_url;
 	private double watt_total;
 	private int divide_by;
 	private String sensor;
@@ -46,6 +47,14 @@ public class Device {
 
 	public void setPhoto_url(String photo_url) {
 		this.photo_url = photo_url;
+	}
+	
+	public String getLogo_url() {
+		return logo_url;
+	}
+
+	public void setLogo_url(String logo_url) {
+		this.logo_url = logo_url;
 	}
 
 	public double getWatt_total() {
