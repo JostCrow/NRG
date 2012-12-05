@@ -9,9 +9,11 @@ public class WheelOption {
 	
 	private Image background, icon;
 	private String description;
+	private double average;
 	
-	public WheelOption(String description, String icon, String background){
+	public WheelOption(String description, String icon, String background, double average){
 		this.description = description;
+		this.average = average;
 		try {
 			this.background = new Image(Resource.getPath(background));
 			this.icon = new Image(Resource.getPath(icon));
@@ -30,5 +32,9 @@ public class WheelOption {
 	
 	public Image background(){
 		return this.background;
+	}
+	
+	public double getAverage(){
+		return this.average;
 	}
 }
