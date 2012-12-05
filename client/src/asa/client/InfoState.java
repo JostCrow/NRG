@@ -1,15 +1,23 @@
 package asa.client;
 
 import asa.client.resources.Resource;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
+import org.newdawn.slick.AngelCodeFont;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.SpriteSheetFont;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.gui.TextField;
 import service.Device;
 
 public class InfoState extends ArduinoGameState {
@@ -79,6 +87,7 @@ public class InfoState extends ArduinoGameState {
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga")));
 		
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
@@ -98,11 +107,14 @@ public class InfoState extends ArduinoGameState {
 			icon_background.draw(x, y);
 			option.getIcon().draw(x, y);
 			
+			
 			//TODO: find correct selection
 			//TODO: animate background switch
 			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
 				oldSelectedOption = selectedOption;
 				background = option.background();
+				int length = String.valueOf(option.getAverage()).length();
+				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
 				selectedOption = i;
 			}
 			logger.debug(option.getDescription() + " : " + degrees);
@@ -123,7 +135,7 @@ public class InfoState extends ArduinoGameState {
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
 		for(Device device : deviceList){
-			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl()));
+			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
 		}
 	}
 
