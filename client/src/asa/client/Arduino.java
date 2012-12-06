@@ -97,6 +97,7 @@ public class Arduino extends KeyAdapter implements Runnable, SerialPortEventList
 		this.listeners.remove(listener);
 	}
 	
+	@Override
 	synchronized public void serialEvent(SerialPortEvent serialEvent) {
 		if (serialEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
