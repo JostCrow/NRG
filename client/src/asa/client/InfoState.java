@@ -46,8 +46,10 @@ public class InfoState extends ArduinoGameState {
 	Dimension screenSize;
 	Dimension center;
 	
-	int selectionDegrees = 45;
+	int selectionDegrees = 270;
+	int selectionScaleDistance = 30;
 	int selectedOption = 0;
+	float selectedScale = 1.5f;
 	int oldSelectedOption = 0;
 	
 	public InfoState(int stateID, ServerAdapter server) {
@@ -91,7 +93,7 @@ public class InfoState extends ArduinoGameState {
 		
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
-			float degrees = 270 + ((rotation + offsetDegree*i) % 360);
+			float degrees = (270 + ((rotation + offsetDegree*i) % 360))%360;
 			float rad = (float) (degrees * (Math.PI / 180));
 			float radius = 310;
 			
@@ -100,24 +102,36 @@ public class InfoState extends ArduinoGameState {
 			
 			
 			
+			
 			WheelOption option = wheelOptions.get(i);
 			Image optionIcon = option.getIcon();
-			x = x - optionIcon.getWidth()/2;
-			y = y - optionIcon.getHeight()/2;
-			icon_background.draw(x, y);
-			option.getIcon().draw(x, y);
+			
+			float distance = Math.abs(degrees - selectionDegrees);
+			float scale = selectionScaleDistance / distance;
+			if(scale > selectedScale){
+				scale = selectedScale;
+			} else if (scale < 1){
+				scale = 1;
+			}
+			
+			x = x - optionIcon.getWidth()*scale/2;
+			y = y - optionIcon.getHeight()*scale/2;			
+			icon_background.draw(x, y, scale);
+			option.getIcon().draw(x, y, scale);
 			
 			
 			//TODO: find correct selection
 			//TODO: animate background switch
-			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
-				oldSelectedOption = selectedOption;
-				background = option.background();
-				int length = String.valueOf(option.getAverage()).length();
-				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
-				selectedOption = i;
-			}
-			logger.debug(option.getDescription() + " : " + degrees);
+			
+			
+//			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
+//				oldSelectedOption = selectedOption;
+//				background = option.background();
+//				int length = String.valueOf(option.getAverage()).length();
+//				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
+//				selectedOption = i;
+//			}
+			logger.debug(option.getDescription() + " : " + scale);
 		}
 		
 		WheelOption option = wheelOptions.get(selectedOption);
