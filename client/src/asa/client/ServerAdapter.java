@@ -29,6 +29,8 @@ public class ServerAdapter {
 	
 	// Device functions
 	public java.util.List<Device> getAllDevices() {
+		System.out.println(deviceService.toString());
+		System.out.println(devicePort.toString());
 		return devicePort.getAllDevices();
 	}
 

@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "Highscore", targetNamespace = "http://Service/", wsdlLocation = "http://localhost:8080/server/Highscore?wsdl")
+@WebServiceClient(name = "Highscore", targetNamespace = "http://Service/", wsdlLocation = "http://145.89.154.19:8080/server/Highscore?wsdl")
 public class Highscore_Service
     extends Service
 {
@@ -30,7 +30,7 @@ public class Highscore_Service
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://localhost:8080/server/Highscore?wsdl");
+            url = new URL("http://145.89.154.19:8080/server/Highscore?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
