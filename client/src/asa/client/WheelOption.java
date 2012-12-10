@@ -10,6 +10,7 @@ public class WheelOption {
 	private Image background, icon;
 	private String description;
 	private double average;
+	private float scale = 1;
 	
 	public WheelOption(String description, String icon, String background, double average){
 		this.description = description;
@@ -36,5 +37,13 @@ public class WheelOption {
 	
 	public double getAverage(){
 		return this.average;
+	}
+	
+	public float getScale(){
+		return this.scale;
+	}
+	
+	public void setScale(float scale){
+		this.scale = scale;
 	}
 }

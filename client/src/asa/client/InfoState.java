@@ -46,8 +46,8 @@ public class InfoState extends ArduinoGameState {
 	Dimension screenSize;
 	Dimension center;
 	
-	int selectionDegrees = 270;
-	int selectionScaleDistance = 30;
+	int selectionDegrees = 0;
+	int selectionScaleDistance = 180;
 	int selectedOption = 0;
 	float selectedScale = 1.5f;
 	int oldSelectedOption = 0;
@@ -63,9 +63,9 @@ public class InfoState extends ArduinoGameState {
 			@Override
 			public void wheelEvent(int direction, int speed) {
 				if(direction == 1){
-					targetrotation += 3*speed;
+					targetrotation += 1*speed;
 				} else {
-					targetrotation -= 3*speed;
+					targetrotation -= 1*speed;
 				}
 			}
 		});
@@ -74,9 +74,9 @@ public class InfoState extends ArduinoGameState {
 		selectionDegrees = 360/wheelOptions.size();
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
+		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
-		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		background = new Image(Resource.getPath(Resource.BACKGROUND_KOFFIE));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
 		
@@ -86,52 +86,38 @@ public class InfoState extends ArduinoGameState {
 		background.draw(0,0);
 		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
 		tandwiel2.draw(tandwiel1.getWidth()/2-tandwielOffset-40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
+		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga")));
 		
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
-			float degrees = (270 + ((rotation + offsetDegree*i) % 360))%360;
+			float degrees = (360+((rotation + offsetDegree*i) % 360))%360;
 			float rad = (float) (degrees * (Math.PI / 180));
 			float radius = 310;
 			
 			float x = (float) (center.getWidth() + radius * Math.cos(rad));
 			float y = (float) (center.getHeight() + radius * Math.sin(rad));
 			
-			
-			
-			
 			WheelOption option = wheelOptions.get(i);
 			Image optionIcon = option.getIcon();
 			
-			float distance = Math.abs(degrees - selectionDegrees);
-			float scale = selectionScaleDistance / distance;
-			if(scale > selectedScale){
-				scale = selectedScale;
-			} else if (scale < 1){
-				scale = 1;
-			}
-			
-			x = x - optionIcon.getWidth()*scale/2;
-			y = y - optionIcon.getHeight()*scale/2;			
-			icon_background.draw(x, y, scale);
-			option.getIcon().draw(x, y, scale);
-			
-			
-			//TODO: find correct selection
-			//TODO: animate background switch
-			
-			
+			float targetScale = 1;
 			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
 				oldSelectedOption = selectedOption;
 				background = option.background();
 				int length = String.valueOf(option.getAverage()).length();
 				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
 				selectedOption = i;
+				targetScale = 2;
 			}
-			logger.debug(option.getDescription() + " : " + scale);
+			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
+			logger.debug(option.getDescription() + " : " + option.getScale());
+			x = x - optionIcon.getWidth()*option.getScale()/2;
+			y = y - optionIcon.getHeight()*option.getScale()/2;			
+			icon_background.draw(x, y, option.getScale());
+			option.getIcon().draw(x, y, option.getScale());
 		}
 		
 		WheelOption option = wheelOptions.get(selectedOption);
@@ -148,6 +134,9 @@ public class InfoState extends ArduinoGameState {
 
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
+		for(Device device : deviceList){
+			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
+		}
 		for(Device device : deviceList){
 			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
 		}
