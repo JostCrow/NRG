@@ -124,13 +124,13 @@ public class InfoState extends ArduinoGameState {
 			//TODO: animate background switch
 			
 			
-//			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
-//				oldSelectedOption = selectedOption;
-//				background = option.background();
-//				int length = String.valueOf(option.getAverage()).length();
-//				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
-//				selectedOption = i;
-//			}
+			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
+				oldSelectedOption = selectedOption;
+				background = option.background();
+				int length = String.valueOf(option.getAverage()).length();
+				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
+				selectedOption = i;
+			}
 			logger.debug(option.getDescription() + " : " + scale);
 		}
 		

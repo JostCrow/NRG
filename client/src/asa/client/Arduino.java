@@ -1,12 +1,12 @@
 package asa.client;
 
+import com.google.gson.Gson;
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
-
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -17,10 +17,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TooManyListenersException;
-
 import org.apache.log4j.Logger;
-
-import com.google.gson.Gson;
 
 public class Arduino extends KeyAdapter implements Runnable, SerialPortEventListener, KeyListener{
 

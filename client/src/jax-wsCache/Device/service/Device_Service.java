@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "Device", targetNamespace = "http://Service/", wsdlLocation = "http://145.89.154.19:8080/server/Device?wsdl")
+@WebServiceClient(name = "Device", targetNamespace = "http://Service/", wsdlLocation = "http://localhost:8080/server/Device?wsdl")
 public class Device_Service
     extends Service
 {
@@ -30,7 +30,7 @@ public class Device_Service
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("http://145.89.154.19:8080/server/Device?wsdl");
+            url = new URL("http://localhost:8080/server/Device?wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

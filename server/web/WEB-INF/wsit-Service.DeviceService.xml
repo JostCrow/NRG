@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ <definitions 
+ xmlns="http://schemas.xmlsoap.org/wsdl/" 
+ xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+ xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="Device" targetNamespace="http://Service/" xmlns:tns="http://Service/" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsrm="http://docs.oasis-open.org/ws-rx/wsrmp/200702" xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702" xmlns:sc="http://schemas.sun.com/2006/03/wss/server" xmlns:wspp="http://java.sun.com/xml/ns/wsit/policy" 
+ >
+    <message name="getAllDevices"/>
+    <message name="getAllDevicesResponse"/>
+    <message name="getDeviceById"/>
+    <message name="getDeviceByIdResponse"/>
+    <message name="updateWattTotal"/>
+    <message name="updateWattTotalResponse"/>
+    <message name="addDevice"/>
+    <message name="addDeviceResponse"/>
+    <message name="removeDevice"/>
+    <message name="removeDeviceResponse"/>
+    <message name="getLiveData"/>
+    <message name="getLiveDataResponse"/>
+    <message name="updateDevice"/>
+    <message name="updateDeviceResponse"/>
+    <portType name="DeviceService">
+        <operation name="getAllDevices">
+            <input message="tns:getAllDevices"/>
+            <output message="tns:getAllDevicesResponse"/>
+        </operation>
+        <operation name="getDeviceById">
+            <input message="tns:getDeviceById"/>
+            <output message="tns:getDeviceByIdResponse"/>
+        </operation>
+        <operation name="updateWattTotal">
+            <input message="tns:updateWattTotal"/>
+            <output message="tns:updateWattTotalResponse"/>
+        </operation>
+        <operation name="addDevice">
+            <input message="tns:addDevice"/>
+            <output message="tns:addDeviceResponse"/>
+        </operation>
+        <operation name="removeDevice">
+            <input message="tns:removeDevice"/>
+            <output message="tns:removeDeviceResponse"/>
+        </operation>
+        <operation name="getLiveData">
+            <input message="tns:getLiveData"/>
+            <output message="tns:getLiveDataResponse"/>
+        </operation>
+        <operation name="updateDevice">
+            <input message="tns:updateDevice"/>
+            <output message="tns:updateDeviceResponse"/>
+        </operation>
+    </portType>
+    <binding name="DeviceServicePortBinding" type="tns:DeviceService">
+        <operation name="getAllDevices">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="getDeviceById">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="updateWattTotal">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="addDevice">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="removeDevice">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="getLiveData">
+            <input></input>
+            <output></output>
+        </operation>
+        <operation name="updateDevice">
+            <input></input>
+            <output></output>
+        </operation>
+    </binding>
+    <service name="Device">
+        <port name="DeviceServicePort" binding="tns:DeviceServicePortBinding"/>
+    </service>
+</definitions>
