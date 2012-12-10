@@ -1,24 +1,19 @@
 package asa.client;
 
-import asa.client.resources.Resource;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
-import org.newdawn.slick.SpriteSheetFont;
-import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.gui.TextField;
+
 import service.Device;
+import asa.client.resources.Resource;
 
 public class InfoState extends ArduinoGameState {
 
@@ -113,7 +108,6 @@ public class InfoState extends ArduinoGameState {
 				targetScale = 2;
 			}
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
-			logger.debug(option.getDescription() + " : " + option.getScale());
 			x = x - optionIcon.getWidth()*option.getScale()/2;
 			y = y - optionIcon.getHeight()*option.getScale()/2;			
 			icon_background.draw(x, y, option.getScale());
@@ -134,9 +128,6 @@ public class InfoState extends ArduinoGameState {
 
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
-		for(Device device : deviceList){
-			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
-		}
 		for(Device device : deviceList){
 			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
 		}
