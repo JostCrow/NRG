@@ -57,8 +57,8 @@ public class AsaGame extends StateBasedGame{
 	
 	@Override
 	public void initStatesList(GameContainer gameContainer) throws SlickException{
-		this.addState(new InfoState(INFOSTATE, this.server));
-		this.addState(new GameState(GAMESTATE, this.server, server.getDeviceById(5)));
+//		this.addState(new InfoState(INFOSTATE, this.server));
+		this.addState(new GameState(GAMESTATE, this.server, server.getDeviceById(6)));
 		this.addState(new HighscoreState(HIGHSCORESTATE));
 	}
 	

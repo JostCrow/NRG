@@ -18,8 +18,10 @@ import service.Device;
 
 public class GameState extends ArduinoGameState {
 
+	Logger logger = Logger.getLogger(this.getClass());
 	ServerAdapter server;
 	Device device;
+	
 	Image tandwiel1;
 	Image tandwiel2;
 	Image background;
@@ -30,32 +32,30 @@ public class GameState extends ArduinoGameState {
 	Image icon_background;
 	Image count_down1;
 	Image count_down2;
-	Image count_down3;
 	Image start;
-//	Animation animation;
+	Image count_down;
+
 	int image = 3;
-	Logger logger = Logger.getLogger(this.getClass());
 	int targetrotation = 0;
 	int tandwielOffset = 30;
-	float rotation = 0;
-	float spinnerrotation = 0;
-	double rotationEase = 5.0;
-	Dimension screenSize;
-	Dimension center;
 	int selectionDegrees = 45;
 	int selectedOption = 0;
 	int oldSelectedOption = 0;
 	
+	float rotation = 0;
+	float spinnerrotation = 0;
+	
 	double deviceScore = 0;
 	double score = 0;
-	boolean gamestarted = false;
-	boolean fadein = true;
+	double rotationEase = 5.0;
 	
-	int count = 1;
+	Dimension screenSize;
+	Dimension center;
+	
+	boolean gamestarted = false;
+	boolean countdownActive = true;
 	
 	DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00");
-	private Image count_down;
-	private boolean countdownActive = true;
 
 	public GameState(int stateID, ServerAdapter server, Device device) {
 		super(stateID);
@@ -80,7 +80,7 @@ public class GameState extends ArduinoGameState {
 					targetrotation -= 3 * speed;
 				}
 				if (gamestarted) {
-					score = score + speed;
+					score = score + (((double)speed*2)/10);
 				}
 			}
 		});
@@ -94,12 +94,8 @@ public class GameState extends ArduinoGameState {
 		tandwiel4 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
 		count_down1 = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
-		count_down1.setAlpha(0);
 		count_down2 = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
-		count_down2.setAlpha(0);
-		count_down3 = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
 		start = new Image(Resource.getPath(Resource.START_GAME));
-		start.setAlpha(0);
 	}
 
 	@Override
@@ -110,8 +106,8 @@ public class GameState extends ArduinoGameState {
 		tandwiel2.draw(tandwiel1.getWidth() / 2 - tandwielOffset - 40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
 		tandwiel3.draw(tandwiel2.getWidth() - tandwielOffset, AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() / 7));
 		tandwiel4.draw(tandwiel2.getWidth() - tandwielOffset + (tandwiel3.getWidth() - (tandwiel3.getWidth() / 5)), AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() - 145));
-		graphics.drawString(decimalFormat.format(score), (center.getWidth() - ((int)(String.valueOf(score).length()) * 13)), center.getHeight());
-		graphics.drawString(decimalFormat.format(deviceScore) + "", (center.getWidth()*2 - 100 - (int)(String.valueOf(score).length())), center.getHeight());
+		graphics.drawString(decimalFormat.format(score), center.getWidth(), center.getHeight());
+		graphics.drawString(decimalFormat.format(deviceScore) + "", (center.getWidth()*2 - 100 - (int)(String.valueOf(deviceScore).length())), center.getHeight());
 
 		if(countdownActive){
 			count_down.draw(center.getWidth() + (count_down.getWidth()), center.getHeight() - (count_down.getHeight() / 2));
@@ -143,7 +139,6 @@ public class GameState extends ArduinoGameState {
 			@Override
 			public void run() {
 				try {
-					image = 2;
 					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
 					count_down.setAlpha(0);
 				} catch (SlickException ex) {
@@ -190,6 +185,6 @@ public class GameState extends ArduinoGameState {
 			public void run() {
 				gamestarted = false;
 			}
-		}, 23500);
+		}, 23100);
 	}
 }
