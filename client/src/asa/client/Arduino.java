@@ -166,7 +166,7 @@ public class Arduino extends KeyAdapter implements Runnable, SerialPortEventList
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_A){
+		if(e.getKeyCode() == KeyEvent.VK_ENTER){
 			logger.debug("ButtonEvent A");
 		}
 	}

@@ -4,6 +4,7 @@ import asa.client.resources.Resource;
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
@@ -20,6 +21,7 @@ public class GameState extends ArduinoGameState {
 	Logger logger = Logger.getLogger(this.getClass());
 	ServerAdapter server;
 	Device device;
+	StateBasedGame stateBasedGame;
 	
 	Image tandwiel1;
 	Image tandwiel2;
@@ -56,11 +58,10 @@ public class GameState extends ArduinoGameState {
 	
 	DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00");
 
-	public GameState(int stateID, ServerAdapter server, Device device) {
+	public GameState(int stateID, ServerAdapter server) {
 		super(stateID);
 		this.server = server;
 		this.stateID = stateID;
-		this.device = device;
 	}
 
 	@Override
@@ -83,10 +84,11 @@ public class GameState extends ArduinoGameState {
 				}
 			}
 		});
-		startTimer();
 
+		stateBasedGame = sbg;
+		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
-		background = new Image(Resource.getPath(device.getPhotoUrl()));
+		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		tandwiel3 = new Image(Resource.getPath(Resource.TANDWIEL6));
@@ -123,8 +125,16 @@ public class GameState extends ArduinoGameState {
 		tandwiel4.setRotation((float) ((float) -(rotation * 1.818181818181818) + 14.36363636363636));
 		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
 		if (gamestarted) {
+			System.out.println(device.getWattTotal());
 			deviceScore = deviceScore + ((device.getWattTotal() / device.getDivideBy()) /100);
 		}
+	}
+	
+	@Override
+	public void enter(GameContainer gc, StateBasedGame sbg){
+		startTimer();
+		System.out.println(selectedDeviceId);
+		device = server.getDeviceById(selectedDeviceId);
 	}
 	
 	public void setFont(Graphics graphics) throws SlickException{
@@ -185,5 +195,11 @@ public class GameState extends ArduinoGameState {
 				gamestarted = false;
 			}
 		}, 23100);
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE);
+			}
+		}, 28000);
 	}
 }

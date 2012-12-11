@@ -10,8 +10,9 @@ public class WheelOption {
 	private Image background, icon;
 	private String description;
 	private double average;
+	private int deviceId;
 	
-	public WheelOption(String description, String icon, String background, double average){
+	public WheelOption(int id, String description, String icon, String background, double average){
 		this.description = description;
 		this.average = average;
 		try {
@@ -36,5 +37,9 @@ public class WheelOption {
 	
 	public double getAverage(){
 		return this.average;
+	}
+	
+	public int getDeviceId(){
+		return deviceId;
 	}
 }

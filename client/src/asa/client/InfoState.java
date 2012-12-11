@@ -1,9 +1,9 @@
 package asa.client;
 
 import asa.client.resources.Resource;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
@@ -12,12 +12,9 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
-import org.newdawn.slick.SpriteSheetFont;
-import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.gui.TextField;
+import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 
 public class InfoState extends ArduinoGameState {
@@ -58,7 +55,8 @@ public class InfoState extends ArduinoGameState {
 		loadWheelOptions();
 	}
 
-	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
+	@Override
+	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
 			public void wheelEvent(int direction, int speed) {
@@ -67,6 +65,13 @@ public class InfoState extends ArduinoGameState {
 				} else {
 					targetrotation -= 3*speed;
 				}
+			}
+			
+			@Override
+			public void buttonEvent(){
+//				Transition startTransition = new FadeOutTransition(Color.black, 2000);
+//				Transition endTransition = new FadeInTransition(Color.black, 2000);
+				stateBasedGame.enterState(AsaGame.GAMESTATE);
 			}
 		});
 		
@@ -118,26 +123,29 @@ public class InfoState extends ArduinoGameState {
 			y = y - optionIcon.getHeight()*scale/2;			
 			icon_background.draw(x, y, scale);
 			option.getIcon().draw(x, y, scale);
+			float test = 270 + (offsetDegree/2);
+			if(test > 360){
+				test = test - 360;
+			}
 			
-			
-			//TODO: find correct selection
-			//TODO: animate background switch
-			
-			
-//			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
-//				oldSelectedOption = selectedOption;
-//				background = option.background();
-//				int length = String.valueOf(option.getAverage()).length();
-//				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
-//				selectedOption = i;
-//			}
-			logger.debug(option.getDescription() + " : " + scale);
+			if(degrees >= 270 - (offsetDegree/2) && degrees < test){
+				oldSelectedOption = selectedOption;
+				background = option.background();
+				int length = String.valueOf(option.getAverage()).length();
+				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
+				selectedOption = i;
+				selectedDeviceId = option.getDeviceId();
+				logger.debug(option.getDescription() + " : " + option.getDeviceId());
+			}
+			logger.debug(option.getDescription() + " : " + degrees);
 		}
 		
 		WheelOption option = wheelOptions.get(selectedOption);
-		logger.debug(option.getDescription());
+//		logger.debug(option.getDescription());
 	}
-
+	
+	
+	@Override
 	public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
 		super.update(gameContainer, stateBasedGame, delta);
 		rotation += (targetrotation - rotation) / rotationEase;
@@ -149,7 +157,7 @@ public class InfoState extends ArduinoGameState {
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
 		for(Device device : deviceList){
-			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
+			wheelOptions.add(new WheelOption(device.getId(), device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
 		}
 	}
 
