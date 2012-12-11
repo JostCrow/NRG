@@ -22,8 +22,15 @@ public class HighscoreState extends ArduinoGameState{
 	Device device;
 	
 	Logger logger = Logger.getLogger(this.getClass());
-	List<WheelOption> wheelOptions = new ArrayList<WheelOption>();
+	List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
 	AngelCodeFont font;
+	
+	// mode 1: Able to choose yes or no
+	// mode 2: Automaticaly making picture (can be skipped)
+	// mode 3: Able to scroll through highscorelist
+	int mode;
+	boolean waitingForButton;
+	boolean makePhoto;
 	
 	Image tandwiel1;
 	Image tandwiel2;
@@ -55,6 +62,25 @@ public class HighscoreState extends ArduinoGameState{
 
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
+		wheelOptions.add(new WheelOptionYesNo("Ja", "icon_beamer.png", true));
+		wheelOptions.add(new WheelOptionYesNo("Nee", "icon_automaat.png", false));
+		
+		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
+		selectionDegrees = 360/wheelOptions.size();
+		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
+		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
+		spinner = new Image(Resource.getPath(Resource.SPINNER));
+		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
+		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
+		background = new Image(Resource.getPath(device.getPhotoUrl()));
+		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
+		font = new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga"));
+		mode = 1;
+	}
+	
+	@Override
+	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame)
+	{
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
 			public void wheelEvent(int direction, int speed) {
@@ -65,21 +91,17 @@ public class HighscoreState extends ArduinoGameState{
 				}
 			}
 		});
-		
-		wheelOptions.add(new WheelOption("Ja", device.getLogoUrl(), device.getPhotoUrl(), 0));
-		wheelOptions.add(new WheelOption("Nee", device.getLogoUrl(), device.getPhotoUrl(), 0));
-		
-		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
-		selectionDegrees = 360/wheelOptions.size();
-		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
-		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
-		spinner = new Image(Resource.getPath(Resource.SPINNER));
-		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
-		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
-		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
-		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
-		font = new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga"));
+		arduino.addListener(new ArduinoAdapter() {
+			@Override
+			public void buttonEvent(){
+				if (waitingForButton)
+				{
 
+				}
+			}
+		});
+		
+		waitingForButton = true;
 	}
 
 	@Override
@@ -94,14 +116,14 @@ public class HighscoreState extends ArduinoGameState{
 		
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
-			float degrees = (270 + ((rotation + offsetDegree*i) % 360))%360;
+			float degrees = (270 + ((rotation)%360 + offsetDegree*i) % 360)%360;
 			float rad = (float) (degrees * (Math.PI / 180));
 			float radius = 310;
 			
 			float x = (float) (center.getWidth() + radius * Math.cos(rad));
 			float y = (float) (center.getHeight() + radius * Math.sin(rad));			
 			
-			WheelOption option = wheelOptions.get(i);
+			WheelOptionYesNo option = wheelOptions.get(i);
 			Image optionIcon = option.getIcon();
 			
 			float distance = Math.abs(degrees - selectionDegrees);
@@ -115,17 +137,21 @@ public class HighscoreState extends ArduinoGameState{
 			x = x - optionIcon.getWidth()*scale/2;
 			y = y - optionIcon.getHeight()*scale/2;			
 			icon_background.draw(x, y, scale);
-			option.getIcon().draw(x, y, scale);
+			graphics.drawString(option.getDescription(), x, y);
 			
-			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
+			float biggerThanDegrees = 270 + (offsetDegree/2);
+			if(biggerThanDegrees > 360){
+				biggerThanDegrees = biggerThanDegrees - 360;
+			}
+
+			if(degrees >= 270 - (offsetDegree/2) && degrees < biggerThanDegrees){
 				if (selectedOption != oldSelectedOption)
 				{
 					logger.debug(option.getDescription());
 				}
-				oldSelectedOption = selectedOption;
-				background = option.background();
 				int length = String.valueOf(option.getDescription()).length();
 				graphics.drawString(option.getDescription(), (center.getWidth()-((length)*13)), center.getHeight());
+				oldSelectedOption = selectedOption;
 				selectedOption = i;				
 			}
 		}
