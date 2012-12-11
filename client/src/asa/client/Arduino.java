@@ -129,7 +129,9 @@ public class Arduino extends KeyAdapter implements Runnable, SerialPortEventList
 	@Override
 	public void run() {
 		try {
-			if(this.simulation) logger.debug("Simulation mode activated, use keyboard to simulate arduino");
+			if(this.simulation) {
+				logger.debug("Simulation mode activated, use keyboard to simulate arduino");
+			}
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			System.out.println(e);

@@ -14,6 +14,7 @@ public class WheelOption {
 	
 	public WheelOption(int id, String description, String icon, String background, double average){
 		this.description = description;
+		this.deviceId = id;
 		this.average = average;
 		try {
 			this.background = new Image(Resource.getPath(background));

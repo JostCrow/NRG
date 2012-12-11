@@ -1,5 +1,6 @@
 package asa.client;
 
+import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +14,19 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.BlobbyTransition;
+import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.state.transition.HorizontalSplitTransition;
+import org.newdawn.slick.state.transition.RotateTransition;
 import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 
 public class InfoState extends ArduinoGameState {
 
 	ServerAdapter server;
+	GameData gameData;
+	
 	Image tandwiel1;
 	Image tandwiel2;
 	Image background;
@@ -49,9 +56,10 @@ public class InfoState extends ArduinoGameState {
 	float selectedScale = 1.5f;
 	int oldSelectedOption = 0;
 	
-	public InfoState(int stateID, ServerAdapter server) {
+	public InfoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
+		this.gameData = gameData;
 		loadWheelOptions();
 	}
 
@@ -65,13 +73,6 @@ public class InfoState extends ArduinoGameState {
 				} else {
 					targetrotation -= 3*speed;
 				}
-			}
-			
-			@Override
-			public void buttonEvent(){
-//				Transition startTransition = new FadeOutTransition(Color.black, 2000);
-//				Transition endTransition = new FadeInTransition(Color.black, 2000);
-				stateBasedGame.enterState(AsaGame.GAMESTATE);
 			}
 		});
 		
@@ -123,21 +124,22 @@ public class InfoState extends ArduinoGameState {
 			y = y - optionIcon.getHeight()*scale/2;			
 			icon_background.draw(x, y, scale);
 			option.getIcon().draw(x, y, scale);
-			float test = 270 + (offsetDegree/2);
-			if(test > 360){
-				test = test - 360;
-			}
-			
-			if(degrees >= 270 - (offsetDegree/2) && degrees < test){
+			graphics.drawString(degrees + "", 10, 80*(i+1));
+			if(degrees >= 270 - (offsetDegree/2) && degrees < 270 + (offsetDegree/2)){
 				oldSelectedOption = selectedOption;
 				background = option.background();
 				int length = String.valueOf(option.getAverage()).length();
 				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
 				selectedOption = i;
-				selectedDeviceId = option.getDeviceId();
-				logger.debug(option.getDescription() + " : " + option.getDeviceId());
+				gameData.setDeviceId(option.getDeviceId());
+				if(option.getDeviceId() == 6){
+//					Transition t = new FadeOutTransition();
+//					Transition t1 = new FadeInTransition();
+					stateBasedGame.enterState(AsaGame.GAMESTATE);
+				}
+//				logger.debug(option.getDescription() + " : " + option.getDeviceId());
 			}
-			logger.debug(option.getDescription() + " : " + degrees);
+//			logger.debug(option.getDescription() + " : " + degrees);
 		}
 		
 		WheelOption option = wheelOptions.get(selectedOption);

@@ -1,7 +1,9 @@
 package asa.client;
+import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
@@ -17,6 +19,7 @@ public class HighscoreState extends ArduinoGameState{
 	int stateID = -1;
 
 	ServerAdapter server;
+	GameData gameData;
 	double playerScore;
 	double deviceScore;
 	Device device;
@@ -52,12 +55,10 @@ public class HighscoreState extends ArduinoGameState{
 	float rotation = 0;
 	double rotationEase = 5.0;
 
-	public HighscoreState(int stateID, ServerAdapter server, double playerScore, double deviceScore, Device device) {
+	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
-		this.playerScore = playerScore;
-		this.deviceScore = deviceScore;
-		this.device = device;
+		this.gameData = gameData;
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class HighscoreState extends ArduinoGameState{
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
-		background = new Image(Resource.getPath(device.getPhotoUrl()));
+		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
 		font = new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga"));
 		mode = 1;
@@ -100,7 +101,13 @@ public class HighscoreState extends ArduinoGameState{
 				}
 			}
 		});
-		
+		this.playerScore = gameData.getPlayerScore();
+		this.deviceScore = gameData.getDeviceScore();
+		this.device = server.getDeviceById(gameData.getDeviceId());
+		try {
+			background = new Image(Resource.getPath(device.getPhotoUrl()));
+		} catch (SlickException ex) {
+		}
 		waitingForButton = true;
 	}
 

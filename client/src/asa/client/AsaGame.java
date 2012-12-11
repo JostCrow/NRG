@@ -1,5 +1,6 @@
 package asa.client;
 
+import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -27,12 +28,15 @@ public class AsaGame extends StateBasedGame{
 	
 	private static final boolean DEBUG = true;
 	
+	private GameData gameData;
+	
 	public AsaGame() {
 		super("ASA-Game");
 		this.server = new ServerAdapter();
 		setLog4jConfiguration();
 		printSystemInfo();
 		setResolution();
+		gameData = new GameData();
 	}
 	
 	private void setLog4jConfiguration(){
@@ -53,11 +57,12 @@ public class AsaGame extends StateBasedGame{
 		AsaGame.RESOLUTION = Toolkit.getDefaultToolkit().getScreenSize();
 	}
 	
+	
 	@Override
 	public void initStatesList(GameContainer gameContainer) throws SlickException{
-//		this.addState(new InfoState(INFOSTATE, this.server));
-		this.addState(new GameState(GAMESTATE, this.server));
-		this.addState(new HighscoreState(HIGHSCORESTATE, this.server, 140.0, 240, server.getDeviceById(6)));
+		this.addState(new InfoState(INFOSTATE, this.server, gameData));
+		this.addState(new GameState(GAMESTATE, this.server, gameData));
+		this.addState(new HighscoreState(HIGHSCORESTATE, this.server, gameData));
 	}
 	
 	public static void main(String[] args) throws SlickException{

@@ -1,5 +1,6 @@
 package asa.client;
 
+import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 import java.text.DecimalFormat;
 import java.util.Timer;
@@ -14,6 +15,11 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.BlobbyTransition;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.state.transition.RotateTransition;
+import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 
 public class GameState extends ArduinoGameState {
@@ -22,6 +28,7 @@ public class GameState extends ArduinoGameState {
 	ServerAdapter server;
 	Device device;
 	StateBasedGame stateBasedGame;
+	GameData gameData;
 	
 	Image tandwiel1;
 	Image tandwiel2;
@@ -58,15 +65,10 @@ public class GameState extends ArduinoGameState {
 	
 	DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00");
 
-	public GameState(int stateID, ServerAdapter server) {
+	public GameState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
-		this.stateID = stateID;
-	}
-
-	@Override
-	public int getID() {
-		return stateID;
+		this.gameData = gameData;
 	}
 
 	@Override
@@ -125,7 +127,6 @@ public class GameState extends ArduinoGameState {
 		tandwiel4.setRotation((float) ((float) -(rotation * 1.818181818181818) + 14.36363636363636));
 		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
 		if (gamestarted) {
-			System.out.println(device.getWattTotal());
 			deviceScore = deviceScore + ((device.getWattTotal() / device.getDivideBy()) /100);
 		}
 	}
@@ -133,8 +134,12 @@ public class GameState extends ArduinoGameState {
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg){
 		startTimer();
-		System.out.println(selectedDeviceId);
-		device = server.getDeviceById(selectedDeviceId);
+		device = server.getDeviceById(gameData.getDeviceId());
+		try {
+			background = new Image(Resource.getPath(device.getPhotoUrl()));
+		} catch (SlickException ex) {
+			
+		}
 	}
 	
 	public void setFont(Graphics graphics) throws SlickException{
@@ -193,13 +198,17 @@ public class GameState extends ArduinoGameState {
 			@Override
 			public void run() {
 				gamestarted = false;
+				gameData.setDeviceScore(deviceScore);
+				gameData.setPlayerScore(score);
 			}
-		}, 23100);
+		}, 13100);
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE);
+//				Transition t = new BlobbyTransition();
+				Transition t1 = new BlobbyTransition();
+				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, t1, t1);
 			}
-		}, 28000);
+		}, 18000);
 	}
 }
