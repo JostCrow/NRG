@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
-public class Arduino extends KeyAdapter implements Runnable, SerialPortEventListener, KeyListener{
+public class Arduino extends KeyAdapter implements Runnable, SerialPortEventListener {
 
 	private Logger logger = Logger.getLogger(Arduino.class);
 	
@@ -153,6 +153,12 @@ public class Arduino extends KeyAdapter implements Runnable, SerialPortEventList
 	public void dispatchWheelEvent(int direction, int speed){
 		for(ArduinoListener listener : listeners){
 			listener.wheelEvent(direction, speed);
+		}
+	}
+	
+	public void dispatchButtonEvent(){
+		for(ArduinoListener listener : listeners){
+			listener.buttonEvent();
 		}
 	}
 	

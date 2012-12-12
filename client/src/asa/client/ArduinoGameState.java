@@ -31,5 +31,8 @@ public abstract class ArduinoGameState extends BasicGameState {
 		if(input.isKeyDown(Input.KEY_RIGHT)){
 			arduino.dispatchWheelEvent(1, speed);
 		}
+		if(input.isKeyPressed(Input.KEY_A)){
+			arduino.dispatchButtonEvent();
+		}
 	}
 }
