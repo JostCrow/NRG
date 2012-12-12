@@ -24,14 +24,20 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _AddHighscore_QNAME = new QName("http://Service/", "AddHighscore");
-    private final static QName _DeleteHighscore_QNAME = new QName("http://Service/", "DeleteHighscore");
-    private final static QName _GetLimitedHighscores_QNAME = new QName("http://Service/", "getLimitedHighscores");
-    private final static QName _GetLimitedHighscoresResponse_QNAME = new QName("http://Service/", "getLimitedHighscoresResponse");
-    private final static QName _AddHighscoreResponse_QNAME = new QName("http://Service/", "AddHighscoreResponse");
-    private final static QName _GetAllHighscores_QNAME = new QName("http://Service/", "getAllHighscores");
-    private final static QName _GetAllHighscoresResponse_QNAME = new QName("http://Service/", "getAllHighscoresResponse");
-    private final static QName _DeleteHighscoreResponse_QNAME = new QName("http://Service/", "DeleteHighscoreResponse");
+    private final static QName _GetLiveDataResponse_QNAME = new QName("http://Service/", "getLiveDataResponse");
+    private final static QName _UpdateDeviceResponse_QNAME = new QName("http://Service/", "updateDeviceResponse");
+    private final static QName _GetDeviceById_QNAME = new QName("http://Service/", "getDeviceById");
+    private final static QName _UpdateWattTotal_QNAME = new QName("http://Service/", "updateWattTotal");
+    private final static QName _UpdateDevice_QNAME = new QName("http://Service/", "updateDevice");
+    private final static QName _GetAllDevicesResponse_QNAME = new QName("http://Service/", "getAllDevicesResponse");
+    private final static QName _GetDeviceByIdResponse_QNAME = new QName("http://Service/", "getDeviceByIdResponse");
+    private final static QName _RemoveDeviceResponse_QNAME = new QName("http://Service/", "removeDeviceResponse");
+    private final static QName _AddDeviceResponse_QNAME = new QName("http://Service/", "addDeviceResponse");
+    private final static QName _AddDevice_QNAME = new QName("http://Service/", "addDevice");
+    private final static QName _UpdateWattTotalResponse_QNAME = new QName("http://Service/", "updateWattTotalResponse");
+    private final static QName _GetLiveData_QNAME = new QName("http://Service/", "getLiveData");
+    private final static QName _RemoveDevice_QNAME = new QName("http://Service/", "removeDevice");
+    private final static QName _GetAllDevices_QNAME = new QName("http://Service/", "getAllDevices");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: service
@@ -41,147 +47,249 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetLimitedHighscores }
+     * Create an instance of {@link UpdateWattTotalResponse }
      * 
      */
-    public GetLimitedHighscores createGetLimitedHighscores() {
-        return new GetLimitedHighscores();
+    public UpdateWattTotalResponse createUpdateWattTotalResponse() {
+        return new UpdateWattTotalResponse();
     }
 
     /**
-     * Create an instance of {@link DeleteHighscore }
+     * Create an instance of {@link AddDevice }
      * 
      */
-    public DeleteHighscore createDeleteHighscore() {
-        return new DeleteHighscore();
+    public AddDevice createAddDevice() {
+        return new AddDevice();
     }
 
     /**
-     * Create an instance of {@link AddHighscore }
+     * Create an instance of {@link GetAllDevices }
      * 
      */
-    public AddHighscore createAddHighscore() {
-        return new AddHighscore();
+    public GetAllDevices createGetAllDevices() {
+        return new GetAllDevices();
     }
 
     /**
-     * Create an instance of {@link GetAllHighscoresResponse }
+     * Create an instance of {@link RemoveDevice }
      * 
      */
-    public GetAllHighscoresResponse createGetAllHighscoresResponse() {
-        return new GetAllHighscoresResponse();
+    public RemoveDevice createRemoveDevice() {
+        return new RemoveDevice();
     }
 
     /**
-     * Create an instance of {@link DeleteHighscoreResponse }
+     * Create an instance of {@link GetLiveData }
      * 
      */
-    public DeleteHighscoreResponse createDeleteHighscoreResponse() {
-        return new DeleteHighscoreResponse();
+    public GetLiveData createGetLiveData() {
+        return new GetLiveData();
     }
 
     /**
-     * Create an instance of {@link GetAllHighscores }
+     * Create an instance of {@link GetDeviceById }
      * 
      */
-    public GetAllHighscores createGetAllHighscores() {
-        return new GetAllHighscores();
+    public GetDeviceById createGetDeviceById() {
+        return new GetDeviceById();
     }
 
     /**
-     * Create an instance of {@link AddHighscoreResponse }
+     * Create an instance of {@link UpdateDeviceResponse }
      * 
      */
-    public AddHighscoreResponse createAddHighscoreResponse() {
-        return new AddHighscoreResponse();
+    public UpdateDeviceResponse createUpdateDeviceResponse() {
+        return new UpdateDeviceResponse();
     }
 
     /**
-     * Create an instance of {@link GetLimitedHighscoresResponse }
+     * Create an instance of {@link GetLiveDataResponse }
      * 
      */
-    public GetLimitedHighscoresResponse createGetLimitedHighscoresResponse() {
-        return new GetLimitedHighscoresResponse();
+    public GetLiveDataResponse createGetLiveDataResponse() {
+        return new GetLiveDataResponse();
     }
 
     /**
-     * Create an instance of {@link Highscore }
+     * Create an instance of {@link GetDeviceByIdResponse }
      * 
      */
-    public Highscore createHighscore() {
-        return new Highscore();
+    public GetDeviceByIdResponse createGetDeviceByIdResponse() {
+        return new GetDeviceByIdResponse();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AddHighscore }{@code >}}
+     * Create an instance of {@link RemoveDeviceResponse }
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "AddHighscore")
-    public JAXBElement<AddHighscore> createAddHighscore(AddHighscore value) {
-        return new JAXBElement<AddHighscore>(_AddHighscore_QNAME, AddHighscore.class, null, value);
+    public RemoveDeviceResponse createRemoveDeviceResponse() {
+        return new RemoveDeviceResponse();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteHighscore }{@code >}}
+     * Create an instance of {@link AddDeviceResponse }
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "DeleteHighscore")
-    public JAXBElement<DeleteHighscore> createDeleteHighscore(DeleteHighscore value) {
-        return new JAXBElement<DeleteHighscore>(_DeleteHighscore_QNAME, DeleteHighscore.class, null, value);
+    public AddDeviceResponse createAddDeviceResponse() {
+        return new AddDeviceResponse();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetLimitedHighscores }{@code >}}
+     * Create an instance of {@link GetAllDevicesResponse }
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "getLimitedHighscores")
-    public JAXBElement<GetLimitedHighscores> createGetLimitedHighscores(GetLimitedHighscores value) {
-        return new JAXBElement<GetLimitedHighscores>(_GetLimitedHighscores_QNAME, GetLimitedHighscores.class, null, value);
+    public GetAllDevicesResponse createGetAllDevicesResponse() {
+        return new GetAllDevicesResponse();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetLimitedHighscoresResponse }{@code >}}
+     * Create an instance of {@link UpdateDevice }
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "getLimitedHighscoresResponse")
-    public JAXBElement<GetLimitedHighscoresResponse> createGetLimitedHighscoresResponse(GetLimitedHighscoresResponse value) {
-        return new JAXBElement<GetLimitedHighscoresResponse>(_GetLimitedHighscoresResponse_QNAME, GetLimitedHighscoresResponse.class, null, value);
+    public UpdateDevice createUpdateDevice() {
+        return new UpdateDevice();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link AddHighscoreResponse }{@code >}}
+     * Create an instance of {@link UpdateWattTotal }
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "AddHighscoreResponse")
-    public JAXBElement<AddHighscoreResponse> createAddHighscoreResponse(AddHighscoreResponse value) {
-        return new JAXBElement<AddHighscoreResponse>(_AddHighscoreResponse_QNAME, AddHighscoreResponse.class, null, value);
+    public UpdateWattTotal createUpdateWattTotal() {
+        return new UpdateWattTotal();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetAllHighscores }{@code >}}
+     * Create an instance of {@link Device }
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "getAllHighscores")
-    public JAXBElement<GetAllHighscores> createGetAllHighscores(GetAllHighscores value) {
-        return new JAXBElement<GetAllHighscores>(_GetAllHighscores_QNAME, GetAllHighscores.class, null, value);
+    public Device createDevice() {
+        return new Device();
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetAllHighscoresResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetLiveDataResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "getAllHighscoresResponse")
-    public JAXBElement<GetAllHighscoresResponse> createGetAllHighscoresResponse(GetAllHighscoresResponse value) {
-        return new JAXBElement<GetAllHighscoresResponse>(_GetAllHighscoresResponse_QNAME, GetAllHighscoresResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://Service/", name = "getLiveDataResponse")
+    public JAXBElement<GetLiveDataResponse> createGetLiveDataResponse(GetLiveDataResponse value) {
+        return new JAXBElement<GetLiveDataResponse>(_GetLiveDataResponse_QNAME, GetLiveDataResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteHighscoreResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateDeviceResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://Service/", name = "DeleteHighscoreResponse")
-    public JAXBElement<DeleteHighscoreResponse> createDeleteHighscoreResponse(DeleteHighscoreResponse value) {
-        return new JAXBElement<DeleteHighscoreResponse>(_DeleteHighscoreResponse_QNAME, DeleteHighscoreResponse.class, null, value);
+    @XmlElementDecl(namespace = "http://Service/", name = "updateDeviceResponse")
+    public JAXBElement<UpdateDeviceResponse> createUpdateDeviceResponse(UpdateDeviceResponse value) {
+        return new JAXBElement<UpdateDeviceResponse>(_UpdateDeviceResponse_QNAME, UpdateDeviceResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetDeviceById }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "getDeviceById")
+    public JAXBElement<GetDeviceById> createGetDeviceById(GetDeviceById value) {
+        return new JAXBElement<GetDeviceById>(_GetDeviceById_QNAME, GetDeviceById.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateWattTotal }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "updateWattTotal")
+    public JAXBElement<UpdateWattTotal> createUpdateWattTotal(UpdateWattTotal value) {
+        return new JAXBElement<UpdateWattTotal>(_UpdateWattTotal_QNAME, UpdateWattTotal.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateDevice }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "updateDevice")
+    public JAXBElement<UpdateDevice> createUpdateDevice(UpdateDevice value) {
+        return new JAXBElement<UpdateDevice>(_UpdateDevice_QNAME, UpdateDevice.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetAllDevicesResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "getAllDevicesResponse")
+    public JAXBElement<GetAllDevicesResponse> createGetAllDevicesResponse(GetAllDevicesResponse value) {
+        return new JAXBElement<GetAllDevicesResponse>(_GetAllDevicesResponse_QNAME, GetAllDevicesResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetDeviceByIdResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "getDeviceByIdResponse")
+    public JAXBElement<GetDeviceByIdResponse> createGetDeviceByIdResponse(GetDeviceByIdResponse value) {
+        return new JAXBElement<GetDeviceByIdResponse>(_GetDeviceByIdResponse_QNAME, GetDeviceByIdResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RemoveDeviceResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "removeDeviceResponse")
+    public JAXBElement<RemoveDeviceResponse> createRemoveDeviceResponse(RemoveDeviceResponse value) {
+        return new JAXBElement<RemoveDeviceResponse>(_RemoveDeviceResponse_QNAME, RemoveDeviceResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddDeviceResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "addDeviceResponse")
+    public JAXBElement<AddDeviceResponse> createAddDeviceResponse(AddDeviceResponse value) {
+        return new JAXBElement<AddDeviceResponse>(_AddDeviceResponse_QNAME, AddDeviceResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddDevice }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "addDevice")
+    public JAXBElement<AddDevice> createAddDevice(AddDevice value) {
+        return new JAXBElement<AddDevice>(_AddDevice_QNAME, AddDevice.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateWattTotalResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "updateWattTotalResponse")
+    public JAXBElement<UpdateWattTotalResponse> createUpdateWattTotalResponse(UpdateWattTotalResponse value) {
+        return new JAXBElement<UpdateWattTotalResponse>(_UpdateWattTotalResponse_QNAME, UpdateWattTotalResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetLiveData }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "getLiveData")
+    public JAXBElement<GetLiveData> createGetLiveData(GetLiveData value) {
+        return new JAXBElement<GetLiveData>(_GetLiveData_QNAME, GetLiveData.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RemoveDevice }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "removeDevice")
+    public JAXBElement<RemoveDevice> createRemoveDevice(RemoveDevice value) {
+        return new JAXBElement<RemoveDevice>(_RemoveDevice_QNAME, RemoveDevice.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetAllDevices }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "getAllDevices")
+    public JAXBElement<GetAllDevices> createGetAllDevices(GetAllDevices value) {
+        return new JAXBElement<GetAllDevices>(_GetAllDevices_QNAME, GetAllDevices.class, null, value);
     }
 
 }
