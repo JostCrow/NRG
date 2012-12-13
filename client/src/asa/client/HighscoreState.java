@@ -18,8 +18,7 @@ import service.Device;
 import service.Highscore;
 
 public class HighscoreState extends ArduinoGameState {
-
-	int stateID = -1;
+	
 	ServerAdapter server;
 	GameData gameData;
 	double playerScore;
@@ -28,9 +27,11 @@ public class HighscoreState extends ArduinoGameState {
 	Logger logger = Logger.getLogger(this.getClass());
 	List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
 	AngelCodeFont font;
-	// mode 1: Able to choose yes or no
-	// mode 2: Automaticaly making picture (can be skipped)
-	// mode 3: Able to scroll through highscorelist
+	/**
+	 * mode 1: Able to choose yes or no
+	 * mode 2: Automaticaly making picture (can be skipped)
+	 * mode 3: Able to scroll through highscorelist
+	 */
 	int mode;
 	boolean waitingForButton;
 	String underSpinner = "Foto maken bij behaalde score?";
@@ -72,7 +73,7 @@ public class HighscoreState extends ArduinoGameState {
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
 		wheelOptions.add(new WheelOptionYesNo("Ja", "icon_beamer.png", true));
 		wheelOptions.add(new WheelOptionYesNo("Nee", "icon_automaat.png", false));
-
+		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360 / wheelOptions.size();
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
@@ -152,8 +153,11 @@ public class HighscoreState extends ArduinoGameState {
 			for (int i = 0; i < wheelOptions.size(); i++) {
 				float offsetDegree = 360 / wheelOptions.size();
 				float degrees = (270 + ((rotation) % 360 + offsetDegree * i) % 360) % 360;
+				if(degrees < 0){
+					degrees = degrees + 360;
+				}
 				float rad = (float) (degrees * (Math.PI / 180));
-				float radius = 310;
+				float radius = 313;
 
 				float x = (float) (center.getWidth() + radius * Math.cos(rad));
 				float y = (float) (center.getHeight() + radius * Math.sin(rad));
@@ -161,22 +165,21 @@ public class HighscoreState extends ArduinoGameState {
 				WheelOptionYesNo option = wheelOptions.get(i);
 				Image optionIcon = option.getIcon();
 
-				float distance = Math.abs(degrees - selectionDegrees);
-				float scale = selectionScaleDistance / distance;
-				if (scale > selectedScale) {
-					scale = selectedScale;
-				} else if (scale < 1) {
-					scale = 1;
-				}
-
-				x = x - optionIcon.getWidth() * scale / 2;
-				y = y - optionIcon.getHeight() * scale / 2;
-				icon_background.draw(x, y, scale);
-				graphics.drawString(option.getDescription(), x, y);
-
 				float biggerThanDegrees = 270 + (offsetDegree / 2);
 				if (biggerThanDegrees > 360) {
 					biggerThanDegrees = biggerThanDegrees - 360;
+				}
+				
+				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
+					x = x - (float) (optionIcon.getWidth() * 1.3 / 2);
+					y = y - (float) (optionIcon.getHeight() * 1.3 / 2);
+					icon_background.draw(x, y, (float) 1.3);
+					graphics.drawString(option.getDescription(), x, y);
+				} else{
+					x = x - (float) (optionIcon.getWidth() * 1 / 2);
+					y = y - (float) (optionIcon.getHeight() * 1 / 2);
+					icon_background.draw(x, y);
+					graphics.drawString(option.getDescription(), x, y);
 				}
 
 				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {

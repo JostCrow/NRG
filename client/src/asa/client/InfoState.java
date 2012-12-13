@@ -86,8 +86,11 @@ public class InfoState extends ArduinoGameState {
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
 			float degrees = (270 + ((rotation + offsetDegree*i) % 360))%360;
+			if(degrees < 0){
+				degrees = degrees + 360;
+			}
 			float rad = (float) (degrees * (Math.PI / 180));
-			float radius = 310;
+			float radius = 313;
 			
 			float x = (float) (center.getWidth() + radius * Math.cos(rad));
 			float y = (float) (center.getHeight() + radius * Math.sin(rad));
@@ -98,19 +101,24 @@ public class InfoState extends ArduinoGameState {
 			WheelOption option = wheelOptions.get(i);
 			Image optionIcon = option.getIcon();
 			
-			float distance = Math.abs(degrees - selectionDegrees);
-			float scale = selectionScaleDistance / distance;
-			if(scale > selectedScale){
-				scale = selectedScale;
-			} else if (scale < 1){
-				scale = 1;
+			float biggerThanDegrees = 270 + (offsetDegree / 2);
+			if (biggerThanDegrees > 360) {
+				biggerThanDegrees = biggerThanDegrees - 360;
 			}
 			
-			x = x - optionIcon.getWidth()*scale/2;
-			y = y - optionIcon.getHeight()*scale/2;			
-			icon_background.draw(x, y, scale);
-			option.getIcon().draw(x, y, scale);
-			if(degrees >= 270 - (offsetDegree/2) && degrees < 270 + (offsetDegree/2)){
+			if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
+				x = x - (float) (optionIcon.getWidth() * 1.2 / 2);
+				y = y - (float) (optionIcon.getHeight() * 1.2 / 2);
+				icon_background.draw(x, y, (float) 1.2);
+				option.getIcon().draw(x, y, (float) 1.2);
+			} else{
+				x = x - (float) (optionIcon.getWidth() * 1 / 2);
+				y = y - (float) (optionIcon.getHeight() * 1 / 2);
+				icon_background.draw(x, y);
+				option.getIcon().draw(x, y);
+			}
+			
+			if(degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
 				oldSelectedOption = selectedOption;
 				background = option.background();
 				int length = decimalFormat.format(option.getAverage()).length();
