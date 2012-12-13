@@ -80,14 +80,18 @@ public class HighscoreState extends ArduinoGameState {
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
-		font = new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga"));
+		font = new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga"));
 	}
 
 	@Override
 	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame) {
 		
 		mode = 1;
-		spinnerSouth = playerScore + " kWh";
+		
+		playerScore = gameData.getPlayerScore();
+		deviceScore = gameData.getDeviceScore();
+		
+		spinnerSouth = decimalFormat.format(playerScore) + " kWh";
 		
 		basedGame = stateBasedGame;
 		this.playerScore = gameData.getPlayerScore();
@@ -97,19 +101,8 @@ public class HighscoreState extends ArduinoGameState {
 			background = new Image(Resource.getPath(device.getPhotoUrl()));
 		} catch (SlickException ex) {
 		}
-
-		int selectionAreaSize = 360 / wheelOptions.size();
-		for (int i = 0; i < wheelOptions.size(); i++) {
-			int min = i * selectionAreaSize;
-			int max = (i + 1) * selectionAreaSize;
-//			int degrees = min + (selectionAreaSize/2);
-			System.out.println(i + ": " + min + ", " + max);
-			if (min <= 0 && max > 0) {
-				selectedOption = i;
-				System.out.println("Initial selected option: " + i);
-				break;
-			}
-		}
+		
+		caclulateSelected();
 
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
@@ -135,6 +128,11 @@ public class HighscoreState extends ArduinoGameState {
 			}
 		});
 		ActivateButton();
+	}
+	
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		arduino.removeAllListeners();
 	}
 
 	@Override
@@ -308,5 +306,20 @@ public class HighscoreState extends ArduinoGameState {
 				waitingForButton = true;
 			}
 		}, 750);
+	}
+
+	private void caclulateSelected() {
+		int selectionAreaSize = 360 / wheelOptions.size();
+		for (int i = 0; i < wheelOptions.size(); i++) {
+			int min = i * selectionAreaSize;
+			int max = (i + 1) * selectionAreaSize;
+//			int degrees = min + (selectionAreaSize/2);
+			System.out.println(i + ": " + min + ", " + max);
+			if (min <= 0 && max > 0) {
+				selectedOption = i;
+				System.out.println("Initial selected option: " + i);
+				break;
+			}
+		}
 	}
 }

@@ -2,10 +2,8 @@ package asa.client;
 
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
-import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
@@ -15,11 +13,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.BlobbyTransition;
 import org.newdawn.slick.state.transition.EmptyTransition;
-import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.RotateTransition;
 import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 
@@ -63,8 +58,6 @@ public class GameState extends ArduinoGameState {
 	
 	boolean gamestarted = false;
 	boolean countdownActive = true;
-	
-	DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00");
 
 	public GameState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -74,20 +67,6 @@ public class GameState extends ArduinoGameState {
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		arduino.addListener(new ArduinoAdapter() {
-			@Override
-			public void wheelEvent(int direction, int speed) {
-				if (direction == 1) {
-					targetrotation += 3 * speed;
-				} else {
-					targetrotation -= 3 * speed;
-				}
-				if (gamestarted) {
-					score = score + (((double)speed*2)/10);
-				}
-			}
-		});
-
 		stateBasedGame = sbg;
 		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
@@ -134,18 +113,38 @@ public class GameState extends ArduinoGameState {
 	
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg){
-		startTimer();
+		arduino.addListener(new ArduinoAdapter() {
+			@Override
+			public void wheelEvent(int direction, int speed) {
+				if (direction == 1) {
+					targetrotation += 3 * speed;
+				} else {
+					targetrotation -= 3 * speed;
+				}
+				if (gamestarted) {
+					score = score + (((double)speed*2)/10);
+				}
+			}
+		});
 		device = server.getDeviceById(gameData.getDeviceId());
 		try {
 			background = new Image(Resource.getPath(device.getPhotoUrl()));
 		} catch (SlickException ex) {
 			
 		}
+		countdownActive = true;
+		score = 0;
+		deviceScore = 0;
+		startTimer();
+	}
+	
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		arduino.removeAllListeners();
 	}
 	
 	public void setFont(Graphics graphics) throws SlickException{
-		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga")));
-		graphics.setColor(Color.black);
+		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
 	}
 
 	public void startTimer(){

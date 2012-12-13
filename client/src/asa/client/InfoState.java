@@ -64,23 +64,7 @@ public class InfoState extends ArduinoGameState {
 	}
 
 	@Override
-	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {
-		arduino.addListener(new ArduinoAdapter() {
-			@Override
-			public void wheelEvent(int direction, int speed) {
-				if(direction == 1){
-					targetrotation += 3*speed;
-				} else {
-					targetrotation -= 3*speed;
-				}
-			}
-			
-			@Override
-			public void buttonEvent(){
-				stateBasedGame.enterState(AsaGame.GAMESTATE);
-			}
-		});
-		
+	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360/wheelOptions.size();
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
@@ -100,7 +84,7 @@ public class InfoState extends ArduinoGameState {
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
-		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga")));
+		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
 		
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
@@ -129,26 +113,17 @@ public class InfoState extends ArduinoGameState {
 			y = y - optionIcon.getHeight()*scale/2;			
 			icon_background.draw(x, y, scale);
 			option.getIcon().draw(x, y, scale);
-			graphics.drawString(degrees + "", 10, 80*(i+1));
 			if(degrees >= 270 - (offsetDegree/2) && degrees < 270 + (offsetDegree/2)){
 				oldSelectedOption = selectedOption;
 				background = option.background();
-				int length = String.valueOf(option.getAverage()).length();
-				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
+				int length = decimalFormat.format(option.getAverage()).length();
+				graphics.drawString(decimalFormat.format(option.getAverage()), (center.getWidth()-((length)*13)), center.getHeight());
 				selectedOption = i;
 				gameData.setDeviceId(option.getDeviceId());
-				if(option.getDeviceId() == 6){
-//					Transition t = new FadeOutTransition();
-//					Transition t1 = new FadeInTransition();
-//					stateBasedGame.enterState(AsaGame.GAMESTATE);
-				}
-//				logger.debug(option.getDescription() + " : " + option.getDeviceId());
 			}
-//			logger.debug(option.getDescription() + " : " + degrees);
 		}
 		
 		WheelOption option = wheelOptions.get(selectedOption);
-//		logger.debug(option.getDescription());
 	}
 	
 	
@@ -159,6 +134,30 @@ public class InfoState extends ArduinoGameState {
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
 		spinner.setRotation(rotation);
+	}
+	
+	@Override
+	public void enter(GameContainer gameContainer, final StateBasedGame stateBasedGame){
+		arduino.addListener(new ArduinoAdapter() {
+			@Override
+			public void wheelEvent(int direction, int speed) {
+				if(direction == 1){
+					targetrotation += 3*speed;
+				} else {
+					targetrotation -= 3*speed;
+				}
+			}
+			
+			@Override
+			public void buttonEvent(){
+				stateBasedGame.enterState(AsaGame.GAMESTATE);
+			}
+		});
+	}
+	
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		arduino.removeAllListeners();
 	}
 
 	private void loadWheelOptions() {
