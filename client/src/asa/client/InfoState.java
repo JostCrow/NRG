@@ -4,21 +4,17 @@ import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.BlobbyTransition;
+import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.HorizontalSplitTransition;
-import org.newdawn.slick.state.transition.RotateTransition;
 import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 
@@ -77,6 +73,7 @@ public class InfoState extends ArduinoGameState {
 		
 	}
 
+	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
 		background.draw(0,0);
 		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
@@ -150,7 +147,9 @@ public class InfoState extends ArduinoGameState {
 			
 			@Override
 			public void buttonEvent(){
-				stateBasedGame.enterState(AsaGame.GAMESTATE);
+				Transition fadeIn = new FadeInTransition();
+				Transition fadeOut = new FadeOutTransition();
+				stateBasedGame.enterState(AsaGame.GAMESTATE, fadeOut, fadeIn);
 			}
 		});
 	}
