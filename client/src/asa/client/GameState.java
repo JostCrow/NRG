@@ -7,13 +7,11 @@ import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 import org.newdawn.slick.state.transition.Transition;
@@ -24,7 +22,6 @@ public class GameState extends ArduinoGameState {
 	Logger logger = Logger.getLogger(this.getClass());
 	ServerAdapter server;
 	Device device;
-	StateBasedGame stateBasedGame;
 	GameData gameData;
 	
 	Image tandwiel1;
@@ -65,11 +62,13 @@ public class GameState extends ArduinoGameState {
 		this.server = server;
 		this.gameData = gameData;
 	}
+	/**
+	 * This function can be used to start the game.
+	 * This function also resets all the used variables in the game.
+	 */
 
 	@Override
-	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		stateBasedGame = sbg;
-		
+	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
@@ -97,7 +96,7 @@ public class GameState extends ArduinoGameState {
 			count_down.draw(center.getWidth() + (count_down.getWidth()), center.getHeight() - (count_down.getHeight() / 2));
 		}
 	}
-
+	
 	@Override
 	public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
 		super.update(gameContainer, stateBasedGame, delta);
@@ -113,7 +112,117 @@ public class GameState extends ArduinoGameState {
 	}
 	
 	@Override
-	public void enter(GameContainer gc, StateBasedGame sbg){
+	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame){
+		initiateListeners();
+		setSelectedDevice();
+		startGame(stateBasedGame);
+	}
+	
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		arduino.removeAllListeners();
+	}
+	
+	private void setFont(Graphics graphics) throws SlickException{
+		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
+	}
+
+	private void startGame(StateBasedGame stateBasedGame){
+		
+		countdownActive = true;
+		score = 0;
+		deviceScore = 0;
+		
+		Timer timer = new Timer();
+		startTimer(timer, stateBasedGame);
+	}
+	
+	private void startTimer(Timer timer, final StateBasedGame stateBasedGame){
+		/**
+		 * change the image to the number 2.
+		 */
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
+					count_down.setAlpha(0);
+				} catch (SlickException ex) {
+					
+				}
+			}
+		}, 1000);
+		/**
+		 * change the image to the number 1.
+		 */
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
+					count_down.setAlpha(0);
+				} catch (SlickException ex) {
+					
+				}
+			}
+		}, 2000);
+		/**
+		 * change the image to START.
+		 */
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					count_down = new Image(Resource.getPath(Resource.START_GAME));
+					count_down.setAlpha(0);
+				} catch (SlickException ex) {
+					
+				}
+			}
+		}, 3000);
+		/**
+		 * starts the game.
+		 */
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				gamestarted = true;
+			}
+		}, 3100);
+		/**
+		 * removes the countdown images.
+		 */
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				countdownActive = false;
+			}
+		}, 4000);
+		/**
+		 * stops the game after 20 seconds.
+		 */
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				gamestarted = false;
+				gameData.setDeviceScore(deviceScore);
+				gameData.setPlayerScore(score);
+			}
+		}, 23100);
+		/**
+		 * starts the HIGHSCORE state.
+		 */
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				Transition fadeIn = new FadeInTransition();
+				Transition fadeOut = new FadeOutTransition();
+				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, fadeOut, fadeIn);
+			}
+		}, 28000);
+	}
+
+	private void initiateListeners() {
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
 			public void wheelEvent(int direction, int speed) {
@@ -127,89 +236,14 @@ public class GameState extends ArduinoGameState {
 				}
 			}
 		});
+	}
+
+	private void setSelectedDevice() {
 		device = server.getDeviceById(gameData.getDeviceId());
 		try {
 			background = new Image(Resource.getPath(device.getPhotoUrl()));
 		} catch (SlickException ex) {
 			
 		}
-		countdownActive = true;
-		score = 0;
-		deviceScore = 0;
-		startTimer();
-	}
-	
-	@Override
-	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
-		arduino.removeAllListeners();
-	}
-	
-	public void setFont(Graphics graphics) throws SlickException{
-		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
-	}
-
-	public void startTimer(){
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
-					count_down.setAlpha(0);
-				} catch (SlickException ex) {
-					
-				}
-			}
-		}, 1000);
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
-					count_down.setAlpha(0);
-				} catch (SlickException ex) {
-					
-				}
-			}
-		}, 2000);
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					count_down = new Image(Resource.getPath(Resource.START_GAME));
-					count_down.setAlpha(0);
-				} catch (SlickException ex) {
-					
-				}
-			}
-		}, 3000);
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				gamestarted = true;
-			}
-		}, 3100);
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				countdownActive = false;
-			}
-		}, 4000);
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				gamestarted = false;
-				gameData.setDeviceScore(deviceScore);
-				gameData.setPlayerScore(score);
-			}
-		}, 13100);
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				Transition fadeIn = new FadeInTransition();
-				Transition fadeOut = new FadeOutTransition();
-				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, fadeOut, fadeIn);
-			}
-		}, 18000);
 	}
 }
