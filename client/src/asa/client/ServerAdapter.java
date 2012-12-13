@@ -29,8 +29,6 @@ public class ServerAdapter {
 	
 	// Device functions
 	public java.util.List<Device> getAllDevices() {
-		System.out.println(deviceService.toString());
-		System.out.println(devicePort.toString());
 		return devicePort.getAllDevices();
 	}
 
@@ -62,7 +60,10 @@ public class ServerAdapter {
 		return highscorePort.getAllHighscores();
 	}
 	
-	public void addHighscore(Highscore highscore) {
+	public void addHighscore(double score, String photoUrl) {
+		Highscore highscore = new Highscore();
+		highscore.setScore(score);
+		highscore.setFoto(photoUrl);		
 		highscorePort.addHighscore(highscore);
 	}
 }

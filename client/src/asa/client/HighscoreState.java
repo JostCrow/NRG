@@ -1,9 +1,11 @@
 package asa.client;
+
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Timer;
+import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.AngelCodeFont;
@@ -13,28 +15,26 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import service.Device;
+import service.Highscore;
 
-public class HighscoreState extends ArduinoGameState{
+public class HighscoreState extends ArduinoGameState {
 
 	int stateID = -1;
-
 	ServerAdapter server;
 	GameData gameData;
 	double playerScore;
 	double deviceScore;
 	Device device;
-	
 	Logger logger = Logger.getLogger(this.getClass());
 	List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
 	AngelCodeFont font;
-	
 	// mode 1: Able to choose yes or no
 	// mode 2: Automaticaly making picture (can be skipped)
 	// mode 3: Able to scroll through highscorelist
 	int mode;
 	boolean waitingForButton;
-	boolean makePhoto;
-	
+	String underSpinner = "Foto maken bij behaalde score?";
+	String spinnerSouth = "";
 	Image tandwiel1;
 	Image tandwiel2;
 	Image background;
@@ -42,9 +42,7 @@ public class HighscoreState extends ArduinoGameState{
 	Image background_spinner;
 	Image spinneroverlay;
 	Image icon_background;
-	
 	Dimension center;
-	
 	int targetrotation = 0;
 	int selectionDegrees = 180;
 	int selectionScaleDistance = 30;
@@ -54,6 +52,13 @@ public class HighscoreState extends ArduinoGameState{
 	int tandwielOffset = 30;
 	float rotation = 0;
 	double rotationEase = 5.0;
+	StateBasedGame basedGame;
+	
+	List<Highscore> highscores;
+	boolean longlist;
+	int topDraw;
+	int scoreHeight;
+	int scrollDelta;
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -65,9 +70,9 @@ public class HighscoreState extends ArduinoGameState{
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
 		wheelOptions.add(new WheelOptionYesNo("Ja", "icon_beamer.png", true));
 		wheelOptions.add(new WheelOptionYesNo("Nee", "icon_automaat.png", false));
-		
+
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
-		selectionDegrees = 360/wheelOptions.size();
+		selectionDegrees = 360 / wheelOptions.size();
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
@@ -76,31 +81,15 @@ public class HighscoreState extends ArduinoGameState{
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
 		font = new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga"));
-		mode = 1;
 	}
-	
-	@Override
-	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame)
-	{
-		arduino.addListener(new ArduinoAdapter() {
-			@Override
-			public void wheelEvent(int direction, int speed) {
-				if(direction == 1){
-					targetrotation += 3*speed;
-				} else {
-					targetrotation -= 3*speed;
-				}
-			}
-		});
-		arduino.addListener(new ArduinoAdapter() {
-			@Override
-			public void buttonEvent(){
-				if (waitingForButton)
-				{
 
-				}
-			}
-		});
+	@Override
+	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame) {
+		
+		mode = 1;
+		spinnerSouth = playerScore + " kWh";
+		
+		basedGame = stateBasedGame;
 		this.playerScore = gameData.getPlayerScore();
 		this.deviceScore = gameData.getDeviceScore();
 		this.device = server.getDeviceById(gameData.getDeviceId());
@@ -108,58 +97,123 @@ public class HighscoreState extends ArduinoGameState{
 			background = new Image(Resource.getPath(device.getPhotoUrl()));
 		} catch (SlickException ex) {
 		}
-		waitingForButton = true;
+
+		int selectionAreaSize = 360 / wheelOptions.size();
+		for (int i = 0; i < wheelOptions.size(); i++) {
+			int min = i * selectionAreaSize;
+			int max = (i + 1) * selectionAreaSize;
+//			int degrees = min + (selectionAreaSize/2);
+			System.out.println(i + ": " + min + ", " + max);
+			if (min <= 0 && max > 0) {
+				selectedOption = i;
+				System.out.println("Initial selected option: " + i);
+				break;
+			}
+		}
+
+		arduino.addListener(new ArduinoAdapter() {
+			@Override
+			public void wheelEvent(int direction, int speed) {
+				if (direction == 1) {
+					targetrotation += 3 * speed;
+				} else {
+					targetrotation -= 3 * speed;
+				}
+			}
+
+			@Override
+			public void buttonEvent() {
+				if (waitingForButton) {
+					waitingForButton = !waitingForButton;
+					WheelOptionYesNo selected = wheelOptions.get(selectedOption);
+					if (selected.getValue()) {
+						MakePhoto();
+					} else if (!selected.getValue()) {
+						ActivateHighscoreList();
+					}
+				}
+			}
+		});
+		ActivateButton();
 	}
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
-		background.draw(0,0);
-		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
-		tandwiel2.draw(tandwiel1.getWidth()/2-tandwielOffset-40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
+		background.draw(0, 0);
+		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
+		tandwiel2.draw(tandwiel1.getWidth() / 2 - tandwielOffset - 40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		graphics.setFont(font);
-		
-		for(int i = 0; i < wheelOptions.size(); i++){
-			float offsetDegree = 360/wheelOptions.size();
-			float degrees = (270 + ((rotation)%360 + offsetDegree*i) % 360)%360;
-			float rad = (float) (degrees * (Math.PI / 180));
-			float radius = 310;
-			
-			float x = (float) (center.getWidth() + radius * Math.cos(rad));
-			float y = (float) (center.getHeight() + radius * Math.sin(rad));			
-			
-			WheelOptionYesNo option = wheelOptions.get(i);
-			Image optionIcon = option.getIcon();
-			
-			float distance = Math.abs(degrees - selectionDegrees);
-			float scale = selectionScaleDistance / distance;
-			if(scale > selectedScale){
-				scale = selectedScale;
-			} else if (scale < 1){
-				scale = 1;
-			}
-			
-			x = x - optionIcon.getWidth()*scale/2;
-			y = y - optionIcon.getHeight()*scale/2;			
-			icon_background.draw(x, y, scale);
-			graphics.drawString(option.getDescription(), x, y);
-			
-			float biggerThanDegrees = 270 + (offsetDegree/2);
-			if(biggerThanDegrees > 360){
-				biggerThanDegrees = biggerThanDegrees - 360;
-			}
 
-			if(degrees >= 270 - (offsetDegree/2) && degrees < biggerThanDegrees){
-				if (selectedOption != oldSelectedOption)
-				{
-					logger.debug(option.getDescription());
+		if (mode == 1) {
+
+			for (int i = 0; i < wheelOptions.size(); i++) {
+				float offsetDegree = 360 / wheelOptions.size();
+				float degrees = (270 + ((rotation) % 360 + offsetDegree * i) % 360) % 360;
+				float rad = (float) (degrees * (Math.PI / 180));
+				float radius = 310;
+
+				float x = (float) (center.getWidth() + radius * Math.cos(rad));
+				float y = (float) (center.getHeight() + radius * Math.sin(rad));
+
+				WheelOptionYesNo option = wheelOptions.get(i);
+				Image optionIcon = option.getIcon();
+
+				float distance = Math.abs(degrees - selectionDegrees);
+				float scale = selectionScaleDistance / distance;
+				if (scale > selectedScale) {
+					scale = selectedScale;
+				} else if (scale < 1) {
+					scale = 1;
 				}
-				int length = String.valueOf(option.getDescription()).length();
-				graphics.drawString(option.getDescription(), (center.getWidth()-((length)*13)), center.getHeight());
-				oldSelectedOption = selectedOption;
-				selectedOption = i;				
+
+				x = x - optionIcon.getWidth() * scale / 2;
+				y = y - optionIcon.getHeight() * scale / 2;
+				icon_background.draw(x, y, scale);
+				graphics.drawString(option.getDescription(), x, y);
+
+				float biggerThanDegrees = 270 + (offsetDegree / 2);
+				if (biggerThanDegrees > 360) {
+					biggerThanDegrees = biggerThanDegrees - 360;
+				}
+
+				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
+					if (selectedOption != oldSelectedOption) {
+						logger.debug(option.getDescription());
+					}
+					oldSelectedOption = selectedOption;
+					selectedOption = i;
+				}
+				
+				int scoreLength = spinnerSouth.length();
+				int questionLength = underSpinner.length();
+				graphics.drawString(spinnerSouth, (center.getWidth() - ((scoreLength) * 13)), center.getHeight() + 160);
+				graphics.drawString(underSpinner, (center.getWidth() - ((questionLength) * 13)), center.getHeight() + 400);
+			}
+		}
+		else if (mode == 2)
+		{
+			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);				
+		}
+		else if (mode == 3)
+		{
+			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
+			underSpinner = highscores.size() + ", " + topDraw + ", " + rotation + ", " + scoreHeight + ", " + scrollDelta;
+			graphics.drawString(underSpinner, center.getWidth(), center.getHeight() + 400);
+			for (int i = topDraw ; i < topDraw+9 ; i++)
+			{
+				if(topDraw+i == highscores.size())
+				{
+					break;
+				}				
+				scoreHeight = (AsaGame.SOURCE_RESOLUTION.height/8);
+				int topLeftX = (AsaGame.SOURCE_RESOLUTION.width - AsaGame.SOURCE_RESOLUTION.width/4);
+				int topLeftY = (scoreHeight*i) - scrollDelta;
+				Highscore score = highscores.get(i);
+				int rank = i+1;
+				graphics.drawString(rank + ": " + score.getScore(), topLeftX, topLeftY); //+ (scoreHeight/2));				
 			}
 		}
 	}
@@ -169,8 +223,90 @@ public class HighscoreState extends ArduinoGameState{
 		super.update(gameContainer, stateBasedGame, delta);
 		rotation += (targetrotation - rotation) / rotationEase;
 		tandwiel1.setRotation(rotation);
-		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
+		tandwiel2.setRotation((float) ((float) -(rotation * 1.818181818181818) + 16.36363636363636));
 		spinner.setRotation(rotation);
+		
+		if (mode == 3)
+		{
+			int possibleTopDraw = (int) ((rotation*-1)/scoreHeight);
+			if (possibleTopDraw>=0)
+			{
+				scrollDelta = (int)((rotation*-1) % scoreHeight);
+				topDraw = possibleTopDraw;
+			}
+			else{
+				scrollDelta = (int)((rotation*-1) % scoreHeight - (possibleTopDraw*scoreHeight));
+			}
+		}
 	}
-
+	
+	public void MakePhoto()
+	{
+		mode = 2;
+		spinnerSouth = "";
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				spinnerSouth = "3";
+			}
+		}, 1000);
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				spinnerSouth = "2";
+			}
+		}, 2000);
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				spinnerSouth = "1";
+			}
+		}, 3000);
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				spinnerSouth = "Foto maken";
+			}
+		}, 4000);
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				spinnerSouth = "Foto laten zien";
+			}
+		}, 5500);
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				ActivateHighscoreList();
+				
+			}
+		}, 9000);
+	}
+	
+	public void ActivateHighscoreList()
+	{
+		spinnerSouth = "Scrolllist";
+		server.addHighscore(playerScore, "new Photo");
+		
+		highscores = server.getAllHighscores();
+		if (highscores.size() > 9)
+		{
+			longlist = true;
+		}
+		topDraw = 0;
+		rotation = 0;
+		mode = 3;
+	}
+	
+	public void ActivateButton()
+	{
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				waitingForButton = true;
+			}
+		}, 750);
+	}
 }
