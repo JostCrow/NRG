@@ -65,10 +65,6 @@ public class GameState extends ArduinoGameState {
 		this.server = server;
 		this.gameData = gameData;
 	}
-	/**
-	 * This function can be used to start the game.
-	 * This function also resets all the used variables in the game.
-	 */
 
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
@@ -119,6 +115,7 @@ public class GameState extends ArduinoGameState {
 	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame){
 		initiateListeners();
 		setSelectedDevice();
+		resetGame();
 		startGame(stateBasedGame);
 	}
 	
@@ -130,12 +127,18 @@ public class GameState extends ArduinoGameState {
 	private void setFont(Graphics graphics) throws SlickException{
 		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
 	}
-
-	private void startGame(StateBasedGame stateBasedGame){
-		
+	
+	private void resetGame(){
 		countdownActive = true;
 		score = 0;
 		deviceScore = 0;
+		try {
+			count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
+		} catch (SlickException ex) {
+		}
+	}
+
+	private void startGame(StateBasedGame stateBasedGame){
 		
 		Timer timer = new Timer();
 		startTimer(timer, stateBasedGame);
@@ -253,6 +256,7 @@ public class GameState extends ArduinoGameState {
 	
 	/**
 	 * takes the device score and randomly generates a new score with a margin of 10%.
+	 * 
 	 * @param deviceAverage 
 	 * @return 
 	 */
