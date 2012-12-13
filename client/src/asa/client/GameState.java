@@ -2,6 +2,7 @@ package asa.client;
 
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.log4j.Logger;
@@ -56,6 +57,8 @@ public class GameState extends ArduinoGameState {
 	
 	boolean gamestarted = false;
 	boolean countdownActive = true;
+	
+	Random random;
 
 	public GameState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -79,6 +82,7 @@ public class GameState extends ArduinoGameState {
 		count_down1 = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
 		count_down2 = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
 		start = new Image(Resource.getPath(Resource.START_GAME));
+		random = new Random();
 	}
 
 	@Override
@@ -107,7 +111,7 @@ public class GameState extends ArduinoGameState {
 		tandwiel4.setRotation((float) ((float) -(rotation * 1.818181818181818) + 14.36363636363636));
 		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
 		if (gamestarted) {
-			deviceScore = deviceScore + ((device.getWattTotal() / device.getDivideBy()) /100);
+			deviceScore = deviceScore + random((float)device.getWattTotal() / device.getDivideBy());
 		}
 	}
 	
@@ -245,5 +249,21 @@ public class GameState extends ArduinoGameState {
 		} catch (SlickException ex) {
 			
 		}
+	}
+	
+	/**
+	 * takes the device score and randomly generates a new score with a margin of 10%.
+	 * @param deviceAverage 
+	 * @return 
+	 */
+	private float random(float deviceAverage){
+		
+		float min = ((deviceAverage) - (deviceAverage/10));
+		float max = ((deviceAverage) + (deviceAverage/10));
+		int range = (int)(max - min);
+		float number = random.nextInt(range) + min;
+		
+		float test = (float)number/100;
+		return test;
 	}
 }
