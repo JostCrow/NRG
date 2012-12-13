@@ -87,14 +87,14 @@ public class HighscoreState extends ArduinoGameState {
 	}
 
 	@Override
-	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame) {
+	public void enter(GameContainer gameContainer, final StateBasedGame stateBasedGame) {
 		
 		mode = 1;
 		
 		playerScore = gameData.getPlayerScore();
 		deviceScore = gameData.getDeviceScore();
 		
-		spinnerSouth = decimalFormat.format(playerScore) + " kWh";
+		spinnerSouth = decimalFormat.format(playerScore) + " kWh, " + deviceScore;
 		
 		basedGame = stateBasedGame;
 		this.playerScore = gameData.getPlayerScore();
@@ -121,11 +121,18 @@ public class HighscoreState extends ArduinoGameState {
 			public void buttonEvent() {
 				if (waitingForButton) {
 					waitingForButton = !waitingForButton;
-					WheelOptionYesNo selected = wheelOptions.get(selectedOption);
-					if (selected.getValue()) {
-						MakePhoto();
-					} else if (!selected.getValue()) {
-						ActivateHighscoreList();
+					if (mode == 1)
+					{
+						WheelOptionYesNo selected = wheelOptions.get(selectedOption);
+						if (selected.getValue()) {
+							MakePhoto();
+						} else if (!selected.getValue()) {
+							ActivateHighscoreList();
+						}
+					}
+					if (mode == 3)
+					{
+						stateBasedGame.enterState(AsaGame.INFOSTATE);
 					}
 				}
 			}
@@ -205,20 +212,20 @@ public class HighscoreState extends ArduinoGameState {
 			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
 			underSpinner = highscores.size() + ", " + topDraw + ", " + rotation + ", " + scoreHeight + ", " + scrollDelta;
 			graphics.drawString(underSpinner, center.getWidth(), center.getHeight() + 400);
-			for (int i = topDraw ; i < topDraw+9 ; i++)
+			for (int i = 0 ; i < 9 ; i++)
 			{
-				if(topDraw+i == highscores.size())
+				if(topDraw+i >= highscores.size())
 				{
 					break;
 				}				
 				
 				int topLeftX = (appResWidth - appResWidth/4);
 				int topLeftY = (scoreHeight*i) + scrollDelta;
-				Highscore score = highscores.get(i);
+				Highscore score = highscores.get(topDraw+i);
 				int rank = topDraw+i+1;
 				graphics.drawLine(topLeftX, topLeftY, appResWidth, topLeftY);
 				graphics.setLineWidth(3.0f);
-				graphics.drawString(rank + ": " + score.getScore(), topLeftX, topLeftY + (scoreHeight/2));				
+				graphics.drawString(rank + ": " + score.getScore() + ", " + topLeftY+ ", " + i, topLeftX, topLeftY + (scoreHeight/2));				
 			}
 		}
 	}
@@ -302,6 +309,7 @@ public class HighscoreState extends ArduinoGameState {
 		topDraw = 0;
 		rotation = 0;
 		mode = 3;
+		ActivateButton();
 	}
 	
 	public void ActivateButton()
