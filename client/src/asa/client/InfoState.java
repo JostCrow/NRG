@@ -74,6 +74,11 @@ public class InfoState extends ArduinoGameState {
 					targetrotation -= 3*speed;
 				}
 			}
+			
+			@Override
+			public void buttonEvent(){
+				stateBasedGame.enterState(AsaGame.GAMESTATE);
+			}
 		});
 		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
@@ -135,7 +140,7 @@ public class InfoState extends ArduinoGameState {
 				if(option.getDeviceId() == 6){
 //					Transition t = new FadeOutTransition();
 //					Transition t1 = new FadeInTransition();
-					stateBasedGame.enterState(AsaGame.GAMESTATE);
+//					stateBasedGame.enterState(AsaGame.GAMESTATE);
 				}
 //				logger.debug(option.getDescription() + " : " + option.getDeviceId());
 			}

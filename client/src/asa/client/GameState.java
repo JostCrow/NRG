@@ -16,6 +16,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.BlobbyTransition;
+import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 import org.newdawn.slick.state.transition.RotateTransition;
@@ -205,8 +206,8 @@ public class GameState extends ArduinoGameState {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-//				Transition t = new BlobbyTransition();
-				Transition t1 = new BlobbyTransition();
+				Transition t = new EmptyTransition();
+				Transition t1 = new FadeOutTransition();
 				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, t1, t1);
 			}
 		}, 18000);
