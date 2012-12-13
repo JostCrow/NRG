@@ -54,11 +54,13 @@ public class HighscoreState extends ArduinoGameState {
 	double rotationEase = 5.0;
 	StateBasedGame basedGame;
 	
+	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
+	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
 	List<Highscore> highscores;
 	boolean longlist;
 	int topDraw;
-	int scoreHeight;
 	int scrollDelta;
+	int scoreHeight = (appResHeight/8);
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -206,12 +208,14 @@ public class HighscoreState extends ArduinoGameState {
 				{
 					break;
 				}				
-				scoreHeight = (AsaGame.SOURCE_RESOLUTION.height/8);
-				int topLeftX = (AsaGame.SOURCE_RESOLUTION.width - AsaGame.SOURCE_RESOLUTION.width/4);
-				int topLeftY = (scoreHeight*i) - scrollDelta;
+				
+				int topLeftX = (appResWidth - appResWidth/4);
+				int topLeftY = (scoreHeight*i) + scrollDelta;
 				Highscore score = highscores.get(i);
-				int rank = i+1;
-				graphics.drawString(rank + ": " + score.getScore(), topLeftX, topLeftY); //+ (scoreHeight/2));				
+				int rank = topDraw+i+1;
+				graphics.drawLine(topLeftX, topLeftY, appResWidth, topLeftY);
+				graphics.setLineWidth(3.0f);
+				graphics.drawString(rank + ": " + score.getScore(), topLeftX, topLeftY + (scoreHeight/2));				
 			}
 		}
 	}
@@ -229,11 +233,11 @@ public class HighscoreState extends ArduinoGameState {
 			int possibleTopDraw = (int) ((rotation*-1)/scoreHeight);
 			if (possibleTopDraw>=0)
 			{
-				scrollDelta = (int)((rotation*-1) % scoreHeight);
+				scrollDelta = (int)((rotation) % scoreHeight);
 				topDraw = possibleTopDraw;
 			}
 			else{
-				scrollDelta = (int)((rotation*-1) % scoreHeight - (possibleTopDraw*scoreHeight));
+				scrollDelta = (int)(((possibleTopDraw*-1)*scoreHeight) + (rotation%scoreHeight));
 			}
 		}
 	}
