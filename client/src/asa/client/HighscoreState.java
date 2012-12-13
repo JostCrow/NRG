@@ -94,7 +94,7 @@ public class HighscoreState extends ArduinoGameState {
 		playerScore = gameData.getPlayerScore();
 		deviceScore = gameData.getDeviceScore();
 		
-		spinnerSouth = decimalFormat.format(playerScore) + " kWh, " + deviceScore;
+		spinnerSouth = decimalFormat.format(playerScore) + " kWh, " + decimalFormat.format(deviceScore);
 		
 		basedGame = stateBasedGame;
 		this.playerScore = gameData.getPlayerScore();
@@ -121,17 +121,14 @@ public class HighscoreState extends ArduinoGameState {
 			public void buttonEvent() {
 				if (waitingForButton) {
 					waitingForButton = !waitingForButton;
-					if (mode == 1)
-					{
+					if (mode == 1){
 						WheelOptionYesNo selected = wheelOptions.get(selectedOption);
 						if (selected.getValue()) {
 							MakePhoto();
 						} else if (!selected.getValue()) {
 							ActivateHighscoreList();
 						}
-					}
-					if (mode == 3)
-					{
+					} else if (mode == 3){
 						stateBasedGame.enterState(AsaGame.INFOSTATE);
 					}
 				}
