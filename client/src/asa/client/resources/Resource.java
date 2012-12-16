@@ -38,7 +38,7 @@ public class Resource {
 	public static final String COUNT_DOUWN1 = "nederland1-300.png";
 	public static final String COUNT_DOUWN2 = "nederland2-300.png";
 	public static final String COUNT_DOUWN3 = "nederland3-300.png";
-	public static final String START_GAME = "start.gif";
+	public static final String START_GAME = "start.png";
 	
 	
 	public static URL getURL(String path) {

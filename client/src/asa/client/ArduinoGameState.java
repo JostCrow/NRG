@@ -1,5 +1,8 @@
 package asa.client;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
@@ -10,6 +13,7 @@ public abstract class ArduinoGameState extends BasicGameState {
 
 	int stateID = -1;
 	int speed = 1;
+	DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00", new DecimalFormatSymbols(Locale.GERMAN));
 	
 	Arduino arduino = Arduino.getInstance();
 	
@@ -30,6 +34,9 @@ public abstract class ArduinoGameState extends BasicGameState {
 		}
 		if(input.isKeyDown(Input.KEY_RIGHT)){
 			arduino.dispatchWheelEvent(1, speed);
+		}
+		if(input.isKeyPressed(Input.KEY_A)){
+			arduino.dispatchButtonEvent();
 		}
 	}
 }

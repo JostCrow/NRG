@@ -11,13 +11,19 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
+import org.newdawn.slick.state.transition.Transition;
 
 import service.Device;
+import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 
 public class InfoState extends ArduinoGameState {
 
 	ServerAdapter server;
+	GameData gameData;
+	
 	Image tandwiel1;
 	Image tandwiel2;
 	Image background;
@@ -47,24 +53,15 @@ public class InfoState extends ArduinoGameState {
 	float selectedScale = 1.5f;
 	int oldSelectedOption = 0;
 	
-	public InfoState(int stateID, ServerAdapter server) {
+	public InfoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
+		this.gameData = gameData;
 		loadWheelOptions();
 	}
 
-	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
-		arduino.addListener(new ArduinoAdapter() {
-			@Override
-			public void wheelEvent(int direction, int speed) {
-				if(direction == 1){
-					targetrotation += 3*speed;
-				} else {
-					targetrotation -= 3*speed;
-				}
-			}
-		});
-		
+	@Override
+	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360/wheelOptions.size();
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
@@ -77,6 +74,7 @@ public class InfoState extends ArduinoGameState {
 		
 	}
 
+	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
 		background.draw(0,0);
 		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
@@ -90,7 +88,7 @@ public class InfoState extends ArduinoGameState {
 			float offsetDegree = 360/wheelOptions.size();
 			float degrees = (360+((rotation + offsetDegree*i) % 360))%360;
 			float rad = (float) (degrees * (Math.PI / 180));
-			float radius = 310;
+			float radius = 313;
 			
 			float x = (float) (center.getWidth() + radius * Math.cos(rad));
 			float y = (float) (center.getHeight() + radius * Math.sin(rad));
@@ -102,9 +100,9 @@ public class InfoState extends ArduinoGameState {
 			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
 				oldSelectedOption = selectedOption;
 				background = option.background();
-				int length = String.valueOf(option.getAverage()).length();
-				graphics.drawString(option.getAverage() + "", (center.getWidth()-((length)*13)), center.getHeight());
-				selectedOption = i;
+				int length = decimalFormat.format(option.getAverage()).length();
+				graphics.drawString(decimalFormat.format(option.getAverage()), (center.getWidth()-((length)*13)), center.getHeight());
+				gameData.setDeviceId(option.getDeviceId());
 				targetScale = 2;
 			}
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
@@ -113,11 +111,10 @@ public class InfoState extends ArduinoGameState {
 			icon_background.draw(x, y, option.getScale());
 			option.getIcon().draw(x, y, option.getScale());
 		}
-		
-		WheelOption option = wheelOptions.get(selectedOption);
-		logger.debug(option.getDescription());
 	}
-
+	
+	
+	@Override
 	public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
 		super.update(gameContainer, stateBasedGame, delta);
 		rotation += (targetrotation - rotation) / rotationEase;
@@ -125,11 +122,37 @@ public class InfoState extends ArduinoGameState {
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
 		spinner.setRotation(rotation);
 	}
+	
+	@Override
+	public void enter(GameContainer gameContainer, final StateBasedGame stateBasedGame){
+		arduino.addListener(new ArduinoAdapter() {
+			@Override
+			public void wheelEvent(int direction, int speed) {
+				if(direction == 1){
+					targetrotation += 3*speed;
+				} else {
+					targetrotation -= 3*speed;
+				}
+			}
+			
+			@Override
+			public void buttonEvent(){
+				Transition fadeIn = new FadeInTransition();
+				Transition fadeOut = new FadeOutTransition();
+				stateBasedGame.enterState(AsaGame.GAMESTATE, fadeOut, fadeIn);
+			}
+		});
+	}
+	
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		arduino.removeAllListeners();
+	}
 
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
 		for(Device device : deviceList){
-			wheelOptions.add(new WheelOption(device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
+			wheelOptions.add(new WheelOption(device.getId(), device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
 		}
 	}
 

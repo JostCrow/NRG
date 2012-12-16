@@ -11,9 +11,11 @@ public class WheelOption {
 	private String description;
 	private double average;
 	private float scale = 1;
-	
-	public WheelOption(String description, String icon, String background, double average){
+	private int deviceId;
+
+	public WheelOption(int id, String description, String icon, String background, double average){
 		this.description = description;
+		this.deviceId = id;
 		this.average = average;
 		try {
 			this.background = new Image(Resource.getPath(background));
@@ -45,5 +47,8 @@ public class WheelOption {
 	
 	public void setScale(float scale){
 		this.scale = scale;
+	}
+	public int getDeviceId(){
+		return deviceId;
 	}
 }

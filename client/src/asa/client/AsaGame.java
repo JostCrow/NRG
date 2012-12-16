@@ -1,9 +1,10 @@
 package asa.client;
 
+import asa.client.DTO.GameData;
+import asa.client.resources.Resource;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.net.URL;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.newdawn.slick.AppGameContainer;
@@ -12,8 +13,6 @@ import org.newdawn.slick.ScalableGame;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.Log;
-
-import asa.client.resources.Resource;
 
 public class AsaGame extends StateBasedGame{
 	private ServerAdapter server;
@@ -29,12 +28,15 @@ public class AsaGame extends StateBasedGame{
 	
 	private static final boolean DEBUG = true;
 	
+	private GameData gameData;
+	
 	public AsaGame() {
 		super("ASA-Game");
 		this.server = new ServerAdapter();
 		setLog4jConfiguration();
 		printSystemInfo();
 		setResolution();
+		gameData = new GameData();
 	}
 	
 	private void setLog4jConfiguration(){
@@ -51,15 +53,16 @@ public class AsaGame extends StateBasedGame{
 		logger.debug("Total memory: " + runtime.totalMemory());
 	}
 	
-	public final void setResolution(){
+	public void setResolution(){
 		AsaGame.RESOLUTION = Toolkit.getDefaultToolkit().getScreenSize();
 	}
 	
+	
 	@Override
 	public void initStatesList(GameContainer gameContainer) throws SlickException{
-		this.addState(new InfoState(INFOSTATE, this.server));
-		this.addState(new GameState(GAMESTATE, this.server, server.getDeviceById(5)));
-		this.addState(new HighscoreState(HIGHSCORESTATE));
+		this.addState(new InfoState(INFOSTATE, this.server, gameData));
+		this.addState(new GameState(GAMESTATE, this.server, gameData));
+		this.addState(new HighscoreState(HIGHSCORESTATE, this.server, gameData));
 	}
 	
 	public static void main(String[] args) throws SlickException{
