@@ -7,9 +7,6 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,7 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
-public class Arduino extends KeyAdapter implements Runnable, SerialPortEventListener {
+public class Arduino implements Runnable, SerialPortEventListener {
 
 	private Logger logger = Logger.getLogger(Arduino.class);
 	
@@ -163,23 +160,6 @@ public class Arduino extends KeyAdapter implements Runnable, SerialPortEventList
 	public void dispatchButtonEvent(){
 		for(ArduinoListener listener : listeners){
 			listener.buttonEvent();
-		}
-	}
-	
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_LEFT){
-			logger.debug("Wheelevent LEFT");
-		}
-		if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-			logger.debug("Wheelevent RIGHT");
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ENTER){
-			logger.debug("ButtonEvent A");
 		}
 	}
 }
