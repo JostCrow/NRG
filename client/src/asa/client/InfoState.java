@@ -106,7 +106,6 @@ public class InfoState extends ArduinoGameState {
 			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
 				selectedOption = i;
 				if(selectedOption != oldSelectedOption){
-					System.out.println(selectedOption + " : " + oldSelectedOption);
 					BackgroundImage background = new BackgroundImage(option.getBackground());
 					int startPosition = 1080;
 					if (selectedOption < oldSelectedOption){
