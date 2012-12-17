@@ -33,7 +33,7 @@ public class WheelOption {
 		return this.icon;
 	}
 	
-	public Image background(){
+	public Image getBackground(){
 		return this.background;
 	}
 	

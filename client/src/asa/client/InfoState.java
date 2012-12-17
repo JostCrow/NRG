@@ -35,7 +35,7 @@ public class InfoState extends ArduinoGameState {
 	Logger logger = Logger.getLogger(this.getClass());
 	
 	List<WheelOption> wheelOptions = new ArrayList<WheelOption>();
-			
+	ArrayList<BackgroundImage> backgrounds = new ArrayList<BackgroundImage>();
 	
 	int targetrotation = 0;
 	int tandwielOffset = 30;
@@ -76,7 +76,12 @@ public class InfoState extends ArduinoGameState {
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
-		background.draw(0,0);
+		
+		for(BackgroundImage background : backgrounds){
+			background.setX(background.getX()+((0-background.getX())/5));
+			background.getImage().draw(background.getX(),0);
+		}
+		
 		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
 		tandwiel2.draw(tandwiel1.getWidth()/2-tandwielOffset-40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
@@ -84,6 +89,7 @@ public class InfoState extends ArduinoGameState {
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga")));
 		
+		// Render icons
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
 			float degrees = (360+((rotation + offsetDegree*i) % 360))%360;
@@ -98,8 +104,25 @@ public class InfoState extends ArduinoGameState {
 			
 			float targetScale = 1;
 			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
+				selectedOption = i;
+				if(selectedOption != oldSelectedOption){
+					System.out.println(selectedOption + " : " + oldSelectedOption);
+					BackgroundImage background = new BackgroundImage(option.getBackground());
+					int startPosition = 1080;
+					if (selectedOption < oldSelectedOption){
+						startPosition = -startPosition;
+					}
+					// Switch startposition on edges
+					if(
+						(selectedOption == 0 && oldSelectedOption == wheelOptions.size()-1) || 
+						(selectedOption == wheelOptions.size()-1 && oldSelectedOption == 0)){
+						startPosition = -startPosition;
+					}
+					background.setX(startPosition);
+					backgrounds.add(background);
+				}
 				oldSelectedOption = selectedOption;
-				background = option.background();
+				background = option.getBackground();
 				int length = decimalFormat.format(option.getAverage()).length();
 				graphics.drawString(decimalFormat.format(option.getAverage()), (center.getWidth()-((length)*13)), center.getHeight());
 				gameData.setDeviceId(option.getDeviceId());
@@ -110,6 +133,14 @@ public class InfoState extends ArduinoGameState {
 			y = y - optionIcon.getHeight()*option.getScale()/2;			
 			icon_background.draw(x, y, option.getScale());
 			option.getIcon().draw(x, y, option.getScale());
+		}
+		
+		// Cleanup background list
+		if(backgrounds.size() > 5){
+			BackgroundImage background = backgrounds.get(0);
+			if(background.getX() < 0.05){
+				backgrounds.remove(background);
+			}
 		}
 	}
 	
