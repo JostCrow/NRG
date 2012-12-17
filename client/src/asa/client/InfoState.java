@@ -153,6 +153,12 @@ public class InfoState extends ArduinoGameState {
 			option.getIcon().draw(x, y, option.getScale());
 		}		
 		
+		// Draw selected option in center;
+		//center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2
+		WheelOption option = wheelOptions.get(selectedOption);
+		Image selectedIcon = option.getIcon();
+		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth()*2.5f/2, -100 + center.getHeight() - selectedIcon.getHeight()*2.5f/2, 2.5f);
+		
 		// Cleanup background list
 		if(backgrounds.size() > 5){
 			BackgroundImage background = backgrounds.get(0);
