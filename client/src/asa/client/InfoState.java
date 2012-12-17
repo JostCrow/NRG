@@ -30,7 +30,9 @@ public class InfoState extends ArduinoGameState {
 	Image spinner;
 	Image background_spinner;
 	Image spinneroverlay;
-	Image icon_background;
+	Image icon_background_easy;
+	Image icon_background_medium;
+	Image icon_background_hard;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -70,7 +72,9 @@ public class InfoState extends ArduinoGameState {
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background = new Image(Resource.getPath(Resource.BACKGROUND_KOFFIE));
-		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
+		icon_background_easy = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
+		icon_background_medium = new Image(Resource.getPath(Resource.ICON_BACKGROUND_MEDIUM));
+		icon_background_hard = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
 		
 	}
 
@@ -129,10 +133,25 @@ public class InfoState extends ArduinoGameState {
 			}
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
 			x = x - optionIcon.getWidth()*option.getScale()/2;
-			y = y - optionIcon.getHeight()*option.getScale()/2;			
+			y = y - optionIcon.getHeight()*option.getScale()/2;
+			
+			Image icon_background;
+			switch(option.getDifficulty()){
+				case WheelOption.EASY: 
+					icon_background = icon_background_easy;
+					break;
+				case WheelOption.MEDIUM: 
+					icon_background = icon_background_medium;
+					break;
+				case WheelOption.HARD: 
+					icon_background = icon_background_hard;
+					break;
+				default: icon_background = icon_background_medium;
+			}
+			
 			icon_background.draw(x, y, option.getScale());
 			option.getIcon().draw(x, y, option.getScale());
-		}
+		}		
 		
 		// Cleanup background list
 		if(backgrounds.size() > 5){

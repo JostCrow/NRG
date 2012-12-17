@@ -24,7 +24,10 @@ public class Resource {
 	public static final String BACKGROUND_AUTOMAAT = "background_cola.png";
 	public static final String BACKGROUND_BEAMER = "background_beamert.png";
 	
-	public static final String ICON_BACKGROUND = "icon_background.png";
+	public static final String ICON_BACKGROUND_EASY = "icon_background_easy.png";
+	public static final String ICON_BACKGROUND_MEDIUM = "icon_background_medium.png";
+	public static final String ICON_BACKGROUND_HARD = "icon_background_hard.png";
+	
 	public static final String ICON_KOFFIE = "icon_koffie.png";
 	public static final String ICON_PRINTER = "icon_printer.png";
 	public static final String ICON_AUTOMAAT = "icon_automaat.png";

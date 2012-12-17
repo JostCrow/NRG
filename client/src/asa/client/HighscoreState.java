@@ -82,7 +82,7 @@ public class HighscoreState extends ArduinoGameState {
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
-		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
+		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		font = new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga"));
 	}
 
