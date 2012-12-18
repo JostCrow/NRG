@@ -89,7 +89,7 @@ public class InfoState extends ArduinoGameState {
 		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
 		icons_details = new Image(Resource.getPath(Resource.ICONS_DETAILS));
 		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 35, Color.BLACK);
-		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 12, Color.WHITE);
+		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 25, Color.WHITE);
 	}
 
 	@Override
@@ -194,10 +194,9 @@ public class InfoState extends ArduinoGameState {
 		icons_details.draw(center.getWidth()-125, center.getHeight()+50);
 		
 		graphics.setFont(font_details);
-		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-100, center.getHeight()+50);
-		
-		graphics.setFont(font_details);
-		graphics.drawString(decimalFormat.format(option.getAverage()), center.getWidth()-100, center.getHeight()+50);
+		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-75, 60+center.getHeight());
+		graphics.drawString("30 sec.", center.getWidth()-75, 60+center.getHeight()+47);
+		graphics.drawString(decimalFormat.format(option.getAverage()) + " Kw.", center.getWidth()-75, 60+center.getHeight()+47*2);
 		
 		
 		// Cleanup background list
