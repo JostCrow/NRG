@@ -1,15 +1,16 @@
 package asa.client;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
-import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
@@ -36,6 +37,9 @@ public class InfoState extends ArduinoGameState {
 	Image label_easy;
 	Image label_medium;
 	Image label_hard;
+	
+	UnicodeFont font_label;
+	UnicodeFont font_details;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -82,7 +86,8 @@ public class InfoState extends ArduinoGameState {
 		label_easy = new Image(Resource.getPath(Resource.LABEL_EASY));
 		label_medium = new Image(Resource.getPath(Resource.LABEL_MEDIUM));
 		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
-		
+		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 16, Color.BLACK);
+		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 12, Color.WHITE);
 	}
 
 	@Override
@@ -100,8 +105,7 @@ public class InfoState extends ArduinoGameState {
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga")));
-		
+	
 		// Render icons
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
@@ -135,8 +139,6 @@ public class InfoState extends ArduinoGameState {
 				}
 				oldSelectedOption = selectedOption;
 				background = option.getBackground();
-				int length = decimalFormat.format(option.getAverage()).length();
-				graphics.drawString(decimalFormat.format(option.getAverage()), (center.getWidth()-((length)*13)), center.getHeight());
 				gameData.setDeviceId(option.getDeviceId());
 				targetScale = 2;
 			}
@@ -163,7 +165,6 @@ public class InfoState extends ArduinoGameState {
 		}		
 		
 		// Draw selected option in center;
-		//center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2
 		WheelOption option = wheelOptions.get(selectedOption);
 		Image selectedIcon = option.getIcon();
 		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth()*2.5f/2, -100 + center.getHeight() - selectedIcon.getHeight()*2.5f/2, 2.5f);
@@ -182,7 +183,14 @@ public class InfoState extends ArduinoGameState {
 				default: label_difficulty = label_medium;
 		}
 		
-		label_difficulty.draw(center.getWidth()-label_difficulty.getWidth()/2, center.getHeight());
+		label_difficulty.draw(center.getWidth()-label_difficulty.getWidth()/2, center.getHeight()+1);
+		
+		graphics.setFont(font_label);
+		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 20);
+		
+		graphics.setFont(font_details);
+		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 50);
+		
 		// Cleanup background list
 		if(backgrounds.size() > 5){
 			BackgroundImage background = backgrounds.get(0);

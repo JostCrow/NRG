@@ -1,21 +1,24 @@
 package asa.client;
 
-import asa.client.DTO.GameData;
-import asa.client.resources.Resource;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
-import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
+
 import service.Device;
 import service.Highscore;
+import asa.client.DTO.GameData;
+import asa.client.resources.Resource;
 
 public class HighscoreState extends ArduinoGameState {
 	
@@ -26,7 +29,7 @@ public class HighscoreState extends ArduinoGameState {
 	Device device;
 	Logger logger = Logger.getLogger(this.getClass());
 	List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
-	AngelCodeFont font;
+	UnicodeFont font;
 	/**
 	 * mode 1: Able to choose yes or no
 	 * mode 2: Automaticaly making picture (can be skipped)
@@ -83,7 +86,7 @@ public class HighscoreState extends ArduinoGameState {
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
-		font = new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga"));
+		font = Resource.getFont(Resource.FONT_SANCHEZ, 10, Color.WHITE);
 	}
 
 	@Override
