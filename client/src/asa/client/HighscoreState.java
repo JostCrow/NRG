@@ -37,7 +37,7 @@ public class HighscoreState extends ArduinoGameState {
 	 */
 	int mode;
 	boolean waitingForButton;
-	String underSpinner = "Foto maken bij behaalde score?";
+	String underSpinner;
 	String spinnerSouth = "";
 	Image tandwiel1;
 	Image tandwiel2;
@@ -55,6 +55,7 @@ public class HighscoreState extends ArduinoGameState {
 	int oldSelectedOption = 0;
 	int tandwielOffset = 30;
 	float rotation = 0;
+	float rotationDelta = 0;
 	double rotationEase = 5.0;
 	StateBasedGame basedGame;
 	
@@ -65,6 +66,7 @@ public class HighscoreState extends ArduinoGameState {
 	int topDraw;
 	int scrollDelta;
 	int scoreHeight = (appResHeight/8);
+	int listSpeedfactor = 5;
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -92,21 +94,19 @@ public class HighscoreState extends ArduinoGameState {
 	@Override
 	public void enter(GameContainer gameContainer, final StateBasedGame stateBasedGame) {
 		
-		mode = 1;
-		
-		playerScore = gameData.getPlayerScore();
-		deviceScore = gameData.getDeviceScore();
-		
-		spinnerSouth = decimalFormat.format(playerScore) + " kWh, " + decimalFormat.format(deviceScore);
-		
+		mode = 1;		
 		basedGame = stateBasedGame;
+		rotationDelta = (rotation*-1);
 		this.playerScore = gameData.getPlayerScore();
 		this.deviceScore = gameData.getDeviceScore();
 		this.device = server.getDeviceById(gameData.getDeviceId());
 		try {
-			background = new Image(Resource.getPath(device.getPhotoUrl()));
+			background = new Image(Resource.getPath(device.getBackgroundUrl()));
 		} catch (SlickException ex) {
 		}
+		
+		spinnerSouth = decimalFormat.format(playerScore) + " kWh, ";
+		underSpinner = "Foto maken bij behaalde score?";
 		
 		caclulateSelected();
 
@@ -142,6 +142,7 @@ public class HighscoreState extends ArduinoGameState {
 	
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		mode = 1;
 		arduino.removeAllListeners();
 	}
 
@@ -159,7 +160,7 @@ public class HighscoreState extends ArduinoGameState {
 
 			for (int i = 0; i < wheelOptions.size(); i++) {
 				float offsetDegree = 360 / wheelOptions.size();
-				float degrees = (270 + ((rotation) % 360 + offsetDegree * i) % 360) % 360;
+				float degrees = (270 + ((rotation+rotationDelta) % 360 + offsetDegree * i) % 360) % 360;
 				if(degrees < 0){
 					degrees = degrees + 360;
 				}
@@ -210,8 +211,8 @@ public class HighscoreState extends ArduinoGameState {
 		else if (mode == 3)
 		{
 			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
-			underSpinner = highscores.size() + ", " + topDraw + ", " + rotation + ", " + scoreHeight + ", " + scrollDelta;
-			graphics.drawString(underSpinner, center.getWidth(), center.getHeight() + 400);
+			//underSpinner = highscores.size() + ", " + topDraw + ", " + rotation + ", " + scoreHeight + ", " + scrollDelta;
+			//graphics.drawString(underSpinner, center.getWidth(), center.getHeight() + 400);
 			for (int i = 0 ; i < 9 ; i++)
 			{
 				if(topDraw+i >= highscores.size())
@@ -225,7 +226,7 @@ public class HighscoreState extends ArduinoGameState {
 				int rank = topDraw+i+1;
 				graphics.drawLine(topLeftX, topLeftY, appResWidth, topLeftY);
 				graphics.setLineWidth(3.0f);
-				graphics.drawString(rank + ": " + score.getScore() + ", " + topLeftY+ ", " + i, topLeftX, topLeftY + (scoreHeight/2));				
+				graphics.drawString(rank + ": " + score.getScore(), topLeftX, topLeftY + (scoreHeight/2));				
 			}
 		}
 	}
@@ -240,14 +241,16 @@ public class HighscoreState extends ArduinoGameState {
 		
 		if (mode == 3)
 		{
-			int possibleTopDraw = (int) ((rotation*-1)/scoreHeight);
+			float listRotation = ((rotation+rotationDelta)*listSpeedfactor);
+		
+			int possibleTopDraw = (int) ((listRotation*-1)/scoreHeight);
 			if (possibleTopDraw>=0)
 			{
-				scrollDelta = (int)((rotation) % scoreHeight);
+				scrollDelta = (int)(listRotation % scoreHeight);
 				topDraw = possibleTopDraw;
 			}
 			else{
-				scrollDelta = (int)(((possibleTopDraw*-1)*scoreHeight) + (rotation%scoreHeight));
+				scrollDelta = (int)(((possibleTopDraw*-1)*scoreHeight) + (listRotation%scoreHeight));
 			}
 		}
 	}
@@ -307,7 +310,7 @@ public class HighscoreState extends ArduinoGameState {
 			longlist = true;
 		}
 		topDraw = 0;
-		rotation = 0;
+		rotationDelta = rotation*-1;
 		mode = 3;
 		ActivateButton();
 	}

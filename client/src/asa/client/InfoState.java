@@ -239,7 +239,7 @@ public class InfoState extends ArduinoGameState {
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
 		for(Device device : deviceList){
-			wheelOptions.add(new WheelOption(device.getId(), device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
+			wheelOptions.add(new WheelOption(device.getId(), device.getName(), device.getLogoUrl(), device.getBackgroundUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
 		}
 	}
 
