@@ -14,6 +14,7 @@ public class SlickLogger implements LogSystem {
 
 	@Override
 	public void error(Throwable throwable) {
+		throwable.printStackTrace();
 		logger.error(throwable);
 	}
 
