@@ -31,6 +31,7 @@ public class DeviceTable {
 			while (resultSet.next()) {
 				Device device = new Device(resultSet.getInt("id"));
 				device.setName(resultSet.getString("name"));
+				device.setLocation(resultSet.getString("location"));
 				device.setBackground_url(resultSet.getString("background_url"));
 				device.setLogo_url(resultSet.getString("logo_url"));
 				device.setDevice_url(resultSet.getString("device_url"));
@@ -61,6 +62,7 @@ public class DeviceTable {
 			
 			device = new Device(resultSet.getInt("id"));
 			device.setName(resultSet.getString("name"));
+			device.setLocation(resultSet.getString("location"));
 			device.setBackground_url(resultSet.getString("background_url"));
 			device.setLogo_url(resultSet.getString("logo_url"));
 			device.setDevice_url(resultSet.getString("device_url"));
@@ -103,6 +105,7 @@ public class DeviceTable {
 			String query = "INSERT INTO device "
 					+ "VALUES (null, "
 					+ "'" + device.getName() + "', "
+					+ "'" + device.getLocation() + "', "
 					+ "'" + device.getBackground_url() + "', "
 					+ "'" + device.getLogo_url() + "', "
 					+ "'" + device.getDevice_url() + "', "
@@ -145,6 +148,7 @@ public class DeviceTable {
 			
 			String query = "UPDATE device SET "
 					+ "name = '" + device.getName() + "', "
+					+ "location = '" + device.getLocation() + "', "
 					+ "background_url = '" + device.getBackground_url() + "', "
 					+ "logo_url = '" + device.getLogo_url() + "', "
 					+ "device_url = '" + device.getDevice_url() + "', "
