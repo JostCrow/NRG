@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import service.Device;
+
 import asa.client.resources.Resource;
 
 public class WheelOption {
@@ -17,30 +19,28 @@ public class WheelOption {
 	public static final int HARD = 3;
 	
 	private Image background, icon;
-	private String description;
-	private double average;
 	private float scale = 1;
-	private int deviceId;
 	private int difficulty;
 	
-	public WheelOption(int id, String description, String icon, String background, double average){
-		this.description = description;
-		this.deviceId = id;
-		this.average = average;
+	private Device device;
+	
+	public WheelOption(Device device){
+		this.device = device;
 		
 		// TODO: calculate proper difficulty;
 		Random random = new Random();
 		this.difficulty = random.nextInt(3) + 1;
+		
 		try {
-			this.background = new Image(Resource.getPath(background));
-			this.icon = new Image(Resource.getPath(icon));
+			this.background = new Image(Resource.getPath(device.getBackgroundUrl()));
+			this.icon = new Image(Resource.getPath(device.getLogoUrl()));
 		} catch (SlickException e) {
 			logger.error(e);
 		}
 	}
 
-	public String getDescription(){
-		return this.description;
+	public Device getDevice(){
+		return this.device;
 	}
 	
 	public Image getIcon(){
@@ -52,7 +52,7 @@ public class WheelOption {
 	}
 	
 	public double getAverage(){
-		return this.average;
+		return this.device.getWattTotal() / this.device.getDivideBy();
 	}
 	
 	public float getScale(){
@@ -61,10 +61,6 @@ public class WheelOption {
 	
 	public void setScale(float scale){
 		this.scale = scale;
-	}
-	
-	public int getDeviceId(){
-		return deviceId;
 	}
 	
 	public int getDifficulty(){

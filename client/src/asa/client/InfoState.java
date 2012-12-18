@@ -37,6 +37,7 @@ public class InfoState extends ArduinoGameState {
 	Image label_easy;
 	Image label_medium;
 	Image label_hard;
+	Image icons_details;
 	
 	UnicodeFont font_label;
 	UnicodeFont font_details;
@@ -86,8 +87,9 @@ public class InfoState extends ArduinoGameState {
 		label_easy = new Image(Resource.getPath(Resource.LABEL_EASY));
 		label_medium = new Image(Resource.getPath(Resource.LABEL_MEDIUM));
 		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
-		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 16, Color.BLACK);
-		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 12, Color.WHITE);
+		icons_details = new Image(Resource.getPath(Resource.ICONS_DETAILS));
+		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 35, Color.BLACK);
+		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 25, Color.WHITE);
 	}
 
 	@Override
@@ -139,8 +141,8 @@ public class InfoState extends ArduinoGameState {
 				}
 				oldSelectedOption = selectedOption;
 				background = option.getBackground();
-				gameData.setDeviceId(option.getDeviceId());
-				targetScale = 2;
+				gameData.setDeviceId(option.getDevice().getId());
+				targetScale = 1.5f;
 			}
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
 			x = x - optionIcon.getWidth()*option.getScale()/2;
@@ -166,8 +168,9 @@ public class InfoState extends ArduinoGameState {
 		
 		// Draw selected option in center;
 		WheelOption option = wheelOptions.get(selectedOption);
+		
 		Image selectedIcon = option.getIcon();
-		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth()*2.5f/2, -100 + center.getHeight() - selectedIcon.getHeight()*2.5f/2, 2.5f);
+		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth(), -120 + center.getHeight() - selectedIcon.getHeight(), 2);
 		
 		Image label_difficulty;
 		switch(option.getDifficulty()){
@@ -186,13 +189,18 @@ public class InfoState extends ArduinoGameState {
 		label_difficulty.draw(center.getWidth()-label_difficulty.getWidth()/2, center.getHeight()+1);
 		
 		graphics.setFont(font_label);
-		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 20);
+		graphics.drawString(option.getDevice().getName(), center.getWidth()-font_label.getWidth(option.getDevice().getName())/2, center.getHeight() - 50);
+		
+		icons_details.draw(center.getWidth()-125, center.getHeight()+50);
 		
 		graphics.setFont(font_details);
-		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 50);
+		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-75, 60+center.getHeight());
+		graphics.drawString("30 sec.", center.getWidth()-75, 60+center.getHeight()+47);
+		graphics.drawString(decimalFormat.format(option.getAverage()) + " Kw.", center.getWidth()-75, 60+center.getHeight()+47*2);
+		
 		
 		// Cleanup background list
-		if(backgrounds.size() > 5){
+		if(backgrounds.size() > 2){
 			BackgroundImage background = backgrounds.get(0);
 			if(background.getX() < 0.05){
 				backgrounds.remove(background);
@@ -239,7 +247,7 @@ public class InfoState extends ArduinoGameState {
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
 		for(Device device : deviceList){
-			wheelOptions.add(new WheelOption(device.getId(), device.getName(), device.getLogoUrl(), device.getBackgroundUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
+			wheelOptions.add(new WheelOption(device));
 		}
 	}
 
