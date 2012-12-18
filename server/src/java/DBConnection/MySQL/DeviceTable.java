@@ -145,7 +145,7 @@ public class DeviceTable {
 			
 			String query = "UPDATE device SET "
 					+ "name = '" + device.getName() + "', "
-					+ "photo_url = '" + device.getBackground_url() + "', "
+					+ "background_url = '" + device.getBackground_url() + "', "
 					+ "logo_url = '" + device.getLogo_url() + "', "
 					+ "device_url = '" + device.getDevice_url() + "', "
 					+ "watt_total = " + device.getWatt_total() + ", "

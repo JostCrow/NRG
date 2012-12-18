@@ -1,15 +1,16 @@
 package asa.client;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
-import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
@@ -24,15 +25,21 @@ public class InfoState extends ArduinoGameState {
 	ServerAdapter server;
 	GameData gameData;
 	
+	Image background;
 	Image tandwiel1;
 	Image tandwiel2;
-	Image background;
 	Image spinner;
 	Image background_spinner;
 	Image spinneroverlay;
 	Image icon_background_easy;
 	Image icon_background_medium;
 	Image icon_background_hard;
+	Image label_easy;
+	Image label_medium;
+	Image label_hard;
+	
+	UnicodeFont font_label;
+	UnicodeFont font_details;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -66,6 +73,7 @@ public class InfoState extends ArduinoGameState {
 	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360/wheelOptions.size();
+		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
@@ -75,11 +83,17 @@ public class InfoState extends ArduinoGameState {
 		icon_background_easy = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		icon_background_medium = new Image(Resource.getPath(Resource.ICON_BACKGROUND_MEDIUM));
 		icon_background_hard = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
-		
+		label_easy = new Image(Resource.getPath(Resource.LABEL_EASY));
+		label_medium = new Image(Resource.getPath(Resource.LABEL_MEDIUM));
+		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
+		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 16, Color.BLACK);
+		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 12, Color.WHITE);
 	}
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
+		
+		background.draw(0, 0);
 		
 		for(BackgroundImage background : backgrounds){
 			background.setX(background.getX()+((0-background.getX())/5));
@@ -91,8 +105,7 @@ public class InfoState extends ArduinoGameState {
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont.fnt"), Resource.getPath("OnzeFont_1.tga")));
-		
+	
 		// Render icons
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
@@ -126,8 +139,6 @@ public class InfoState extends ArduinoGameState {
 				}
 				oldSelectedOption = selectedOption;
 				background = option.getBackground();
-				int length = decimalFormat.format(option.getAverage()).length();
-				graphics.drawString(decimalFormat.format(option.getAverage()), (center.getWidth()-((length)*13)), center.getHeight());
 				gameData.setDeviceId(option.getDeviceId());
 				targetScale = 2;
 			}
@@ -154,10 +165,31 @@ public class InfoState extends ArduinoGameState {
 		}		
 		
 		// Draw selected option in center;
-		//center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2
 		WheelOption option = wheelOptions.get(selectedOption);
 		Image selectedIcon = option.getIcon();
 		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth()*2.5f/2, -100 + center.getHeight() - selectedIcon.getHeight()*2.5f/2, 2.5f);
+		
+		Image label_difficulty;
+		switch(option.getDifficulty()){
+			case WheelOption.EASY: 
+				label_difficulty = label_easy;
+				break;
+			case WheelOption.MEDIUM: 
+				label_difficulty = label_medium;
+				break;
+			case WheelOption.HARD: 
+				label_difficulty = label_hard;
+				break;
+				default: label_difficulty = label_medium;
+		}
+		
+		label_difficulty.draw(center.getWidth()-label_difficulty.getWidth()/2, center.getHeight()+1);
+		
+		graphics.setFont(font_label);
+		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 20);
+		
+		graphics.setFont(font_details);
+		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 50);
 		
 		// Cleanup background list
 		if(backgrounds.size() > 5){

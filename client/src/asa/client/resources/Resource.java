@@ -1,13 +1,20 @@
 package asa.client.resources;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.font.effects.ColorEffect;
 
 public class Resource {
 
+	private static Logger logger = Logger.getLogger(Resource.class);
+	
 	public static final String RESOURCE_PATH = "/asa/client/resources/";
 	
 	public static final String LOGCONFIG = "log4j.properties";
@@ -45,6 +52,11 @@ public class Resource {
 	public static final String NUMBERS_RED = "cijfertjesrood.png";
 	public static final String NUMBERS_BLACK = "cijfertjeszwart.png";
 	
+	public static final String LABEL_EASY = "label_easy.png";
+	public static final String LABEL_MEDIUM = "label_medium.png";
+	public static final String LABEL_HARD = "label_hard.png";
+	
+	public static final String FONT_SANCHEZ = "Sanchezregular.tff";
 	
 	public static URL getURL(String path) {
 		URL resourceUrl = null;
@@ -57,12 +69,27 @@ public class Resource {
 	}
 	
 	public static String getPath(String path){
+		String filepath = "";
 		try {
-			String filepath = Resource.class.getResource(RESOURCE_PATH + path).getFile();
-			return URLDecoder.decode(filepath, "UTF-8").toString();
+			String resource = Resource.class.getResource(RESOURCE_PATH + path).getFile();
+			filepath = URLDecoder.decode(resource, "UTF-8").toString();
 		} catch (UnsupportedEncodingException ex) {
-			Logger.getLogger(Resource.class.getName()).log(Level.SEVERE, null, ex);
-			return "Not found";
+			logger.error("Unable to locate resource " + path);
 		}
+		return filepath;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static UnicodeFont getFont(String path, int fontSize, Color color){
+		UnicodeFont font = new UnicodeFont(new Font(path, Font.PLAIN, fontSize));
+		font.addAsciiGlyphs();
+		font.addGlyphs(400, 600);
+		font.getEffects().add(new ColorEffect(color));
+		try {
+			font.loadGlyphs();
+		} catch (SlickException e){
+			logger.error("Unable to load glyphs for font " + path);
+		}
+		return font;
 	}
 }

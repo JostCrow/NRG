@@ -2,12 +2,15 @@ package asa.client;
 
 import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 import asa.client.resources.Resource;
 
 public class WheelOption {
+	
+	private Logger logger = Logger.getLogger(WheelOption.class);
 	
 	public static final int EASY = 1;
 	public static final int MEDIUM = 2;
@@ -28,12 +31,11 @@ public class WheelOption {
 		// TODO: calculate proper difficulty;
 		Random random = new Random();
 		this.difficulty = random.nextInt(3) + 1;
-		
 		try {
 			this.background = new Image(Resource.getPath(background));
 			this.icon = new Image(Resource.getPath(icon));
 		} catch (SlickException e) {
-			
+			logger.error(e);
 		}
 	}
 
