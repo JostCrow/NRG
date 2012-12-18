@@ -201,7 +201,7 @@ public class InfoState extends ArduinoGameState {
 		
 		
 		// Cleanup background list
-		if(backgrounds.size() > 5){
+		if(backgrounds.size() > 2){
 			BackgroundImage background = backgrounds.get(0);
 			if(background.getX() < 0.05){
 				backgrounds.remove(background);
