@@ -4,8 +4,10 @@ public class Device {
 	
 	private int id;
 	private String name;
-	private String photo_url;
+	private String location;
+	private String background_url;
 	private String logo_url;
+	private String device_url;
 	private double watt_total;
 	private int divide_by;
 	private String sensor;
@@ -17,19 +19,19 @@ public class Device {
 		this.id = id;
 	}
 
-	public Device(String name, String photo_url, double watt_total, int divide_by, String sensor) {
+	public Device(String name, String location, String background_url, String logo_url, String device_url, double watt_total, int divide_by, String sensor) {
 		this.name = name;
-		this.photo_url = photo_url;
+		this.background_url = background_url;
 		this.watt_total = watt_total;
 		this.divide_by = divide_by;
 		this.sensor = sensor;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
-	
-	public void setId(int id){
+
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -41,20 +43,36 @@ public class Device {
 		this.name = name;
 	}
 
-	public String getPhoto_url() {
-		return photo_url;
+	public String getLocation() {
+		return location;
 	}
 
-	public void setPhoto_url(String photo_url) {
-		this.photo_url = photo_url;
+	public void setLocation(String location) {
+		this.location = location;
 	}
-	
+
+	public String getBackground_url() {
+		return background_url;
+	}
+
+	public void setBackground_url(String background_url) {
+		this.background_url = background_url;
+	}
+
 	public String getLogo_url() {
 		return logo_url;
 	}
 
 	public void setLogo_url(String logo_url) {
 		this.logo_url = logo_url;
+	}
+
+	public String getDevice_url() {
+		return device_url;
+	}
+
+	public void setDevice_url(String device_url) {
+		this.device_url = device_url;
 	}
 
 	public double getWatt_total() {

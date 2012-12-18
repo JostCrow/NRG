@@ -7,7 +7,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
-import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -24,6 +23,7 @@ public class GameState extends ArduinoGameState {
 	ServerAdapter server;
 	Device device;
 	GameData gameData;
+	Timer timer;
 	
 	Image tandwiel1;
 	Image tandwiel2;
@@ -37,6 +37,7 @@ public class GameState extends ArduinoGameState {
 	Image count_down2;
 	Image start;
 	Image count_down;
+	Image device_icon;
 
 	int image = 3;
 	int targetrotation = 0;
@@ -78,6 +79,8 @@ public class GameState extends ArduinoGameState {
 		count_down1 = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
 		count_down2 = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
 		start = new Image(Resource.getPath(Resource.START_GAME));
+		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
+		device_icon = new Image(Resource.getPath(Resource.ICON_KOFFIE));
 		random = new Random();
 	}
 
@@ -89,9 +92,12 @@ public class GameState extends ArduinoGameState {
 		tandwiel2.draw(tandwiel1.getWidth() / 2 - tandwielOffset - 40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
 		tandwiel3.draw(tandwiel2.getWidth() - tandwielOffset, AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() / 7));
 		tandwiel4.draw(tandwiel2.getWidth() - tandwielOffset + (tandwiel3.getWidth() - (tandwiel3.getWidth() / 5)), AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() - 145));
-		graphics.drawString(decimalFormat.format(score), center.getWidth(), center.getHeight());
-		graphics.drawString(decimalFormat.format(deviceScore) + "", (center.getWidth()*2 - 100 - (int)(String.valueOf(deviceScore).length())), center.getHeight());
-
+		graphics.drawString(decimalFormat.format(score), center.getWidth() - (int)(center.getWidth()/1.5) + (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*3));
+		graphics.drawString(decimalFormat.format(deviceScore), center.getWidth() + (int)(center.getWidth()/1.5) - (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*3));
+		icon_background.draw(center.getWidth() + (int)(center.getWidth()/1.5) - (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
+		device_icon.draw(center.getWidth() + (int)(center.getWidth()/1.5) - (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
+		icon_background.draw(center.getWidth() - (int)(center.getWidth()/1.5) + (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
+		device_icon.draw(center.getWidth() - (int)(center.getWidth()/1.5) + (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
 		if(countdownActive){
 			count_down.draw(center.getWidth() + (count_down.getWidth()), center.getHeight() - (count_down.getHeight() / 2));
 		}
@@ -113,22 +119,21 @@ public class GameState extends ArduinoGameState {
 	
 	@Override
 	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame){
-		initiateListeners();
+		initiateListeners(stateBasedGame);
 		setSelectedDevice();
-		resetGame();
 		startGame(stateBasedGame);
 	}
 	
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		arduino.removeAllListeners();
-	}
-	
-	private void setFont(Graphics graphics) throws SlickException{
-		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
+		resetGame();
+		
 	}
 	
 	private void resetGame(){
+		timer.cancel();
+		gamestarted = false;
 		countdownActive = true;
 		score = 0;
 		deviceScore = 0;
@@ -139,8 +144,7 @@ public class GameState extends ArduinoGameState {
 	}
 
 	private void startGame(StateBasedGame stateBasedGame){
-		
-		Timer timer = new Timer();
+		timer = new Timer();
 		startTimer(timer, stateBasedGame);
 	}
 	
@@ -229,7 +233,7 @@ public class GameState extends ArduinoGameState {
 		}, 28000);
 	}
 
-	private void initiateListeners() {
+	private void initiateListeners(final StateBasedGame stateBasedGame) {
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
 			public void wheelEvent(int direction, int speed) {
@@ -242,15 +246,28 @@ public class GameState extends ArduinoGameState {
 					score = score + (((double)speed*2)/10);
 				}
 			}
+			@Override
+			public void buttonEvent(){
+				Transition fadeIn = new FadeInTransition();
+				Transition fadeOut = new FadeOutTransition();
+				stateBasedGame.enterState(AsaGame.INFOSTATE, fadeOut, fadeIn);
+			}
 		});
 	}
 
 	private void setSelectedDevice() {
 		device = server.getDeviceById(gameData.getDeviceId());
 		try {
-			background = new Image(Resource.getPath(device.getPhotoUrl()));
+			if((device.getWattTotal()/device.getDivideBy()) > 300){
+				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
+			} else if ((device.getWattTotal()/device.getDivideBy()) > 100){
+				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_MEDIUM));
+			} else {
+				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
+			}
+			device_icon = new Image(Resource.getPath(device.getLogoUrl()));
+			background = new Image(Resource.getPath(device.getBackgroundUrl()));
 		} catch (SlickException ex) {
-			
 		}
 	}
 	

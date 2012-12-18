@@ -101,7 +101,7 @@ public class HighscoreState extends ArduinoGameState {
 		this.deviceScore = gameData.getDeviceScore();
 		this.device = server.getDeviceById(gameData.getDeviceId());
 		try {
-			background = new Image(Resource.getPath(device.getPhotoUrl()));
+			background = new Image(Resource.getPath(device.getBackgroundUrl()));
 		} catch (SlickException ex) {
 		}
 		
