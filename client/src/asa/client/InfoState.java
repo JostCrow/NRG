@@ -24,15 +24,18 @@ public class InfoState extends ArduinoGameState {
 	ServerAdapter server;
 	GameData gameData;
 	
+	Image background;
 	Image tandwiel1;
 	Image tandwiel2;
-	Image background;
 	Image spinner;
 	Image background_spinner;
 	Image spinneroverlay;
 	Image icon_background_easy;
 	Image icon_background_medium;
 	Image icon_background_hard;
+	Image label_easy;
+	Image label_medium;
+	Image label_hard;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -66,6 +69,7 @@ public class InfoState extends ArduinoGameState {
 	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360/wheelOptions.size();
+		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
@@ -75,11 +79,16 @@ public class InfoState extends ArduinoGameState {
 		icon_background_easy = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		icon_background_medium = new Image(Resource.getPath(Resource.ICON_BACKGROUND_MEDIUM));
 		icon_background_hard = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
+		label_easy = new Image(Resource.getPath(Resource.LABEL_EASY));
+		label_medium = new Image(Resource.getPath(Resource.LABEL_MEDIUM));
+		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
 		
 	}
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
+		
+		background.draw(0, 0);
 		
 		for(BackgroundImage background : backgrounds){
 			background.setX(background.getX()+((0-background.getX())/5));
@@ -159,6 +168,21 @@ public class InfoState extends ArduinoGameState {
 		Image selectedIcon = option.getIcon();
 		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth()*2.5f/2, -100 + center.getHeight() - selectedIcon.getHeight()*2.5f/2, 2.5f);
 		
+		Image label_difficulty;
+		switch(option.getDifficulty()){
+			case WheelOption.EASY: 
+				label_difficulty = label_easy;
+				break;
+			case WheelOption.MEDIUM: 
+				label_difficulty = label_medium;
+				break;
+			case WheelOption.HARD: 
+				label_difficulty = label_hard;
+				break;
+				default: label_difficulty = label_medium;
+		}
+		
+		label_difficulty.draw(center.getWidth()-label_difficulty.getWidth()/2, center.getHeight());
 		// Cleanup background list
 		if(backgrounds.size() > 5){
 			BackgroundImage background = backgrounds.get(0);

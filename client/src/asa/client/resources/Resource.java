@@ -43,6 +43,9 @@ public class Resource {
 	public static final String COUNT_DOUWN3 = "nederland3-300.png";
 	public static final String START_GAME = "start.png";
 	
+	public static final String LABEL_EASY = "label_easy.png";
+	public static final String LABEL_MEDIUM = "label_medium.png";
+	public static final String LABEL_HARD = "label_hard.png";
 	
 	public static URL getURL(String path) {
 		URL resourceUrl = null;
