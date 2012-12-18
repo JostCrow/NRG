@@ -30,7 +30,9 @@ public class InfoState extends ArduinoGameState {
 	Image spinner;
 	Image background_spinner;
 	Image spinneroverlay;
-	Image icon_background;
+	Image icon_background_easy;
+	Image icon_background_medium;
+	Image icon_background_hard;
 	
 	Logger logger = Logger.getLogger(this.getClass());
 	
@@ -70,7 +72,9 @@ public class InfoState extends ArduinoGameState {
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background = new Image(Resource.getPath(Resource.BACKGROUND_KOFFIE));
-		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND));
+		icon_background_easy = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
+		icon_background_medium = new Image(Resource.getPath(Resource.ICON_BACKGROUND_MEDIUM));
+		icon_background_hard = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
 		
 	}
 
@@ -106,7 +110,6 @@ public class InfoState extends ArduinoGameState {
 			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
 				selectedOption = i;
 				if(selectedOption != oldSelectedOption){
-					System.out.println(selectedOption + " : " + oldSelectedOption);
 					BackgroundImage background = new BackgroundImage(option.getBackground());
 					int startPosition = 1080;
 					if (selectedOption < oldSelectedOption){
@@ -130,10 +133,31 @@ public class InfoState extends ArduinoGameState {
 			}
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
 			x = x - optionIcon.getWidth()*option.getScale()/2;
-			y = y - optionIcon.getHeight()*option.getScale()/2;			
+			y = y - optionIcon.getHeight()*option.getScale()/2;
+			
+			Image icon_background;
+			switch(option.getDifficulty()){
+				case WheelOption.EASY: 
+					icon_background = icon_background_easy;
+					break;
+				case WheelOption.MEDIUM: 
+					icon_background = icon_background_medium;
+					break;
+				case WheelOption.HARD: 
+					icon_background = icon_background_hard;
+					break;
+				default: icon_background = icon_background_medium;
+			}
+			
 			icon_background.draw(x, y, option.getScale());
 			option.getIcon().draw(x, y, option.getScale());
-		}
+		}		
+		
+		// Draw selected option in center;
+		//center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2
+		WheelOption option = wheelOptions.get(selectedOption);
+		Image selectedIcon = option.getIcon();
+		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth()*2.5f/2, -100 + center.getHeight() - selectedIcon.getHeight()*2.5f/2, 2.5f);
 		
 		// Cleanup background list
 		if(backgrounds.size() > 5){
@@ -183,7 +207,7 @@ public class InfoState extends ArduinoGameState {
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
 		for(Device device : deviceList){
-			wheelOptions.add(new WheelOption(device.getId(), device.getName(), device.getLogoUrl(), device.getPhotoUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
+			wheelOptions.add(new WheelOption(device.getId(), device.getName(), device.getLogoUrl(), device.getBackgroundUrl(), ( device.getWattTotal()/device.getDivideBy() ) ));
 		}
 	}
 

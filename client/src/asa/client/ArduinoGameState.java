@@ -1,9 +1,12 @@
 package asa.client;
 
+import asa.client.resources.Resource;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
@@ -38,5 +41,9 @@ public abstract class ArduinoGameState extends BasicGameState {
 		if(input.isKeyPressed(Input.KEY_A)){
 			arduino.dispatchButtonEvent();
 		}
+	}
+	
+	protected void setFont(Graphics graphics) throws SlickException{
+		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
 	}
 }
