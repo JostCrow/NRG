@@ -86,7 +86,7 @@ public class InfoState extends ArduinoGameState {
 		label_easy = new Image(Resource.getPath(Resource.LABEL_EASY));
 		label_medium = new Image(Resource.getPath(Resource.LABEL_MEDIUM));
 		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
-		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 16, Color.BLACK);
+		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 35, Color.BLACK);
 		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 12, Color.WHITE);
 	}
 
@@ -140,7 +140,7 @@ public class InfoState extends ArduinoGameState {
 				oldSelectedOption = selectedOption;
 				background = option.getBackground();
 				gameData.setDeviceId(option.getDeviceId());
-				targetScale = 2;
+				targetScale = 1.5f;
 			}
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
 			x = x - optionIcon.getWidth()*option.getScale()/2;
@@ -167,7 +167,7 @@ public class InfoState extends ArduinoGameState {
 		// Draw selected option in center;
 		WheelOption option = wheelOptions.get(selectedOption);
 		Image selectedIcon = option.getIcon();
-		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth()*2.5f/2, -100 + center.getHeight() - selectedIcon.getHeight()*2.5f/2, 2.5f);
+		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth(), -120 + center.getHeight() - selectedIcon.getHeight(), 2);
 		
 		Image label_difficulty;
 		switch(option.getDifficulty()){
@@ -186,10 +186,10 @@ public class InfoState extends ArduinoGameState {
 		label_difficulty.draw(center.getWidth()-label_difficulty.getWidth()/2, center.getHeight()+1);
 		
 		graphics.setFont(font_label);
-		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 20);
+		graphics.drawString(option.getDescription(), center.getWidth()-font_label.getWidth(option.getDescription())/2, center.getHeight() - 50);
 		
 		graphics.setFont(font_details);
-		graphics.drawString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 100, 50);
+		graphics.drawString(decimalFormat.format(option.getAverage()), 100, 50);
 		
 		// Cleanup background list
 		if(backgrounds.size() > 5){
