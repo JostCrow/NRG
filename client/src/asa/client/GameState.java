@@ -2,6 +2,9 @@ package asa.client;
 
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,6 +22,7 @@ import service.Device;
 
 public class GameState extends ArduinoGameState {
 
+	DecimalFormat specialFormat = new DecimalFormat("00000.00", new DecimalFormatSymbols(Locale.GERMAN));
 	Logger logger = Logger.getLogger(this.getClass());
 	ServerAdapter server;
 	Device device;
@@ -38,6 +42,15 @@ public class GameState extends ArduinoGameState {
 	Image start;
 	Image count_down;
 	Image device_icon;
+	Image linker_kastje;
+	Image rechter_kastje;
+	Image touwtjes;
+	Image spinner1;
+	Image spinner2;
+	Image spinner3;
+	
+	Image red_number;
+	Image black_number;
 
 	int image = 3;
 	int targetrotation = 0;
@@ -45,6 +58,9 @@ public class GameState extends ArduinoGameState {
 	int selectionDegrees = 45;
 	int selectedOption = 0;
 	int oldSelectedOption = 0;
+	
+	int[] playerPositions = new int[7];
+	int[] devicePositions = new int[7];
 	
 	float rotation = 0;
 	float spinnerrotation = 0;
@@ -81,26 +97,49 @@ public class GameState extends ArduinoGameState {
 		start = new Image(Resource.getPath(Resource.START_GAME));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		device_icon = new Image(Resource.getPath(Resource.ICON_KOFFIE));
+		linker_kastje = new Image(Resource.getPath(Resource.KASTJE_LINKS));
+		rechter_kastje = new Image(Resource.getPath(Resource.KASTJE_RECHTS));
+		touwtjes = new Image(Resource.getPath(Resource.ROPES));
+		spinner1 = new Image(Resource.getPath(Resource.GAME_SPINNER));
+		spinner2 = new Image(Resource.getPath(Resource.GAME_SPINNER));
+		spinner3 = new Image(Resource.getPath(Resource.GAME_SPINNER));
+		
+		red_number = new Image(Resource.getPath(Resource.NUMBERS_RED));
+		black_number = new Image(Resource.getPath(Resource.NUMBERS_BLACK));
 		random = new Random();
 	}
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
-		setFont(graphics);
 		background.draw(0, 0);
 		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
 		tandwiel2.draw(tandwiel1.getWidth() / 2 - tandwielOffset - 40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
 		tandwiel3.draw(tandwiel2.getWidth() - tandwielOffset, AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() / 7));
 		tandwiel4.draw(tandwiel2.getWidth() - tandwielOffset + (tandwiel3.getWidth() - (tandwiel3.getWidth() / 5)), AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() - 145));
-		graphics.drawString(decimalFormat.format(score), center.getWidth() - (int)(center.getWidth()/1.5) + (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*3));
-		graphics.drawString(decimalFormat.format(deviceScore), center.getWidth() + (int)(center.getWidth()/1.5) - (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*3));
-		icon_background.draw(center.getWidth() + (int)(center.getWidth()/1.5) - (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
-		device_icon.draw(center.getWidth() + (int)(center.getWidth()/1.5) - (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
-		icon_background.draw(center.getWidth() - (int)(center.getWidth()/1.5) + (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
-		device_icon.draw(center.getWidth() - (int)(center.getWidth()/1.5) + (icon_background.getWidth()/8), gameContainer.getHeight() - (int)(icon_background.getHeight()*2.5));
 		if(countdownActive){
 			count_down.draw(center.getWidth() + (count_down.getWidth()), center.getHeight() - (count_down.getHeight() / 2));
 		}
+		black_number.draw(90, playerPositions[0]);
+		black_number.draw(145, playerPositions[1]);
+		black_number.draw(200, playerPositions[2]);
+		black_number.draw(255, playerPositions[3]);
+		black_number.draw(310, playerPositions[4]);
+		red_number.draw(365, playerPositions[5]);
+		red_number.draw(420, playerPositions[6]);
+		black_number.draw(1432, devicePositions[0]);
+		black_number.draw(1490, devicePositions[1]);
+		black_number.draw(1548, devicePositions[2]);
+		black_number.draw(1606, devicePositions[3]);
+		black_number.draw(1662, devicePositions[4]);
+		red_number.draw(1721, devicePositions[5]);
+		red_number.draw(1780, devicePositions[6]);
+		linker_kastje.draw(0, gameContainer.getHeight() - linker_kastje.getHeight() - 50);
+		touwtjes.draw(85, gameContainer.getHeight() - linker_kastje.getHeight() - 50-touwtjes.getHeight());
+		spinner1.draw(85, gameContainer.getHeight() - linker_kastje.getHeight() - 50-spinner1.getHeight()/2, spinner1.getWidth(), spinner1.getHeight()/2);
+		spinner2.draw(200, gameContainer.getHeight() - linker_kastje.getHeight() - 50-spinner2.getHeight()/2);
+		spinner3.draw(350, gameContainer.getHeight() - linker_kastje.getHeight() - 50-spinner3.getHeight()/2);
+		rechter_kastje.draw(gameContainer.getWidth() - rechter_kastje.getWidth(), gameContainer.getHeight() - rechter_kastje.getHeight() - 50);
+		device_icon.draw(gameContainer.getWidth() - rechter_kastje.getWidth()/2- device_icon.getWidth()/2, gameContainer.getHeight()- rechter_kastje.getHeight()/2 -80);
 	}
 	
 	@Override
@@ -114,6 +153,20 @@ public class GameState extends ArduinoGameState {
 		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
 		if (gamestarted) {
 			deviceScore = deviceScore + random((float)device.getWattTotal() / device.getDivideBy());
+			String number = specialFormat.format(deviceScore);
+			number = number.replace(",", "");
+			System.out.println(number);
+			for(int i = 0; i < devicePositions.length; i++){
+				try{
+					int test = Integer.parseInt(number.substring(i, i+1));
+					devicePositions[i] = 760 - (test*73);
+					if(devicePositions[i] < (760 -(73*9))){
+						devicePositions[i] = 760;
+					}
+				} catch(Exception e){
+				}
+			}
+			System.out.println("");
 		}
 	}
 	
@@ -122,6 +175,7 @@ public class GameState extends ArduinoGameState {
 		initiateListeners(stateBasedGame);
 		setSelectedDevice();
 		startGame(stateBasedGame);
+		resetPositions();
 	}
 	
 	@Override
@@ -234,6 +288,7 @@ public class GameState extends ArduinoGameState {
 	}
 
 	private void initiateListeners(final StateBasedGame stateBasedGame) {
+		
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
 			public void wheelEvent(int direction, int speed) {
@@ -243,7 +298,19 @@ public class GameState extends ArduinoGameState {
 					targetrotation -= 3 * speed;
 				}
 				if (gamestarted) {
-					score = score + (((double)speed*2)/10);
+					score = score + (((double)speed*2)/100);
+					String number = specialFormat.format(score);
+					number = number.replace(",", "");
+					for(int i = 0; i < playerPositions.length; i++){
+						try{
+							int test = Integer.parseInt(number.substring(i, i+1));
+							playerPositions[i] = 760 - (test*73);
+							if(playerPositions[i] < (760 -(73*9))){
+								playerPositions[i] = 760;
+							}
+						} catch(Exception e){
+						}
+					}
 				}
 			}
 			@Override
@@ -266,7 +333,6 @@ public class GameState extends ArduinoGameState {
 				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 			}
 			device_icon = new Image(Resource.getPath(device.getLogoUrl()));
-			background = new Image(Resource.getPath(device.getBackgroundUrl()));
 		} catch (SlickException ex) {
 		}
 	}
@@ -286,5 +352,22 @@ public class GameState extends ArduinoGameState {
 		
 		float test = (float)number/100;
 		return test;
+	}
+
+	private void resetPositions() {
+		playerPositions[0] = 760;
+		playerPositions[1] = 760;
+		playerPositions[2] = 760;
+		playerPositions[3] = 760;
+		playerPositions[4] = 760;
+		playerPositions[5] = 760;
+		playerPositions[6] = 760;
+		devicePositions[0] = 760;
+		devicePositions[1] = 760;
+		devicePositions[2] = 760;
+		devicePositions[3] = 760;
+		devicePositions[4] = 760;
+		devicePositions[5] = 760;
+		devicePositions[6] = 760;
 	}
 }

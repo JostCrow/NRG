@@ -51,12 +51,16 @@ public class Resource {
 	public static final String START_GAME = "start.png";
 	public static final String NUMBERS_RED = "cijfertjesrood.png";
 	public static final String NUMBERS_BLACK = "cijfertjeszwart.png";
+	public static final String KASTJE_LINKS = "linkerkastje.png";
+	public static final String KASTJE_RECHTS = "rechterkastje.png";
+	public static final String ROPES = "touwtjes.png";
+	public static final String GAME_SPINNER = "draaispoel.png";
 	
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";
 	public static final String LABEL_HARD = "label_hard.png";
 	
-	public static final String FONT_SANCHEZ = "Sanchezregular.tff";
+	public static final String FONT_SANCHEZ = "Sanchezregular.tff";	
 	
 	public static URL getURL(String path) {
 		URL resourceUrl = null;
