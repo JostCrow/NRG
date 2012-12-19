@@ -110,6 +110,8 @@ public class GameState extends ArduinoGameState {
 		red_number = new Image(Resource.getPath(Resource.NUMBERS_RED));
 		black_number = new Image(Resource.getPath(Resource.NUMBERS_BLACK));
 		random = new Random();
+		
+		resetPositions();
 	}
 
 	@Override
@@ -130,13 +132,14 @@ public class GameState extends ArduinoGameState {
 		red_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*6+30), devicePositions[6]);
 		background.draw(0, 0);
 		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
+		tandwiel2.draw(center.getWidth()/2-tandwiel2.getWidth()/2-tandwiel2.getWidth()/4, center.getHeight() / 2 - tandwiel2.getHeight()/2);
 		if(countdownActive){
 			count_down.draw(center.getWidth() + (count_down.getWidth()), center.getHeight() - (count_down.getHeight() / 2));
 		}
 		touwtjes.draw(linker_kastje.getWidth()/2+75, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight());
 		spinner1.draw(linker_kastje.getWidth()/2+75, center.getHeight()*2 - linker_kastje.getHeight()-spinner1.getHeight()+spinner1.getHeight()/3);
 		spinner2.draw(linker_kastje.getWidth()/2+225, center.getHeight()*2 - linker_kastje.getHeight()-spinner2.getHeight()+spinner1.getHeight()/3);
-		spinner3.draw(linker_kastje.getWidth()/2+365, center.getHeight()*2 - linker_kastje.getHeight()-spinner3.getHeight()+spinner1.getHeight()/3);
+		spinner3.draw(linker_kastje.getWidth()/2+368 , center.getHeight()*2 - linker_kastje.getHeight()-spinner3.getHeight()+spinner1.getHeight()/3);
 		linker_kastje.draw(linker_kastje.getWidth()/2, center.getHeight()*2 - linker_kastje.getHeight());
 		linker_kastje_boven.draw(350, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight()-linker_kastje_boven.getHeight());
 		rechter_kastje.draw(center.getWidth()*2 - rechter_kastje.getWidth(), center.getHeight()*2 - rechter_kastje.getHeight());
@@ -148,16 +151,16 @@ public class GameState extends ArduinoGameState {
 		super.update(gameContainer, stateBasedGame, delta);
 		rotation += (targetrotation - rotation) / rotationEase;
 		tandwiel1.setRotation(rotation);
+		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+9.36363636363636));
 		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
 		if (gamestarted) {
-			spinner1.setRotation((float) ((float) -(rotation * 0.018181818181818) + 14.36363636363636));
-			spinner2.setRotation((float) ((float) -(rotation * 0.818181818181818)));
-			spinner3.setRotation((float) ((float) -(rotation * 4.818181818181818) + 14.36363636363636));
+			spinner1.setRotation((float) ((float) (rotation * 0.018181818181818) + 14.36363636363636));
+			spinner2.setRotation((float) ((float) (rotation * 0.818181818181818)));
+			spinner3.setRotation((float) ((float) (rotation * 8.818181818181818) + 14.36363636363636));
 			
 			deviceScore = deviceScore + random((float)device.getWattTotal() / device.getDivideBy());
 			String number = specialFormat.format(deviceScore);
 			number = number.replace(",", "");
-			System.out.println(number);
 			for(int i = 0; i < devicePositions.length; i++){
 				try{
 					int test = Integer.parseInt(number.substring(i, i+1));
@@ -188,14 +191,12 @@ public class GameState extends ArduinoGameState {
 		initiateListeners(stateBasedGame);
 		setSelectedDevice();
 		startGame(stateBasedGame);
-		resetPositions();
 	}
 	
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		arduino.removeAllListeners();
 		resetGame();
-		
 	}
 	
 	private void resetGame(){
@@ -204,6 +205,7 @@ public class GameState extends ArduinoGameState {
 		countdownActive = true;
 		score = 0;
 		deviceScore = 0;
+		resetPositions();
 		try {
 			count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
 		} catch (SlickException ex) {
