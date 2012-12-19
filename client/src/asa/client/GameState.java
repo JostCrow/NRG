@@ -28,6 +28,7 @@ public class GameState extends ArduinoGameState {
 	Device device;
 	GameData gameData;
 	Timer timer;
+	int startposition;
 	
 	Image tandwiel1;
 	Image tandwiel2;
@@ -48,6 +49,7 @@ public class GameState extends ArduinoGameState {
 	Image spinner1;
 	Image spinner2;
 	Image spinner3;
+	Image linker_kastje_boven;
 	
 	Image red_number;
 	Image black_number;
@@ -98,6 +100,7 @@ public class GameState extends ArduinoGameState {
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		device_icon = new Image(Resource.getPath(Resource.ICON_KOFFIE));
 		linker_kastje = new Image(Resource.getPath(Resource.KASTJE_LINKS));
+		linker_kastje_boven = new Image(Resource.getPath(Resource.KASTJE_LINKS_BOVEN));
 		rechter_kastje = new Image(Resource.getPath(Resource.KASTJE_RECHTS));
 		touwtjes = new Image(Resource.getPath(Resource.ROPES));
 		spinner1 = new Image(Resource.getPath(Resource.GAME_SPINNER));
@@ -111,35 +114,33 @@ public class GameState extends ArduinoGameState {
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
+		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6, playerPositions[0]);
+		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)), playerPositions[1]);
+		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*2), playerPositions[2]);
+		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*3), playerPositions[3]);
+		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*4), playerPositions[4]);
+		red_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*5), playerPositions[5]);
+		red_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*6), playerPositions[6]);
+		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6-15, devicePositions[0]);
+		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())-5), devicePositions[1]);
+		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*2), devicePositions[2]);
+		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*3+5), devicePositions[3]);
+		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*4+15), devicePositions[4]);
+		red_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*5+22), devicePositions[5]);
+		red_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*6+30), devicePositions[6]);
 		background.draw(0, 0);
 		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
-		tandwiel2.draw(tandwiel1.getWidth() / 2 - tandwielOffset - 40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
-		tandwiel3.draw(tandwiel2.getWidth() - tandwielOffset, AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() / 7));
-		tandwiel4.draw(tandwiel2.getWidth() - tandwielOffset + (tandwiel3.getWidth() - (tandwiel3.getWidth() / 5)), AsaGame.SOURCE_RESOLUTION.height / 2 - (tandwiel3.getHeight() - 145));
 		if(countdownActive){
 			count_down.draw(center.getWidth() + (count_down.getWidth()), center.getHeight() - (count_down.getHeight() / 2));
 		}
-		black_number.draw(90, playerPositions[0]);
-		black_number.draw(145, playerPositions[1]);
-		black_number.draw(200, playerPositions[2]);
-		black_number.draw(255, playerPositions[3]);
-		black_number.draw(310, playerPositions[4]);
-		red_number.draw(365, playerPositions[5]);
-		red_number.draw(420, playerPositions[6]);
-		black_number.draw(1432, devicePositions[0]);
-		black_number.draw(1490, devicePositions[1]);
-		black_number.draw(1548, devicePositions[2]);
-		black_number.draw(1606, devicePositions[3]);
-		black_number.draw(1662, devicePositions[4]);
-		red_number.draw(1721, devicePositions[5]);
-		red_number.draw(1780, devicePositions[6]);
-		linker_kastje.draw(0, gameContainer.getHeight() - linker_kastje.getHeight() - 50);
-		touwtjes.draw(85, gameContainer.getHeight() - linker_kastje.getHeight() - 50-touwtjes.getHeight());
-		spinner1.draw(85, gameContainer.getHeight() - linker_kastje.getHeight() - 50-spinner1.getHeight()/2, spinner1.getWidth(), spinner1.getHeight()/2);
-		spinner2.draw(200, gameContainer.getHeight() - linker_kastje.getHeight() - 50-spinner2.getHeight()/2);
-		spinner3.draw(350, gameContainer.getHeight() - linker_kastje.getHeight() - 50-spinner3.getHeight()/2);
-		rechter_kastje.draw(gameContainer.getWidth() - rechter_kastje.getWidth(), gameContainer.getHeight() - rechter_kastje.getHeight() - 50);
-		device_icon.draw(gameContainer.getWidth() - rechter_kastje.getWidth()/2- device_icon.getWidth()/2, gameContainer.getHeight()- rechter_kastje.getHeight()/2 -80);
+		touwtjes.draw(linker_kastje.getWidth()/2+75, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight());
+		spinner1.draw(linker_kastje.getWidth()/2+75, center.getHeight()*2 - linker_kastje.getHeight()-spinner1.getHeight()+spinner1.getHeight()/3);
+		spinner2.draw(linker_kastje.getWidth()/2+225, center.getHeight()*2 - linker_kastje.getHeight()-spinner2.getHeight()+spinner1.getHeight()/3);
+		spinner3.draw(linker_kastje.getWidth()/2+365, center.getHeight()*2 - linker_kastje.getHeight()-spinner3.getHeight()+spinner1.getHeight()/3);
+		linker_kastje.draw(linker_kastje.getWidth()/2, center.getHeight()*2 - linker_kastje.getHeight());
+		linker_kastje_boven.draw(350, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight()-linker_kastje_boven.getHeight());
+		rechter_kastje.draw(center.getWidth()*2 - rechter_kastje.getWidth(), center.getHeight()*2 - rechter_kastje.getHeight());
+		device_icon.draw(center.getWidth()*2 - rechter_kastje.getWidth()/2- device_icon.getWidth()/2, center.getHeight()*2- rechter_kastje.getHeight()/2-rechter_kastje.getHeight()/16);
 	}
 	
 	@Override
@@ -147,11 +148,12 @@ public class GameState extends ArduinoGameState {
 		super.update(gameContainer, stateBasedGame, delta);
 		rotation += (targetrotation - rotation) / rotationEase;
 		tandwiel1.setRotation(rotation);
-		tandwiel2.setRotation((float) ((float) -(rotation * 1.818181818181818) + 16.36363636363636));
-		tandwiel3.setRotation((float) ((float) (rotation * 1.818181818181818) - 3));
-		tandwiel4.setRotation((float) ((float) -(rotation * 1.818181818181818) + 14.36363636363636));
 		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
 		if (gamestarted) {
+			spinner1.setRotation((float) ((float) -(rotation * 0.018181818181818) + 14.36363636363636));
+			spinner2.setRotation((float) ((float) -(rotation * 0.818181818181818)));
+			spinner3.setRotation((float) ((float) -(rotation * 4.818181818181818) + 14.36363636363636));
+			
 			deviceScore = deviceScore + random((float)device.getWattTotal() / device.getDivideBy());
 			String number = specialFormat.format(deviceScore);
 			number = number.replace(",", "");
@@ -159,14 +161,25 @@ public class GameState extends ArduinoGameState {
 			for(int i = 0; i < devicePositions.length; i++){
 				try{
 					int test = Integer.parseInt(number.substring(i, i+1));
-					devicePositions[i] = 760 - (test*73);
-					if(devicePositions[i] < (760 -(73*9))){
-						devicePositions[i] = 760;
+					devicePositions[i] = startposition - (test*73);
+					if(devicePositions[i] < (startposition -(73*9))){
+						devicePositions[i] = startposition;
 					}
 				} catch(Exception e){
 				}
 			}
-			System.out.println("");
+			String pnumber = specialFormat.format(score);
+			pnumber = pnumber.replace(",", "");
+			for(int i = 0; i < playerPositions.length; i++){
+				try{
+					int test = Integer.parseInt(pnumber.substring(i, i+1));
+					playerPositions[i] = startposition - (test*73);
+					if(playerPositions[i] < (startposition -(73*9))){
+						playerPositions[i] = startposition;
+					}
+				} catch(Exception e){
+				}
+			}
 		}
 	}
 	
@@ -299,18 +312,6 @@ public class GameState extends ArduinoGameState {
 				}
 				if (gamestarted) {
 					score = score + (((double)speed*2)/100);
-					String number = specialFormat.format(score);
-					number = number.replace(",", "");
-					for(int i = 0; i < playerPositions.length; i++){
-						try{
-							int test = Integer.parseInt(number.substring(i, i+1));
-							playerPositions[i] = 760 - (test*73);
-							if(playerPositions[i] < (760 -(73*9))){
-								playerPositions[i] = 760;
-							}
-						} catch(Exception e){
-						}
-					}
 				}
 			}
 			@Override
@@ -355,19 +356,20 @@ public class GameState extends ArduinoGameState {
 	}
 
 	private void resetPositions() {
-		playerPositions[0] = 760;
-		playerPositions[1] = 760;
-		playerPositions[2] = 760;
-		playerPositions[3] = 760;
-		playerPositions[4] = 760;
-		playerPositions[5] = 760;
-		playerPositions[6] = 760;
-		devicePositions[0] = 760;
-		devicePositions[1] = 760;
-		devicePositions[2] = 760;
-		devicePositions[3] = 760;
-		devicePositions[4] = 760;
-		devicePositions[5] = 760;
-		devicePositions[6] = 760;
+		startposition = center.getHeight()*2 - linker_kastje.getHeight()+ linker_kastje.getHeight()/8;
+		playerPositions[0] = startposition;
+		playerPositions[1] = startposition;
+		playerPositions[2] = startposition;
+		playerPositions[3] = startposition;
+		playerPositions[4] = startposition;
+		playerPositions[5] = startposition;
+		playerPositions[6] = startposition;
+		devicePositions[0] = startposition;
+		devicePositions[1] = startposition;
+		devicePositions[2] = startposition;
+		devicePositions[3] = startposition;
+		devicePositions[4] = startposition;
+		devicePositions[5] = startposition;
+		devicePositions[6] = startposition;
 	}
 }

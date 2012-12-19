@@ -54,6 +54,7 @@ public class Resource {
 	public static final String NUMBERS_RED = "cijfertjesrood.png";
 	public static final String NUMBERS_BLACK = "cijfertjeszwart.png";
 	public static final String KASTJE_LINKS = "linkerkastje.png";
+	public static final String KASTJE_LINKS_BOVEN = "kastjelinksboven.png";
 	public static final String KASTJE_RECHTS = "rechterkastje.png";
 	public static final String ROPES = "touwtjes.png";
 	public static final String GAME_SPINNER = "draaispoel.png";
