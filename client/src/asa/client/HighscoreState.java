@@ -120,7 +120,7 @@ public class HighscoreState extends ArduinoGameState {
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
-		font = Resource.getFont(Resource.FONT_SANCHEZ, 10, Color.WHITE);
+		font = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
 	}
 
 	@Override
@@ -262,12 +262,12 @@ public class HighscoreState extends ArduinoGameState {
 					x = x - (float) (optionIcon.getWidth() * 1.3 / 2);
 					y = y - (float) (optionIcon.getHeight() * 1.3 / 2);
 					icon_background.draw(x, y, (float) 1.3);
-					graphics.drawString(option.getDescription(), x, y);
+					graphics.drawString(option.getDescription(), x+icon_background.getWidth()/2 -15*(option.getDescription().length()/2), y+icon_background.getHeight()/2);
 				} else{
 					x = x - (float) (optionIcon.getWidth() * 1 / 2);
 					y = y - (float) (optionIcon.getHeight() * 1 / 2);
 					icon_background.draw(x, y);
-					graphics.drawString(option.getDescription(), x, y);
+					graphics.drawString(option.getDescription(), x+icon_background.getWidth()/3 -15*(option.getDescription().length()/2), y+icon_background.getHeight()/3);
 				}
 
 				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
