@@ -1,6 +1,5 @@
 package asa.client;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -19,6 +18,26 @@ import service.Device;
 import service.Highscore;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Label;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Vector;
+import java.util.logging.Level;
+import javax.media.Buffer;
+import javax.media.CannotRealizeException;
+import javax.media.CaptureDeviceInfo;
+import javax.media.CaptureDeviceManager;
+import javax.media.Manager;
+import javax.media.NoPlayerException;
+import javax.media.Player;
+import javax.media.control.FrameGrabbingControl;
+import javax.media.format.VideoFormat;
+import javax.media.util.BufferToImage;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.util.BufferedImageUtil;
 
 public class HighscoreState extends ArduinoGameState {
 	
@@ -58,6 +77,7 @@ public class HighscoreState extends ArduinoGameState {
 	float rotationDelta = 0;
 	double rotationEase = 5.0;
 	StateBasedGame basedGame;
+	Component lbl = new Label("hallo");
 	
 	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
 	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
@@ -67,17 +87,29 @@ public class HighscoreState extends ArduinoGameState {
 	int scrollDelta;
 	int scoreHeight = (appResHeight/8);
 	int listSpeedfactor = 5;
+	
+	CaptureDeviceInfo deviceInfo;
+	Player player;
+	Component video;
+	Graphics liveVideo;
+	FrameGrabbingControl frameGrabber;
+    Buffer buffer;
+	java.awt.Image awtFrame;
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
 		this.gameData = gameData;
+		Vector devices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
+		CaptureDeviceInfo captureDevice = (CaptureDeviceInfo) devices.get(0);
+		deviceInfo = CaptureDeviceManager.getDevice(captureDevice.getName());
 	}
 
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
+		
 		wheelOptions.add(new WheelOptionYesNo("Ja", "icon_beamer.png", true));
-		wheelOptions.add(new WheelOptionYesNo("Nee", "icon_automaat.png", false));
+		wheelOptions.add(new WheelOptionYesNo("Nee", "icon_automaat.png", false));	
 		
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360 / wheelOptions.size();
@@ -107,6 +139,32 @@ public class HighscoreState extends ArduinoGameState {
 		
 		spinnerSouth = decimalFormat.format(playerScore) + " kWh, ";
 		underSpinner = "Foto maken bij behaalde score?";
+		try {
+			System.out.println("get Player: " + deviceInfo.getLocator().toString());
+			player = Manager.createRealizedPlayer(deviceInfo.getLocator());
+			System.out.println("start Player");
+			player.start();
+			System.out.println("get Video");
+			video = player.getVisualComponent();
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					System.out.println("Getting Framegrabber");
+					frameGrabber = (FrameGrabbingControl)player.getControl("javax.media.control.FrameGrabbingControl");
+				}
+			}, 2500);					
+		} catch(Exception e)
+		{
+			System.out.println("Failed to get webcam feed: " + e.getMessage());			 
+		}
+//		} catch (IOException ex) {
+//			java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
+//		} catch (NoPlayerException ex) {
+//			java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
+//		} catch (CannotRealizeException ex) {
+//			java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
+//		}
 		
 		caclulateSelected();
 
@@ -144,6 +202,8 @@ public class HighscoreState extends ArduinoGameState {
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		mode = 1;
 		arduino.removeAllListeners();
+		player.close();
+		player.deallocate();
 	}
 
 	@Override
@@ -154,7 +214,27 @@ public class HighscoreState extends ArduinoGameState {
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+		if (frameGrabber!=null)
+		{
+//			System.out.println("GrabFrame");
+			buffer = frameGrabber.grabFrame();
+			awtFrame = (java.awt.Image) new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer);
+			BufferedImage awtBuffImg = new BufferedImage(awtFrame.getWidth(null), awtFrame.getHeight(null), BufferedImage.TYPE_INT_RGB);
+			
+			Texture texture = null;
+			try{
+				texture = BufferedImageUtil.getTexture("", awtBuffImg);
+			} catch (Exception e){
+				logger.debug(e);
+			}
+			Image slickImage = new Image(texture.getImageWidth(), texture.getImageHeight() );
+			slickImage.setTexture(texture) ;
+			slickImage.draw(center.getHeight(), center.getWidth());
+					
+//			videoFrame = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer));
+		}
 		graphics.setFont(font);
+		
 
 		if (mode == 1) {
 
@@ -226,7 +306,7 @@ public class HighscoreState extends ArduinoGameState {
 				int rank = topDraw+i+1;
 				graphics.drawLine(topLeftX, topLeftY, appResWidth, topLeftY);
 				graphics.setLineWidth(3.0f);
-				graphics.drawString(rank + ": " + score.getScore(), topLeftX, topLeftY + (scoreHeight/2));				
+				graphics.drawString(rank + ": " + decimalFormat.format(score.getScore()), topLeftX, topLeftY + (scoreHeight/2));				
 			}
 		}
 	}
