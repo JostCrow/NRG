@@ -100,13 +100,6 @@ public class HighscoreState extends ArduinoGameState {
 	java.awt.Image awtFrame;
 
 	ShadowEffect effect;
-	CaptureDeviceInfo deviceInfo;
-	Player player;
-	Component video;
-	Graphics liveVideo;
-	FrameGrabbingControl frameGrabber;
-    Buffer buffer;
-	java.awt.Image awtFrame;
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -163,7 +156,7 @@ public class HighscoreState extends ArduinoGameState {
 				@Override
 				public void run() {
 					System.out.println("Getting Framegrabber");
-					frameGrabber = (FrameGrabbingControl)player.getControl("javax.media.control.FrameGrabbingControl");
+					//frameGrabber = (FrameGrabbingControl)player.getControl("javax.media.control.FrameGrabbingControl");
 				}
 			}, 2500);					
 		} catch(Exception e)
