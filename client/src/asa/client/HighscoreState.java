@@ -207,8 +207,10 @@ public class HighscoreState extends ArduinoGameState {
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		mode = 1;
 		arduino.removeAllListeners();
-		player.close();
-		player.deallocate();
+		if(player != null){
+			player.close();
+			player.deallocate();
+		}
 	}
 
 	@Override
