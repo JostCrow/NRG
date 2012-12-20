@@ -25,6 +25,7 @@ public class Resource {
 	public static final String TANDWIEL4 = "tandwiel4.png";
 	public static final String TANDWIEL5 = "tandwiel5.png";
 	public static final String TANDWIEL6 = "tandwiel6.png";
+	public static final String TANDWIEL7 = "tandwiel7.png";
 	
 	public static final String BACKGROUND_KOFFIE = "background_koffie.png";
 	public static final String BACKGROUND_PRINTER = "background_printer.png";
@@ -64,6 +65,10 @@ public class Resource {
 	public static final String VOORTGANGS_BALK = "voortgangsbalk.png";
 	public static final String OVERLAY = "overlayspel1.png";
 	
+	public static final String background_highscore = "background_highscore.png";
+	public static final String background_item_highscore = "background_item_highscore.png";
+	public static final String overlay_selected = "overlay_selected.png";
+	public static final String tandwiel_vertical = "tandwiel_vertical.png";	
 	
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";
