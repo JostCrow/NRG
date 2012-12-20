@@ -58,6 +58,10 @@ public class Resource {
 	public static final String KASTJE_RECHTS = "rechterkastje.png";
 	public static final String ROPES = "touwtjes.png";
 	public static final String GAME_SPINNER = "draaispoel.png";
+	public static final String WIRES = "draden.png";
+	public static final String PLAYER_ = "voortganglinks.png";
+	public static final String DEVICE_ = "voortgangrechts.png";
+	public static final String VOORTGANGS_BALK = "voortgangsbalk.png";
 	
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";
@@ -82,6 +86,8 @@ public class Resource {
 			filepath = URLDecoder.decode(resource, "UTF-8").toString();
 		} catch (UnsupportedEncodingException ex) {
 			logger.error("Unable to locate resource " + path);
+		} catch (NullPointerException ex){
+			logger.error("NullPointer: Unable to locate resource " + RESOURCE_PATH + path);
 		}
 		return filepath;
 	}
