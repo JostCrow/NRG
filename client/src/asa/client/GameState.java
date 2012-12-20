@@ -55,6 +55,7 @@ public class GameState extends ArduinoGameState {
 	Image voortgangsbalk;
 	Image player_voortgang;
 	Image device_voortgang;
+	Image overlay;
 	
 	Image red_number;
 	Image black_number;
@@ -86,6 +87,7 @@ public class GameState extends ArduinoGameState {
 	
 	boolean gamestarted = false;
 	boolean countdownActive = true;
+	boolean uitleg = true;
 	
 	Random random;
 
@@ -99,6 +101,7 @@ public class GameState extends ArduinoGameState {
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
+		overlay = new Image(Resource.getPath(Resource.OVERLAY));
 		wires = new Image(Resource.getPath(Resource.WIRES));
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
@@ -179,9 +182,13 @@ public class GameState extends ArduinoGameState {
 		voortgangsbalk.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4, 10);
 		player_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4-player_voortgang.getWidth(), player_voortgang_location);
 		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth(), device_voortgang_location);
+		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()+15, device_voortgang_location, 0.7f);
 		
 		if(countdownActive){
 			count_down.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth(), center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
+		}
+		if(uitleg){
+			overlay.draw(0, 0);
 		}
 	}
 	
@@ -231,7 +238,6 @@ public class GameState extends ArduinoGameState {
 	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame){
 		initiateListeners(stateBasedGame);
 		setSelectedDevice();
-		startGame(stateBasedGame);
 	}
 	
 	@Override
@@ -248,6 +254,7 @@ public class GameState extends ArduinoGameState {
 		deviceScore = 0;
 		clock.restart();
 		clock.stop();
+		uitleg = true;
 		player_voortgang_location = voortgangsbalk.getHeight()-50;
 		device_voortgang_location = voortgangsbalk.getHeight()-50;
 		resetPositions();
@@ -292,38 +299,16 @@ public class GameState extends ArduinoGameState {
 			}
 		}, 2000);
 		/**
-		 * change the image to START.
-		 */
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				try {
-					count_down = new Image(Resource.getPath(Resource.START_GAME));
-					count_down.setAlpha(0);
-				} catch (SlickException ex) {
-					
-				}
-			}
-		}, 3000);
-		/**
-		 * starts the game.
+		 * Starts the game.
 		 */
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				gamestarted = true;
 				clock.start();
-			}
-		}, 3100);
-		/**
-		 * removes the countdown images.
-		 */
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
 				countdownActive = false;
 			}
-		}, 4000);
+		}, 3000);
 		/**
 		 * stops the game after 20 seconds.
 		 */
@@ -334,7 +319,7 @@ public class GameState extends ArduinoGameState {
 				gameData.setDeviceScore(deviceScore);
 				gameData.setPlayerScore(score);
 			}
-		}, 23100);
+		}, 23000);
 		/**
 		 * starts the HIGHSCORE state.
 		 */
@@ -359,14 +344,19 @@ public class GameState extends ArduinoGameState {
 					targetrotation -= 3 * speed;
 				}
 				if (gamestarted) {
-					score = score + (((double)speed*2)/100);
+					score = score + (((double)speed*4/100));
 				}
 			}
 			@Override
 			public void buttonEvent(){
-				Transition fadeIn = new FadeInTransition();
-				Transition fadeOut = new FadeOutTransition();
-				stateBasedGame.enterState(AsaGame.INFOSTATE, fadeOut, fadeIn);
+				if(uitleg){
+					startGame(stateBasedGame);
+					uitleg = false;
+				} else {
+					Transition fadeIn = new FadeInTransition();
+					Transition fadeOut = new FadeOutTransition();
+					stateBasedGame.enterState(AsaGame.INFOSTATE, fadeOut, fadeIn);
+				}
 			}
 		});
 	}

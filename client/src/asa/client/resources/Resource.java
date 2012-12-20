@@ -62,6 +62,8 @@ public class Resource {
 	public static final String PLAYER_ = "voortganglinks.png";
 	public static final String DEVICE_ = "voortgangrechts.png";
 	public static final String VOORTGANGS_BALK = "voortgangsbalk.png";
+	public static final String OVERLAY = "overlayspel1.png";
+	
 	
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";
