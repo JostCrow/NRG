@@ -71,6 +71,7 @@ public class GameState extends ArduinoGameState {
 	float player_voortgang_location = 0;
 	float device_voortgang_location = 0;
 	int voortgangs_start_location = 0;
+	float height_calc = 0;
 	
 	int[] playerPositions = new int[7];
 	int[] devicePositions = new int[7];
@@ -180,9 +181,9 @@ public class GameState extends ArduinoGameState {
 		device_icon.draw(center.getWidth()*2 - rechter_kastje.getWidth()/2- device_icon.getWidth()/2+rechter_kastje.getWidth()/6-5, center.getHeight()*2- rechter_kastje.getHeight()/2-rechter_kastje.getHeight()/16);
 		
 		voortgangsbalk.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4, 10);
-		player_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4-player_voortgang.getWidth(), player_voortgang_location);
-		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth(), device_voortgang_location);
-		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()+15, device_voortgang_location, 0.7f);
+		player_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4-player_voortgang.getWidth()+18, player_voortgang_location);
+		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-19, device_voortgang_location);
+		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
 		
 		if(countdownActive){
 			count_down.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth(), center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
@@ -229,8 +230,15 @@ public class GameState extends ArduinoGameState {
 				} catch(Exception e){
 				}
 			}
-			device_voortgang_location = voortgangs_start_location - (float)(deviceScore/((device.getWattTotal()/device.getDivideBy()))*20);
-			player_voortgang_location = voortgangs_start_location - (float)(score/((device.getWattTotal()/device.getDivideBy()))*20);
+			
+			if(score>height_calc){
+				player_voortgang_location = (float)(voortgangs_start_location - ((score/score))*(voortgangs_start_location));
+				device_voortgang_location = (float)(voortgangs_start_location - ((deviceScore/score))*(voortgangs_start_location));
+			} else{
+				player_voortgang_location = (float)(voortgangs_start_location - ((score/height_calc))*(voortgangs_start_location));
+				device_voortgang_location = (float)(voortgangs_start_location - ((deviceScore/height_calc))*(voortgangs_start_location));
+			}
+			
 		}
 	}
 	
@@ -344,7 +352,7 @@ public class GameState extends ArduinoGameState {
 					targetrotation -= 3 * speed;
 				}
 				if (gamestarted) {
-					score = score + (((double)speed*4/100));
+					score = score + (((double)speed*5/100));
 				}
 			}
 			@Override
@@ -363,6 +371,8 @@ public class GameState extends ArduinoGameState {
 
 	private void setSelectedDevice() {
 		device = server.getDeviceById(gameData.getDeviceId());
+		height_calc = (float)((device.getWattTotal()/device.getDivideBy())*20);
+		System.out.println(height_calc);
 		try {
 			if((device.getWattTotal()/device.getDivideBy()) > 300){
 				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
@@ -395,19 +405,11 @@ public class GameState extends ArduinoGameState {
 
 	private void resetPositions() {
 		startposition = center.getHeight()*2 - linker_kastje.getHeight()+ linker_kastje.getHeight()/8;
-		playerPositions[0] = startposition;
-		playerPositions[1] = startposition;
-		playerPositions[2] = startposition;
-		playerPositions[3] = startposition;
-		playerPositions[4] = startposition;
-		playerPositions[5] = startposition;
-		playerPositions[6] = startposition;
-		devicePositions[0] = startposition;
-		devicePositions[1] = startposition;
-		devicePositions[2] = startposition;
-		devicePositions[3] = startposition;
-		devicePositions[4] = startposition;
-		devicePositions[5] = startposition;
-		devicePositions[6] = startposition;
+		for(int i = 0; i < playerPositions.length; i++){
+			playerPositions[i] = startposition;
+		}
+		for(int i = 0; i< devicePositions.length; i++){
+			devicePositions[i] = startposition;
+		}
 	}
 }
