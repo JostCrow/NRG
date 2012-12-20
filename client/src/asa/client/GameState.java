@@ -53,6 +53,9 @@ public class GameState extends ArduinoGameState {
 	
 	Image red_number;
 	Image black_number;
+	
+	Image clockImage;
+	Animation clock;
 
 	int image = 3;
 	int targetrotation = 0;
