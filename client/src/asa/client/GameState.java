@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -33,6 +34,7 @@ public class GameState extends ArduinoGameState {
 	Image tandwiel1;
 	Image tandwiel2;
 	Image background;
+	Image wires;
 	Image tandwiel3;
 	Image tandwiel4;
 	Image background_spinner;
@@ -50,11 +52,13 @@ public class GameState extends ArduinoGameState {
 	Image spinner2;
 	Image spinner3;
 	Image linker_kastje_boven;
+	Image voortgangsbalk;
+	Image player_voortgang;
+	Image device_voortgang;
 	
 	Image red_number;
 	Image black_number;
-	
-	Image clockImage;
+
 	Animation clock;
 
 	int image = 3;
@@ -63,6 +67,9 @@ public class GameState extends ArduinoGameState {
 	int selectionDegrees = 45;
 	int selectedOption = 0;
 	int oldSelectedOption = 0;
+	float player_voortgang_location = 0;
+	float device_voortgang_location = 0;
+	int voortgangs_start_location = 0;
 	
 	int[] playerPositions = new int[7];
 	int[] devicePositions = new int[7];
@@ -92,6 +99,7 @@ public class GameState extends ArduinoGameState {
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
+		wires = new Image(Resource.getPath(Resource.WIRES));
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		tandwiel3 = new Image(Resource.getPath(Resource.TANDWIEL6));
@@ -110,43 +118,71 @@ public class GameState extends ArduinoGameState {
 		spinner2 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		spinner3 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		
+		voortgangsbalk = new Image(Resource.getPath(Resource.VOORTGANGS_BALK));
+		player_voortgang = new Image(Resource.getPath(Resource.PLAYER_));
+		device_voortgang = new Image(Resource.getPath(Resource.DEVICE_));
+		voortgangs_start_location = voortgangsbalk.getHeight()-50;
+		player_voortgang_location = voortgangsbalk.getHeight()-50;
+		device_voortgang_location = voortgangsbalk.getHeight()-50;
+		
 		red_number = new Image(Resource.getPath(Resource.NUMBERS_RED));
 		black_number = new Image(Resource.getPath(Resource.NUMBERS_BLACK));
 		random = new Random();
-		
+		clock = new Animation();
+		clock.setLooping(false);
+		for(int i = 0; i < 601; i++){
+			if((i+"").length() == 1){
+				clock.addFrame(new Image(Resource.getPath("KLOK/Comp 1_0000" + i + ".png")), 20000/601);
+			} else if((i+"").length() == 2){
+				clock.addFrame(new Image(Resource.getPath("KLOK/Comp 1_000" + i + ".png")), 20000/601);
+			} else{
+				clock.addFrame(new Image(Resource.getPath("KLOK/Comp 1_00" + i + ".png")), 20000/601);
+			}
+		}
+		clock.stop();
 		resetPositions();
 	}
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
-		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6, playerPositions[0]);
-		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)), playerPositions[1]);
-		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*2), playerPositions[2]);
-		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*3), playerPositions[3]);
-		black_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*4), playerPositions[4]);
-		red_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*5), playerPositions[5]);
-		red_number.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/6+((black_number.getWidth()+4)*6), playerPositions[6]);
-		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6-15, devicePositions[0]);
-		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())-5), devicePositions[1]);
-		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*2), devicePositions[2]);
-		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*3+5), devicePositions[3]);
-		black_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*4+15), devicePositions[4]);
-		red_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*5+22), devicePositions[5]);
-		red_number.draw(center.getWidth()*2 - rechter_kastje.getWidth()+linker_kastje.getWidth()/6+((black_number.getWidth())*6+30), devicePositions[6]);
 		background.draw(0, 0);
+		wires.draw(center.getWidth()*2-wires.getWidth(), 0);
 		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
 		tandwiel2.draw(center.getWidth()/2-tandwiel2.getWidth()/2-tandwiel2.getWidth()/4, center.getHeight() / 2 - tandwiel2.getHeight()/2);
+		
+		touwtjes.draw(linker_kastje.getWidth()/2+70+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight());
+		spinner1.draw(linker_kastje.getWidth()/2+70+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-spinner1.getHeight()+spinner1.getHeight()/3);
+		spinner2.draw(linker_kastje.getWidth()/2+220+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-spinner2.getHeight()+spinner1.getHeight()/3);
+		spinner3.draw(linker_kastje.getWidth()/2+363+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-spinner3.getHeight()+spinner1.getHeight()/3);
+		black_number.getSubImage(0, startposition-playerPositions[0], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+82, startposition);
+		black_number.getSubImage(0, startposition-playerPositions[1], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()+4, startposition);
+		black_number.getSubImage(0, startposition-playerPositions[2], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*2+11, startposition);
+		black_number.getSubImage(0, startposition-playerPositions[3], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*3+18, startposition);
+		black_number.getSubImage(0, startposition-playerPositions[4], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*4+26, startposition);
+		red_number.getSubImage(0, startposition-playerPositions[5], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*5+33, startposition);
+		red_number.getSubImage(0, startposition-playerPositions[6], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*6+40, startposition);
+		linker_kastje.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight());
+		linker_kastje_boven.draw(360, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight()-linker_kastje_boven.getHeight());
+		
+		clock.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth(), center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
+		
+		black_number.getSubImage(0, startposition-devicePositions[0], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+75, startposition);
+		black_number.getSubImage(0, startposition-devicePositions[1], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()+4, startposition);
+		black_number.getSubImage(0, startposition-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*2+11, startposition);
+		black_number.getSubImage(0, startposition-devicePositions[3], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*3+19, startposition);
+		black_number.getSubImage(0, startposition-devicePositions[4], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*4+27, startposition);
+		red_number.getSubImage(0, startposition-devicePositions[5], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*5+34, startposition);
+		red_number.getSubImage(0, startposition-devicePositions[6], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*6+41, startposition);
+		rechter_kastje.draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6-5, center.getHeight()*2 - rechter_kastje.getHeight());
+		device_icon.draw(center.getWidth()*2 - rechter_kastje.getWidth()/2- device_icon.getWidth()/2+rechter_kastje.getWidth()/6-5, center.getHeight()*2- rechter_kastje.getHeight()/2-rechter_kastje.getHeight()/16);
+		
+		voortgangsbalk.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4, 10);
+		player_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4-player_voortgang.getWidth(), player_voortgang_location);
+		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth(), device_voortgang_location);
+		
 		if(countdownActive){
-			count_down.draw(center.getWidth() + (count_down.getWidth()), center.getHeight() - (count_down.getHeight() / 2));
+			count_down.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth(), center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
 		}
-		touwtjes.draw(linker_kastje.getWidth()/2+75, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight());
-		spinner1.draw(linker_kastje.getWidth()/2+75, center.getHeight()*2 - linker_kastje.getHeight()-spinner1.getHeight()+spinner1.getHeight()/3);
-		spinner2.draw(linker_kastje.getWidth()/2+225, center.getHeight()*2 - linker_kastje.getHeight()-spinner2.getHeight()+spinner1.getHeight()/3);
-		spinner3.draw(linker_kastje.getWidth()/2+368 , center.getHeight()*2 - linker_kastje.getHeight()-spinner3.getHeight()+spinner1.getHeight()/3);
-		linker_kastje.draw(linker_kastje.getWidth()/2, center.getHeight()*2 - linker_kastje.getHeight());
-		linker_kastje_boven.draw(350, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight()-linker_kastje_boven.getHeight());
-		rechter_kastje.draw(center.getWidth()*2 - rechter_kastje.getWidth(), center.getHeight()*2 - rechter_kastje.getHeight());
-		device_icon.draw(center.getWidth()*2 - rechter_kastje.getWidth()/2- device_icon.getWidth()/2, center.getHeight()*2- rechter_kastje.getHeight()/2-rechter_kastje.getHeight()/16);
 	}
 	
 	@Override
@@ -186,6 +222,8 @@ public class GameState extends ArduinoGameState {
 				} catch(Exception e){
 				}
 			}
+			device_voortgang_location = voortgangs_start_location - (float)(deviceScore/((device.getWattTotal()/device.getDivideBy()))*20);
+			player_voortgang_location = voortgangs_start_location - (float)(score/((device.getWattTotal()/device.getDivideBy()))*20);
 		}
 	}
 	
@@ -208,6 +246,10 @@ public class GameState extends ArduinoGameState {
 		countdownActive = true;
 		score = 0;
 		deviceScore = 0;
+		clock.restart();
+		clock.stop();
+		player_voortgang_location = voortgangsbalk.getHeight()-50;
+		device_voortgang_location = voortgangsbalk.getHeight()-50;
 		resetPositions();
 		try {
 			count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
@@ -270,6 +312,7 @@ public class GameState extends ArduinoGameState {
 			@Override
 			public void run() {
 				gamestarted = true;
+				clock.start();
 			}
 		}, 3100);
 		/**

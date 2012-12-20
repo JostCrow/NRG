@@ -18,6 +18,8 @@ import service.Device;
 import service.Highscore;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
+import org.newdawn.slick.font.effects.Effect;
+import org.newdawn.slick.font.effects.ShadowEffect;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Label;
@@ -38,6 +40,7 @@ import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
+
 
 public class HighscoreState extends ArduinoGameState {
 	
@@ -96,6 +99,15 @@ public class HighscoreState extends ArduinoGameState {
     Buffer buffer;
 	java.awt.Image awtFrame;
 
+	ShadowEffect effect;
+	CaptureDeviceInfo deviceInfo;
+	Player player;
+	Component video;
+	Graphics liveVideo;
+	FrameGrabbingControl frameGrabber;
+    Buffer buffer;
+	java.awt.Image awtFrame;
+
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
@@ -121,6 +133,10 @@ public class HighscoreState extends ArduinoGameState {
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		font = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
+		effect = new ShadowEffect();
+		effect.setColor(Color.yellow);
+		effect.setXDistance(5);
+		effect.setYDistance(5);
 	}
 
 	@Override
@@ -132,10 +148,6 @@ public class HighscoreState extends ArduinoGameState {
 		this.playerScore = gameData.getPlayerScore();
 		this.deviceScore = gameData.getDeviceScore();
 		this.device = server.getDeviceById(gameData.getDeviceId());
-		try {
-			background = new Image(Resource.getPath(device.getBackgroundUrl()));
-		} catch (SlickException ex) {
-		}
 		
 		spinnerSouth = decimalFormat.format(playerScore) + " kWh, ";
 		underSpinner = "Foto maken bij behaalde score?";
@@ -263,6 +275,7 @@ public class HighscoreState extends ArduinoGameState {
 					y = y - (float) (optionIcon.getHeight() * 1.3 / 2);
 					icon_background.draw(x, y, (float) 1.3);
 					graphics.drawString(option.getDescription(), x+icon_background.getWidth()/2 -15*(option.getDescription().length()/2), y+icon_background.getHeight()/2);
+//					effect.draw(null, null, font, null);
 				} else{
 					x = x - (float) (optionIcon.getWidth() * 1 / 2);
 					y = y - (float) (optionIcon.getHeight() * 1 / 2);
