@@ -18,10 +18,8 @@ import service.Device;
 import service.Highscore;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
-<<<<<<< HEAD
 import org.newdawn.slick.font.effects.Effect;
 import org.newdawn.slick.font.effects.ShadowEffect;
-=======
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Label;
@@ -42,7 +40,7 @@ import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
->>>>>>> 2d86943a96ec6114df62c0edcda20353187b7584
+
 
 public class HighscoreState extends ArduinoGameState {
 	
@@ -92,6 +90,14 @@ public class HighscoreState extends ArduinoGameState {
 	int scrollDelta;
 	int scoreHeight = (appResHeight/8);
 	int listSpeedfactor = 5;
+	
+	CaptureDeviceInfo deviceInfo;
+	Player player;
+	Component video;
+	Graphics liveVideo;
+	FrameGrabbingControl frameGrabber;
+    Buffer buffer;
+	java.awt.Image awtFrame;
 
 	ShadowEffect effect;
 	CaptureDeviceInfo deviceInfo;
