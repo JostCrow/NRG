@@ -17,6 +17,7 @@ public abstract class ArduinoGameState extends BasicGameState {
 	int stateID = -1;
 	int speed = 1;
 	DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00", new DecimalFormatSymbols(Locale.GERMAN));
+	DecimalFormat specialFormat = new DecimalFormat("00000.00", new DecimalFormatSymbols(Locale.GERMAN));
 	
 	Arduino arduino = Arduino.getInstance();
 	

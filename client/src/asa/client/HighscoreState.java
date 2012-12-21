@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.GameContainer;
@@ -13,31 +12,23 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
-
 import service.Device;
 import service.Highscore;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
-import org.newdawn.slick.font.effects.Effect;
 import org.newdawn.slick.font.effects.ShadowEffect;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Label;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Vector;
-import java.util.logging.Level;
 import javax.media.Buffer;
-import javax.media.CannotRealizeException;
 import javax.media.CaptureDeviceInfo;
-import javax.media.CaptureDeviceManager;
 import javax.media.Manager;
-import javax.media.NoPlayerException;
 import javax.media.Player;
 import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
+import org.newdawn.slick.opengl.ImageData;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
 
@@ -51,7 +42,8 @@ public class HighscoreState extends ArduinoGameState {
 	Device device;
 	Logger logger = Logger.getLogger(this.getClass());
 	List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
-	UnicodeFont font;
+	UnicodeFont fontBlack;
+	UnicodeFont fontWhite;
 	/**
 	 * mode 1: Able to choose yes or no
 	 * mode 2: Automaticaly making picture (can be skipped)
@@ -93,7 +85,7 @@ public class HighscoreState extends ArduinoGameState {
 	boolean longlist;
 	int topDraw;
 	int scrollDelta;
-	int scoreHeight = (appResHeight/8);
+	int scoreHeight = (appResHeight/10);
 	double listSpeedfactor = 3.20;
 	int highscoreBackgroundHeight = 0;
 	
@@ -138,7 +130,8 @@ public class HighscoreState extends ArduinoGameState {
 		overlay_selected = new Image(Resource.getPath(Resource.overlay_selected));
 		tandwiel_vertical = new Image(Resource.getPath(Resource.tandwiel_vertical));
 		
-		font = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
+		fontBlack = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
+		fontWhite = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.WHITE);
 		effect = new ShadowEffect();
 		effect.setColor(Color.yellow);
 		effect.setXDistance(5);
@@ -251,7 +244,7 @@ public class HighscoreState extends ArduinoGameState {
 					
 //			videoFrame = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer));
 		}
-		graphics.setFont(font);
+		graphics.setFont(fontBlack);
 		
 
 		if (mode == 1) {
@@ -314,10 +307,7 @@ public class HighscoreState extends ArduinoGameState {
 		}
 		else if (mode == 3)
 		{
-			tandwiel3.draw(AsaGame.SOURCE_RESOLUTION.width - background_highscore.getWidth() - tandwiel2.getWidth()- tandwiel_vertical.getWidth()/2-42, AsaGame.SOURCE_RESOLUTION.height - tandwiel2.getHeight());
-			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+			tandwiel3.draw(AsaGame.SOURCE_RESOLUTION.width - background_highscore.getWidth() - tandwiel2.getWidth()- tandwiel_vertical.getWidth()/2-38, AsaGame.SOURCE_RESOLUTION.height - tandwiel2.getHeight());
 			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
 			//underSpinner = highscores.size() + ", " + topDraw + ", " + rotation + ", " + scoreHeight + ", " + scrollDelta;
 			//graphics.drawString(underSpinner, center.getWidth(), center.getHeight() + 400);
@@ -327,23 +317,37 @@ public class HighscoreState extends ArduinoGameState {
 			tandwiel_vertical.draw(appResWidth-background_highscore.getWidth()-tandwiel_vertical.getWidth(), highscoreBackgroundHeight+tandwiel_vertical.getHeight());
 			background_highscore.draw(appResWidth-background_highscore.getWidth(), highscoreBackgroundHeight-background_highscore.getHeight());
 			tandwiel_vertical.draw(appResWidth-background_highscore.getWidth()-tandwiel_vertical.getWidth(), highscoreBackgroundHeight-tandwiel_vertical.getHeight());
-			
-			for (int i = 0 ; i < 9 ; i++)
+			graphics.setFont(fontWhite);
+			for (int i = 0 ; i < 11 ; i++)
 			{
 				if(topDraw+i >= highscores.size())
 				{
 					break;
-				}				
-				
-				int topLeftX = (appResWidth - appResWidth/4);
-				int topLeftY = (scoreHeight*i) + scrollDelta;
+				}
 				Highscore score = highscores.get(topDraw+i);
+				
+				
+				int topLeftX = (appResWidth - appResWidth/4 - appResWidth/200);
+				int topLeftY = (scoreHeight*i) + scrollDelta;
 				int rank = topDraw+i+1;
 				background_item_highscore.draw(topLeftX, topLeftY);
-//				graphics.drawLine(topLeftX, topLeftY, appResWidth, topLeftY);
-				graphics.setLineWidth(3.0f);
-				graphics.drawString(rank + ": " + decimalFormat.format(score.getScore()), topLeftX, topLeftY + (scoreHeight/2));
+				
+				Image highscore = new Image(Resource.getPath(Resource.PERSON));
+				highscore.draw(topLeftX+8, topLeftY+6);
+				graphics.drawString(rank+ "", topLeftX+10, topLeftY+70);
+				String pnumber = specialFormat.format(score.getScore());
+				pnumber = pnumber.replace(",", "");
+				System.out.println(pnumber);
+				for(int j = 0; j < pnumber.length(); j++){
+					String test = pnumber.substring(j, j+1);
+					graphics.drawString(test, topLeftX+96+(44*(j+1)), topLeftY+37);
+				}
+//				graphics.drawString(rank + ": " + decimalFormat.format(score.getScore()), topLeftX, topLeftY + (scoreHeight/2));
 			}
+			overlay_selected.draw(appResWidth - appResWidth/4 - appResWidth/8, appResHeight/2 - overlay_selected.getHeight()/2);
+			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		}
 	}
 
@@ -367,7 +371,7 @@ public class HighscoreState extends ArduinoGameState {
 			else{
 				scrollDelta = (int)(((possibleTopDraw*-1)*scoreHeight) + (listRotation%scoreHeight));
 			}
-			tandwiel3.setRotation((float) ((float) listRotation * 0.31255 - 7));
+			tandwiel3.setRotation((float) ((float) listRotation * 0.31255 - 6.7));
 			highscoreBackgroundHeight = (int) ((listRotation)%background_highscore.getHeight());
 		}
 	}

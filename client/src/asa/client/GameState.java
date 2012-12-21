@@ -23,7 +23,6 @@ import service.Device;
 
 public class GameState extends ArduinoGameState {
 
-	DecimalFormat specialFormat = new DecimalFormat("00000.00", new DecimalFormatSymbols(Locale.GERMAN));
 	Logger logger = Logger.getLogger(this.getClass());
 	ServerAdapter server;
 	Device device;
