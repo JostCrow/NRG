@@ -60,17 +60,11 @@ public class ServerAdapter {
 		return highscorePort.getAllHighscores();
 	}
 	
-	public void addHighscore(double score, String photoUrl) {
+	public int addHighscore(double score, String photoUrl) {
 		Highscore highscore = new Highscore();
 		highscore.setScore(score);
 		highscore.setFoto(photoUrl);		
-		highscorePort.addHighscore(highscore);
-	}
-	
-	public int getLastAddedHighscoreId()
-	{
-		//int id = server.getLastAddedHighscoreId();
-		return 174;
-		//return id;
+		return highscorePort.addHighscore(highscore);
+		
 	}
 }

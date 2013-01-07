@@ -72,7 +72,7 @@ public class HighscoreTable {
 	/**
 	 * 
 	 */
-	public void addHighscore(Highscore highscore) {
+	public int addHighscore(Highscore highscore) {
 		try {
 			String query = "INSERT INTO highscore (score, photo_url) "
 					+ "VALUES("
@@ -81,12 +81,17 @@ public class HighscoreTable {
 			System.out.println(query);
 			Statement statement = connection.createStatement();
 			statement.executeUpdate(query);
+			String max_id = "SELECT MAX(id) AS id FROM highscore";
+			ResultSet resultSet = statement.executeQuery(max_id);
+			while(resultSet.next()){
+				return resultSet.getInt("id");
+			}
 			statement.close();
 
 		} catch (SQLException ex) {
 			Logger.getLogger(DeviceTable.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
+		return 0;
 	}
 
 	/**

@@ -27,8 +27,8 @@ public class ObjectFactory {
     private final static QName _GetLiveDataResponse_QNAME = new QName("http://Service/", "getLiveDataResponse");
     private final static QName _UpdateDeviceResponse_QNAME = new QName("http://Service/", "updateDeviceResponse");
     private final static QName _GetDeviceById_QNAME = new QName("http://Service/", "getDeviceById");
-    private final static QName _UpdateWattTotal_QNAME = new QName("http://Service/", "updateWattTotal");
     private final static QName _UpdateDevice_QNAME = new QName("http://Service/", "updateDevice");
+    private final static QName _UpdateWattTotal_QNAME = new QName("http://Service/", "updateWattTotal");
     private final static QName _GetAllDevicesResponse_QNAME = new QName("http://Service/", "getAllDevicesResponse");
     private final static QName _GetDeviceByIdResponse_QNAME = new QName("http://Service/", "getDeviceByIdResponse");
     private final static QName _RemoveDeviceResponse_QNAME = new QName("http://Service/", "removeDeviceResponse");
@@ -143,19 +143,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link UpdateDevice }
-     * 
-     */
-    public UpdateDevice createUpdateDevice() {
-        return new UpdateDevice();
-    }
-
-    /**
      * Create an instance of {@link UpdateWattTotal }
      * 
      */
     public UpdateWattTotal createUpdateWattTotal() {
         return new UpdateWattTotal();
+    }
+
+    /**
+     * Create an instance of {@link UpdateDevice }
+     * 
+     */
+    public UpdateDevice createUpdateDevice() {
+        return new UpdateDevice();
     }
 
     /**
@@ -194,21 +194,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateWattTotal }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://Service/", name = "updateWattTotal")
-    public JAXBElement<UpdateWattTotal> createUpdateWattTotal(UpdateWattTotal value) {
-        return new JAXBElement<UpdateWattTotal>(_UpdateWattTotal_QNAME, UpdateWattTotal.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UpdateDevice }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://Service/", name = "updateDevice")
     public JAXBElement<UpdateDevice> createUpdateDevice(UpdateDevice value) {
         return new JAXBElement<UpdateDevice>(_UpdateDevice_QNAME, UpdateDevice.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UpdateWattTotal }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://Service/", name = "updateWattTotal")
+    public JAXBElement<UpdateWattTotal> createUpdateWattTotal(UpdateWattTotal value) {
+        return new JAXBElement<UpdateWattTotal>(_UpdateWattTotal_QNAME, UpdateWattTotal.class, null, value);
     }
 
     /**

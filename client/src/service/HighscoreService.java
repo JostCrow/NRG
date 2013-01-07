@@ -58,12 +58,15 @@ public interface HighscoreService {
     /**
      * 
      * @param highscore
+     * @return
+     *     returns int
      */
     @WebMethod(operationName = "AddHighscore")
+    @WebResult(targetNamespace = "")
     @RequestWrapper(localName = "AddHighscore", targetNamespace = "http://Service/", className = "service.AddHighscore")
     @ResponseWrapper(localName = "AddHighscoreResponse", targetNamespace = "http://Service/", className = "service.AddHighscoreResponse")
     @Action(input = "http://Service/HighscoreService/AddHighscoreRequest", output = "http://Service/HighscoreService/AddHighscoreResponse")
-    public void addHighscore(
+    public int addHighscore(
         @WebParam(name = "highscore", targetNamespace = "")
         Highscore highscore);
 

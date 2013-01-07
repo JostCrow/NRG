@@ -66,6 +66,7 @@ public class HighscoreState extends ArduinoGameState {
 	Image icon_background;
 	Image background_highscore;
 	Image background_item_highscore;
+	Image background_item_highscore_own;
 	Image overlay_selected;
 	Image tandwiel_vertical;
 	Dimension center;
@@ -111,7 +112,7 @@ public class HighscoreState extends ArduinoGameState {
 		this.gameData = gameData;
 		Vector devices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
 		System.out.println("devices:" + devices.size());
-		webcam = (CaptureDeviceInfo) devices.get(0);
+//		webcam = (CaptureDeviceInfo) devices.get(0);
 	}
 
 	@Override
@@ -133,6 +134,7 @@ public class HighscoreState extends ArduinoGameState {
 		
 		background_highscore = new Image(Resource.getPath(Resource.background_highscore));
 		background_item_highscore = new Image(Resource.getPath(Resource.background_item_highscore));
+		background_item_highscore_own = new Image(Resource.getPath(Resource.BACKGROUND_ITEM_HIGHSCORE_OWN));
 		overlay_selected = new Image(Resource.getPath(Resource.overlay_selected));
 		tandwiel_vertical = new Image(Resource.getPath(Resource.tandwiel_vertical));
 		
@@ -160,7 +162,7 @@ public class HighscoreState extends ArduinoGameState {
 		
 		mode = 1;		
 		basedGame = stateBasedGame;
-		rotationDelta = (rotation*-1);
+//		rotationDelta = (rotation*-1);
 		this.playerScore = gameData.getPlayerScore();
 		this.deviceScore = gameData.getDeviceScore();
 		this.device = server.getDeviceById(gameData.getDeviceId());
@@ -319,11 +321,12 @@ public class HighscoreState extends ArduinoGameState {
 		}
 		else if (mode == 2)
 		{
+			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+			lens.draw(center.getWidth()-(550/2), center.getHeight()-(550/2));
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
-			lens.draw(center.getWidth()-(550/2), center.getHeight()-(550/2));
+			
 		}
 		else if (mode == 3)
 		{
@@ -350,9 +353,15 @@ public class HighscoreState extends ArduinoGameState {
 				int topLeftX = (appResWidth - appResWidth/4 - appResWidth/200);
 				int topLeftY = (scoreHeight*i) + scrollDelta;
 				int rank = topDraw+i+1;
-				background_item_highscore.draw(topLeftX, topLeftY);
-				
 				Image highscore = new Image(Resource.getPath(Resource.PERSON));
+				
+				if (rank == lastHighscoreRank){
+					highscore = new Image(Resource.getPath(Resource.HOOFD));
+					background_item_highscore_own.draw(topLeftX, topLeftY);
+				} else{
+					background_item_highscore.draw(topLeftX, topLeftY);
+				}
+
 				highscore.draw(topLeftX+12, topLeftY+5);
 				graphics.drawString(rank+ "", topLeftX+12, topLeftY+68);
 				String pnumber = specialFormat.format(score.getScore());
@@ -367,7 +376,7 @@ public class HighscoreState extends ArduinoGameState {
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
-			graphics.drawString("rotation:" + rotation + ", rotationDelta:" + rotationDelta + ", lastHigscoreDelta:" + lastHighscoreDelta, 0, 50);
+//			graphics.drawString("rotation:" + rotation + ", rotationDelta:" + rotationDelta + ", lastHigscoreDelta:" + lastHighscoreDelta, 0, 50);
 		}
 	}
 
@@ -441,22 +450,19 @@ public class HighscoreState extends ArduinoGameState {
 		}, 9000);
 	}
 	
-	public void ActivateHighscoreList()
-	{
+	public void ActivateHighscoreList(){
 		spinnerSouth = "Scrolllist";
-		server.addHighscore(playerScore, "new Photo");
-		lastHighscoreId = server.getLastAddedHighscoreId();		
+		lastHighscoreId = server.addHighscore(playerScore, "new Photo");
 		highscores = server.getAllHighscores();
 		lastHighscoreRank = 0;
 		
-		for (Highscore hs : highscores)
-		{
+		for (Highscore hs : highscores){
 //			System.out.println(hs.getId() + " " + hs.getScore() + " " + hs.getTimestamp());
 			lastHighscoreRank++;
-			if (hs.getId() == lastHighscoreId)
-			{
+			if (hs.getId() == lastHighscoreId){
 				System.out.println("lastHighscoreRank:" + lastHighscoreRank);
 				break;
+			} else {
 			}
 		}
 		topDraw = 0;

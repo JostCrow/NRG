@@ -19,6 +19,10 @@ import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
+import java.io.IOException;
+import java.util.logging.Level;
+import org.newdawn.slick.loading.DeferredResource;
+import org.newdawn.slick.loading.LoadingList;
 
 public class InfoState extends ArduinoGameState {
 
@@ -62,6 +66,7 @@ public class InfoState extends ArduinoGameState {
 	int selectedOption = 0;
 	float selectedScale = 1.5f;
 	int oldSelectedOption = 0;
+	String lastLoaded = "";
 	
 	public InfoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -71,7 +76,7 @@ public class InfoState extends ArduinoGameState {
 	}
 
 	@Override
-	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {		
+	public void init(GameContainer gameContainer, final StateBasedGame stateBasedGame) throws SlickException {
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360/wheelOptions.size();
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
@@ -122,7 +127,7 @@ public class InfoState extends ArduinoGameState {
 			Image optionIcon = option.getIcon();
 			
 			float targetScale = 1;
-			if(degrees > 270-(selectionDegrees/2) && degrees < 270+(selectionDegrees/2)){
+			if(degrees > 270-(selectionDegrees/2) && degrees <= 270+(selectionDegrees/2)){
 				selectedOption = i;
 				if(selectedOption != oldSelectedOption){
 					BackgroundImage background = new BackgroundImage(option.getBackground());
