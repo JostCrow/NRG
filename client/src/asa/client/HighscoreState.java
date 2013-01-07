@@ -85,6 +85,7 @@ public class HighscoreState extends ArduinoGameState {
 	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
 	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
 	List<Highscore> highscores;
+	boolean highscoreAdded = false;
 	int lastHighscoreId;
 	int lastHighscoreRank;
 	int topDraw;
@@ -95,6 +96,7 @@ public class HighscoreState extends ArduinoGameState {
 	int highscoreBackgroundHeight = 0;
 	
 	CaptureDeviceInfo webcam;
+	boolean webcamAvailable = false;
 	Player player;
 	Component video;
 	Graphics liveVideo;
@@ -111,7 +113,11 @@ public class HighscoreState extends ArduinoGameState {
 		this.gameData = gameData;
 		Vector devices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
 		System.out.println("devices:" + devices.size());
-		webcam = (CaptureDeviceInfo) devices.get(0);
+		if (devices.size()>0)
+		{
+			webcam = (CaptureDeviceInfo) devices.get(0);
+			webcamAvailable = true;
+		}
 	}
 
 	@Override
@@ -158,7 +164,7 @@ public class HighscoreState extends ArduinoGameState {
 	@Override
 	public void enter(GameContainer gameContainer, final StateBasedGame stateBasedGame) {
 		
-		mode = 1;		
+		mode = 1;
 		basedGame = stateBasedGame;
 		rotationDelta = (rotation*-1);
 		this.playerScore = gameData.getPlayerScore();
@@ -167,25 +173,28 @@ public class HighscoreState extends ArduinoGameState {
 		
 		spinnerSouth = decimalFormat.format(playerScore) + " kWh, ";
 		underSpinner = "Foto maken bij behaalde score?";
-		try {
-			player = Manager.createRealizedPlayer(webcam.getLocator());
-			System.out.println("start Player");
-			player.start();
-//			System.out.println("get Video");
-//			video = player.getVisualComponent();
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					System.out.println("Getting Framegrabber");
-					frameGrabber = (FrameGrabbingControl) player.getControl("javax.media.control.FrameGrabbingControl");
-					System.out.println("Got FrameGrabber");
-				}
-			}, 2500);					
+		
+		if (webcamAvailable)
+		{		
+			try {
+				player = Manager.createRealizedPlayer(webcam.getLocator());
+				System.out.println("start Player");
+				player.start();
+//				System.out.println("get Video");
+//				video = player.getVisualComponent();
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						System.out.println("Getting Framegrabber");
+						frameGrabber = (FrameGrabbingControl) player.getControl("javax.media.control.FrameGrabbingControl");
+						System.out.println("Got FrameGrabber");
+					}
+				}, 2500);
 		} catch(Exception e)
 		{
-			System.out.println("Failed to get webcam feed: " + e.getMessage());			 
-		}
+				System.out.println("Failed to get webcam feed: " + e.getMessage());
+			}
 //		} catch (IOException ex) {
 //			java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
 //		} catch (NoPlayerException ex) {
@@ -193,6 +202,11 @@ public class HighscoreState extends ArduinoGameState {
 //		} catch (CannotRealizeException ex) {
 //			java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
 //		}
+		}
+		else
+		{
+			System.out.println("No webcam available");
+		}
 		
 		caclulateSelected();
 
@@ -318,7 +332,7 @@ public class HighscoreState extends ArduinoGameState {
 			}
 		}
 		else if (mode == 2)
-		{
+		{			
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
@@ -361,7 +375,6 @@ public class HighscoreState extends ArduinoGameState {
 					String singleNumber = pnumber.substring(j, j+1);
 					graphics.drawString(singleNumber, topLeftX+96+(44*(j+1)), topLeftY+37);
 				}
-//				graphics.drawString(rank + ": " + decimalFormat.format(score.getScore()), topLeftX, topLeftY + (scoreHeight/2));
 			}
 			overlay_selected.draw(appResWidth - appResWidth/4 - appResWidth/8, appResHeight/2 - overlay_selected.getHeight()/2);
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
@@ -444,21 +457,21 @@ public class HighscoreState extends ArduinoGameState {
 	public void ActivateHighscoreList()
 	{
 		spinnerSouth = "Scrolllist";
-		server.addHighscore(playerScore, "new Photo");
-		lastHighscoreId = server.getLastAddedHighscoreId();		
-		highscores = server.getAllHighscores();
-		lastHighscoreRank = 0;
-		
+			server.addHighscore(playerScore, "new Photo");
+			lastHighscoreId = server.getLastAddedHighscoreId();
+			highscores = server.getAllHighscores();
+			lastHighscoreRank = 0;
+
 		for (Highscore hs : highscores)
 		{
 //			System.out.println(hs.getId() + " " + hs.getScore() + " " + hs.getTimestamp());
-			lastHighscoreRank++;
+				lastHighscoreRank++;
 			if (hs.getId() == lastHighscoreId)
 			{
-				System.out.println("lastHighscoreRank:" + lastHighscoreRank);
-				break;
+					System.out.println("lastHighscoreRank:" + lastHighscoreRank);
+					break;
+				}
 			}
-		}
 		topDraw = 0;
 		lastHighscoreDelta = (scoreHeight*lastHighscoreRank)-(scoreHeight/2)-(appResHeight/2);
 		rotationDelta = (float) (rotation*-1);
