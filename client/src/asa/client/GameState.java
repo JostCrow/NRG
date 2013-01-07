@@ -350,7 +350,7 @@ public class GameState extends ArduinoGameState {
 					targetrotation -= 3 * speed;
 				}
 				if (gamestarted) {
-					score = score + (((double)speed*5/100));
+					score = score + (((double)speed/100));
 				}
 			}
 			@Override
