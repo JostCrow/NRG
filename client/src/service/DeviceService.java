@@ -27,18 +27,6 @@ public interface DeviceService {
 
     /**
      * 
-     * @return
-     *     returns java.util.List<service.Device>
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getAllDevices", targetNamespace = "http://Service/", className = "service.GetAllDevices")
-    @ResponseWrapper(localName = "getAllDevicesResponse", targetNamespace = "http://Service/", className = "service.GetAllDevicesResponse")
-    @Action(input = "http://Service/DeviceService/getAllDevicesRequest", output = "http://Service/DeviceService/getAllDevicesResponse")
-    public List<Device> getAllDevices();
-
-    /**
-     * 
      * @param deviceId
      * @return
      *     returns service.Device
@@ -51,6 +39,18 @@ public interface DeviceService {
     public Device getDeviceById(
         @WebParam(name = "deviceId", targetNamespace = "")
         int deviceId);
+
+    /**
+     * 
+     * @return
+     *     returns java.util.List<service.Device>
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getAllDevices", targetNamespace = "http://Service/", className = "service.GetAllDevices")
+    @ResponseWrapper(localName = "getAllDevicesResponse", targetNamespace = "http://Service/", className = "service.GetAllDevicesResponse")
+    @Action(input = "http://Service/DeviceService/getAllDevicesRequest", output = "http://Service/DeviceService/getAllDevicesResponse")
+    public List<Device> getAllDevices();
 
     /**
      * 

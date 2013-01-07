@@ -2,9 +2,6 @@ package asa.client;
 
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -152,6 +149,7 @@ public class GameState extends ArduinoGameState {
 		wires.draw(center.getWidth()*2-wires.getWidth(), 0);
 		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
 		tandwiel2.draw(center.getWidth()/2-tandwiel2.getWidth()/2-tandwiel2.getWidth()/4, center.getHeight() / 2 - tandwiel2.getHeight()/2);
+		tandwiel3.draw(center.getWidth()/2+tandwiel2.getWidth()/6-3, center.getHeight() / 2 - tandwiel2.getHeight()/3);
 		
 		touwtjes.draw(linker_kastje.getWidth()/2+70+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight());
 		spinner1.draw(linker_kastje.getWidth()/2+70+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-spinner1.getHeight()+spinner1.getHeight()/3);
@@ -198,6 +196,7 @@ public class GameState extends ArduinoGameState {
 		rotation += (targetrotation - rotation) / rotationEase;
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+9.36363636363636));
+		tandwiel3.setRotation((float) ((float) (rotation*1.818181818181818)+15.36363636363636));
 		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
 		if (gamestarted) {
 			spinner1.setRotation((float) ((float) (rotation * 0.018181818181818) + 14.36363636363636));

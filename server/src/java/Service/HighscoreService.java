@@ -39,8 +39,8 @@ public class HighscoreService {
 	 * Met deze methode kan je een highscore toevoegen.
 	 */
 	@WebMethod(operationName = "AddHighscore")
-	public void AddHighscore(@WebParam(name = "highscore") Highscore highscore) {
-		highscoreTable.addHighscore(highscore);
+	public int AddHighscore(@WebParam(name = "highscore") Highscore highscore) {
+		return highscoreTable.addHighscore(highscore);
 	}
 
 	/**

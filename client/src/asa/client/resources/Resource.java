@@ -67,9 +67,11 @@ public class Resource {
 	
 	public static final String background_highscore = "background_highscore.png";
 	public static final String background_item_highscore = "background_item_highscore.png";
+	public static final String BACKGROUND_ITEM_HIGHSCORE_OWN = "background_item_highscore_own.png";
 	public static final String overlay_selected = "overlay_selected.png";
 	public static final String tandwiel_vertical = "tandwiel_vertical.png";
 	public static final String PERSON = "person.png";
+	public static final String HOOFD = "Hoofd.jpg";
 	
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";
