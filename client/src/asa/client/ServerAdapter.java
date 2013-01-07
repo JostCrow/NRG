@@ -66,4 +66,11 @@ public class ServerAdapter {
 		highscore.setFoto(photoUrl);		
 		highscorePort.addHighscore(highscore);
 	}
+	
+	public int getLastAddedHighscoreId()
+	{
+		//int id = server.getLastAddedHighscoreId();
+		return 174;
+		//return id;
+	}
 }

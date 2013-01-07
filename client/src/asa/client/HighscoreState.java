@@ -21,13 +21,16 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Label;
 import java.awt.image.BufferedImage;
+import java.util.Vector;
 import javax.media.Buffer;
 import javax.media.CaptureDeviceInfo;
+import javax.media.CaptureDeviceManager;
 import javax.media.Manager;
 import javax.media.Player;
 import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.opengl.ImageData;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.util.BufferedImageUtil;
@@ -82,14 +85,16 @@ public class HighscoreState extends ArduinoGameState {
 	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
 	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
 	List<Highscore> highscores;
-	boolean longlist;
+	int lastHighscoreId;
+	int lastHighscoreRank;
 	int topDraw;
 	int scrollDelta;
+	int lastHighscoreDelta;
 	int scoreHeight = (appResHeight/10);
-	double listSpeedfactor = 3.20;
+	double listSpeedFactor = 3.20;
 	int highscoreBackgroundHeight = 0;
 	
-	CaptureDeviceInfo deviceInfo;
+	CaptureDeviceInfo webcam;
 	Player player;
 	Component video;
 	Graphics liveVideo;
@@ -98,14 +103,15 @@ public class HighscoreState extends ArduinoGameState {
 	java.awt.Image awtFrame;
 
 	ShadowEffect effect;
+	Animation lens;
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
 		this.gameData = gameData;
-//		Vector devices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
-//		CaptureDeviceInfo captureDevice = (CaptureDeviceInfo) devices.get(0);
-//		deviceInfo = CaptureDeviceManager.getDevice(captureDevice.getName());
+		Vector devices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
+		System.out.println("devices:" + devices.size());
+		webcam = (CaptureDeviceInfo) devices.get(0);
 	}
 
 	@Override
@@ -136,6 +142,17 @@ public class HighscoreState extends ArduinoGameState {
 		effect.setColor(Color.yellow);
 		effect.setXDistance(5);
 		effect.setYDistance(5);
+		
+		lens = new Animation();
+		lens.setLooping(false);
+		for(int i = 0; i < 33; i++){
+			if((i+"").length() == 1){
+				lens.addFrame(new Image(Resource.getPath("LENS/lens1_0000" + i + ".png")), 550/33);
+			} else if((i+"").length() == 2){
+				lens.addFrame(new Image(Resource.getPath("LENS/lens1_000" + i + ".png")), 550/33);
+			}
+		}
+		lens.stop();
 	}
 
 	@Override
@@ -151,18 +168,18 @@ public class HighscoreState extends ArduinoGameState {
 		spinnerSouth = decimalFormat.format(playerScore) + " kWh, ";
 		underSpinner = "Foto maken bij behaalde score?";
 		try {
-			System.out.println("get Player: " + deviceInfo.getLocator().toString());
-			player = Manager.createRealizedPlayer(deviceInfo.getLocator());
+			player = Manager.createRealizedPlayer(webcam.getLocator());
 			System.out.println("start Player");
 			player.start();
-			System.out.println("get Video");
-			video = player.getVisualComponent();
+//			System.out.println("get Video");
+//			video = player.getVisualComponent();
 			Timer timer = new Timer();
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
 					System.out.println("Getting Framegrabber");
-					//frameGrabber = (FrameGrabbingControl)player.getControl("javax.media.control.FrameGrabbingControl");
+					frameGrabber = (FrameGrabbingControl) player.getControl("javax.media.control.FrameGrabbingControl");
+					System.out.println("Got FrameGrabber");
 				}
 			}, 2500);					
 		} catch(Exception e)
@@ -229,7 +246,8 @@ public class HighscoreState extends ArduinoGameState {
 		{
 //			System.out.println("GrabFrame");
 			buffer = frameGrabber.grabFrame();
-			awtFrame = (java.awt.Image) new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer);
+			awtFrame = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer);
+			// tot hier moet werken
 			BufferedImage awtBuffImg = new BufferedImage(awtFrame.getWidth(null), awtFrame.getHeight(null), BufferedImage.TYPE_INT_RGB);
 			
 			Texture texture = null;
@@ -238,6 +256,7 @@ public class HighscoreState extends ArduinoGameState {
 			} catch (Exception e){
 				logger.debug(e);
 			}
+			
 			Image slickImage = new Image(texture.getImageWidth(), texture.getImageHeight() );
 			slickImage.setTexture(texture) ;
 			slickImage.draw(center.getHeight(), center.getWidth());
@@ -303,7 +322,8 @@ public class HighscoreState extends ArduinoGameState {
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
-			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);				
+			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
+			lens.draw(center.getWidth()-(550/2), center.getHeight()-(550/2));
 		}
 		else if (mode == 3)
 		{
@@ -333,14 +353,13 @@ public class HighscoreState extends ArduinoGameState {
 				background_item_highscore.draw(topLeftX, topLeftY);
 				
 				Image highscore = new Image(Resource.getPath(Resource.PERSON));
-				highscore.draw(topLeftX+8, topLeftY+6);
-				graphics.drawString(rank+ "", topLeftX+10, topLeftY+70);
+				highscore.draw(topLeftX+12, topLeftY+5);
+				graphics.drawString(rank+ "", topLeftX+12, topLeftY+68);
 				String pnumber = specialFormat.format(score.getScore());
 				pnumber = pnumber.replace(",", "");
-				System.out.println(pnumber);
 				for(int j = 0; j < pnumber.length(); j++){
-					String test = pnumber.substring(j, j+1);
-					graphics.drawString(test, topLeftX+96+(44*(j+1)), topLeftY+37);
+					String singleNumber = pnumber.substring(j, j+1);
+					graphics.drawString(singleNumber, topLeftX+96+(44*(j+1)), topLeftY+37);
 				}
 //				graphics.drawString(rank + ": " + decimalFormat.format(score.getScore()), topLeftX, topLeftY + (scoreHeight/2));
 			}
@@ -348,6 +367,7 @@ public class HighscoreState extends ArduinoGameState {
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+			graphics.drawString("rotation:" + rotation + ", rotationDelta:" + rotationDelta + ", lastHigscoreDelta:" + lastHighscoreDelta, 0, 50);
 		}
 	}
 
@@ -361,7 +381,7 @@ public class HighscoreState extends ArduinoGameState {
 		
 		if (mode == 3)
 		{
-			float listRotation = ((-rotation+rotationDelta)* (float)listSpeedfactor);
+			float listRotation = (float) (((-rotation - rotationDelta)*listSpeedFactor) - lastHighscoreDelta) ;
 			int possibleTopDraw = (int) ((listRotation*-1)/scoreHeight);
 			if (possibleTopDraw>=0)
 			{
@@ -403,6 +423,7 @@ public class HighscoreState extends ArduinoGameState {
 			@Override
 			public void run() {
 				spinnerSouth = "Foto maken";
+				lens.restart();
 			}
 		}, 4000);
 		timer.schedule(new TimerTask() {
@@ -424,14 +445,23 @@ public class HighscoreState extends ArduinoGameState {
 	{
 		spinnerSouth = "Scrolllist";
 		server.addHighscore(playerScore, "new Photo");
-		
+		lastHighscoreId = server.getLastAddedHighscoreId();		
 		highscores = server.getAllHighscores();
-		if (highscores.size() > 9)
+		lastHighscoreRank = 0;
+		
+		for (Highscore hs : highscores)
 		{
-			longlist = true;
+//			System.out.println(hs.getId() + " " + hs.getScore() + " " + hs.getTimestamp());
+			lastHighscoreRank++;
+			if (hs.getId() == lastHighscoreId)
+			{
+				System.out.println("lastHighscoreRank:" + lastHighscoreRank);
+				break;
+			}
 		}
 		topDraw = 0;
-		rotationDelta = rotation*-1;
+		lastHighscoreDelta = (scoreHeight*lastHighscoreRank)-(scoreHeight/2)-(appResHeight/2);
+		rotationDelta = (float) (rotation*-1);
 		mode = 3;
 		ActivateButton();
 	}
