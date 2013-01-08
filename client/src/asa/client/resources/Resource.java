@@ -48,9 +48,9 @@ public class Resource {
 	public static final String BACKGROUND_SPINNER = "background_spinner.png";
 	
 	public static final String GAME_BACKGROUND = "game_background.png";
-	public static final String COUNT_DOUWN1 = "nederland1-300.png";
-	public static final String COUNT_DOUWN2 = "nederland2-300.png";
-	public static final String COUNT_DOUWN3 = "nederland3-300.png";
+	public static final String COUNT_DOUWN1 = "1.png";
+	public static final String COUNT_DOUWN2 = "2.png";
+	public static final String COUNT_DOUWN3 = "3.png";
 	public static final String START_GAME = "start.png";
 	public static final String NUMBERS_RED = "cijfertjesrood.png";
 	public static final String NUMBERS_BLACK = "cijfertjeszwart.png";

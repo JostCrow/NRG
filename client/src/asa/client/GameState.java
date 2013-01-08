@@ -64,16 +64,16 @@ public class GameState extends ArduinoGameState {
 	int selectionDegrees = 45;
 	int selectedOption = 0;
 	int oldSelectedOption = 0;
-	float player_voortgang_location = 0;
-	float device_voortgang_location = 0;
 	int voortgangs_start_location = 0;
-	float height_calc = 0;
 	
 	int[] playerPositions = new int[7];
 	int[] devicePositions = new int[7];
 	
 	float rotation = 0;
 	float spinnerrotation = 0;
+	float player_voortgang_location = 0;
+	float device_voortgang_location = 0;
+	float height_calc = 0;
 	
 	double deviceScore = 0;
 	double score = 0;
@@ -183,7 +183,7 @@ public class GameState extends ArduinoGameState {
 		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
 		
 		if(countdownActive){
-			count_down.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth(), center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
+			count_down.draw(center.getWidth() - count_down.getWidth()/5, center.getHeight() - count_down.getHeight()/2);
 		}
 		if(uitleg){
 			overlay.draw(0, 0);
