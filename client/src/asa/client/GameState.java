@@ -25,7 +25,6 @@ public class GameState extends ArduinoGameState {
 	Device device;
 	GameData gameData;
 	Timer timer;
-	int startposition;
 	
 	Image tandwiel1;
 	Image tandwiel2;
@@ -52,13 +51,13 @@ public class GameState extends ArduinoGameState {
 	Image player_voortgang;
 	Image device_voortgang;
 	Image overlay;
-	
 	Image red_number;
 	Image black_number;
 
 	Animation clock;
 
 	int image = 3;
+	int startposition;
 	int targetrotation = 0;
 	int tandwielOffset = 30;
 	int selectionDegrees = 45;
