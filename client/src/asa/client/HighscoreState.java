@@ -71,12 +71,13 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	java.awt.Image awtFrame;
 	BufferedImage baseImage;
 	Animation lens;
+	Texture texture = null;
 
 	/**
 	 * mode 1: Able to choose yes or no mode 2: Automaticaly making picture (can
 	 * be skipped) mode 3: Able to scroll through highscorelist
 	 */
-	int mode;
+	int mode = 1;
 	int targetrotation = 0;
 	int selectionDegrees = 180;
 	int selectionScaleDistance = 30;
@@ -111,7 +112,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 		super(stateID);
 		this.server = server;
 		this.gameData = gameData;
-		
 		wheelOptions.add(new WheelOptionYesNo("Ja", Resource.getPath(Resource.ICON_YES), true));
 		wheelOptions.add(new WheelOptionYesNo("Nee", Resource.getPath(Resource.ICON_NO), false));
 		
@@ -126,6 +126,9 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
+		
+		resetGame();
+		
 		selectionDegrees = 360 / wheelOptions.size();
 		
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
@@ -173,8 +176,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		resetGame();
-		mode = 1;
-		arduino.removeAllListeners();
 		if (webcamPlayer != null) {
 			webcamPlayer.close();
 			webcamPlayer.deallocate();
@@ -237,19 +238,13 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 					x = x - (float) (optionIcon.getWidth() * 1.3 / 2);
 					y = y - (float) (optionIcon.getHeight() * 1.3 / 2);
 					option.getIcon().draw(x, y, (float) 1.3);
-					graphics.drawString(option.getDescription(), x + option.getIcon().getWidth() / 2 - 15 * (option.getDescription().length() / 2), y + option.getIcon().getHeight() / 2);
-//					effect.draw(null, null, font, null);
 				} else {
 					x = x - (float) (optionIcon.getWidth() * 1 / 2);
 					y = y - (float) (optionIcon.getHeight() * 1 / 2);
 					option.getIcon().draw(x, y);
-					graphics.drawString(option.getDescription(), x + option.getIcon().getWidth() / 3 - 15 * (option.getDescription().length() / 2), y + option.getIcon().getHeight() / 3);
 				}
 
 				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
-					if (selectedOption != oldSelectedOption) {
-						logger.debug(option.getDescription());
-					}
 					oldSelectedOption = selectedOption;
 					selectedOption = i;
 				}
@@ -263,14 +258,14 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 			if (baseImage != null) {
 
-				Texture texture = null;
 				try{
-					texture = BufferedImageUtil.getTexture("", baseImage);
-				} catch (Exception e){
-					logger.debug(e);
+					if(texture == null){
+						texture = BufferedImageUtil.getTexture("", baseImage);
+						webcamFeed.setTexture(texture);
+					}
+				} catch (IOException e){
+					logger.error(e);
 				}
-
-				webcamFeed.setTexture(texture);
 				webcamFeed.getSubImage(50, 0, 540, 480).draw(center.getWidth()-((640-50)/2)+20, center.getHeight()-(480/2)-20);
 			}
 			lens.draw(center.getWidth() - (550 / 2), center.getHeight() - (550 / 2));
@@ -288,18 +283,10 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			graphics.setFont(fontWhite);
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 			
-			if (selected > highscores.size() - 6) {
-				selected = highscores.size() - 6;
-			}
-			if (selected < 0) {
-				selected = 0;
-			}
-			
 			for (int i = 0; i < 11; i++) {
 				if (topDraw + i >= highscores.size()) {
 					break;
 				}
-				Highscore score = highscores.get(topDraw + i);
 
 				int topLeftX = (appResWidth - appResWidth / 4 - appResWidth / 200);
 				int topLeftY = (scoreHeight * i) + scrollDelta;
@@ -311,16 +298,16 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 					background_item_highscore.draw(topLeftX, topLeftY);
 				}
 				
-				File f = new File(highscores.get(rank-1).getId() + ".png");
+				File f = new File(highscores.get(topDraw + i).getId() + ".png");
 				if(f.exists()){
-					highscore = new Image(highscores.get(rank-1).getId() + ".png");
+					highscore = new Image(highscores.get(topDraw + i).getId() + ".png");
 				} else {
 					highscore = new Image(Resource.getPath("avatar.png"));
 				}				
 				highscore.getSubImage(((highscore.getWidth()-highscore.getHeight())/2), 0, highscore.getHeight(), highscore.getHeight()).draw(topLeftX + 12, topLeftY + 5, 97, 97);
 				
 				graphics.drawString(rank + "", topLeftX + 12, topLeftY + 68);
-				String pnumber = specialFormat.format(score.getScore());
+				String pnumber = specialFormat.format(highscores.get(topDraw + i).getScore());
 				pnumber = pnumber.replace(",", "");
 				for (int j = 0; j < pnumber.length(); j++) {
 					String singleNumber = pnumber.substring(j, j + 1);
@@ -329,18 +316,7 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			}
 			overlay_selected.draw(appResWidth - appResWidth / 4 - appResWidth / 8, appResHeight / 2 - overlay_selected.getHeight() / 2);
 			
-			if (highscores.get(selected).getFoto().equals("yes")) {
-				File f = new File(highscores.get(selected).getId() + ".png");
-				if(f.exists()){
-					centerImage = new Image(highscores.get(selected).getId() + ".png");
-				} else {
-					centerImage = new Image(Resource.getPath("avatar.png"));
-				}
-			}
-			else{
-				centerImage = new Image(Resource.getPath("avatar.png"));
-			}
-			
+			getCenterImage();
 			centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
 			graphics.drawString(decimalFormat.format(highscores.get(selected).getScore()), center.getWidth(), center.getHeight());
 			graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);			
@@ -362,6 +338,11 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			float listRotation = (float) (((-rotation - rotationDelta) * listSpeedFactor) - lastHighscoreDelta);
 			int possibleTopDraw = (int) ((listRotation * -1) / scoreHeight);
 			selected = possibleTopDraw + 5;
+			if (selected > highscores.size() - 6) {
+				selected = highscores.size() - 6;
+			}else if (selected < 0) {
+				selected = 0;
+			}
 			if (possibleTopDraw >= 0) {
 				scrollDelta = (int) (listRotation % scoreHeight);
 				topDraw = possibleTopDraw;
@@ -421,7 +402,7 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	public void ActivateHighscoreList() {
 		spinnerSouth = "Scrolllist";
 		if (baseImage != null) {
-			lastHighscoreId = server.addHighscore(playerScore, "yes");
+			lastHighscoreId = server.addHighscore(gameData.getPlayerScore(), "yes");
 			System.err.println(lastHighscoreId);
 			try {
 				File f = new File(lastHighscoreId + ".png");
@@ -431,7 +412,7 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			}
 		}
 		else{
-			lastHighscoreId = server.addHighscore(playerScore, "no");
+			lastHighscoreId = server.addHighscore(gameData.getPlayerScore(), "no");
 		}		
 
 		highscores = server.getAllHighscores();
@@ -523,9 +504,12 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	}
 
 	private void resetGame() {
+		mode = 1;
+		arduino.removeAllListeners();
 		spinnerSouth = decimalFormat.format(gameData.getPlayerScore()) + " kWh, ";
 		underSpinner = "Foto maken bij behaalde score?";
 		baseImage = null;
+		texture = null;
 	}
 
 	private void initWebcam() {
@@ -546,6 +530,20 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			}
 		} else {
 			logger.error("No webcam available");
+		}
+	}
+
+	private void getCenterImage() throws SlickException {
+		if (highscores.get(selected).getFoto().equals("yes")) {
+			File f = new File(highscores.get(selected).getId() + ".png");
+			if(f.exists()){
+				centerImage = new Image(highscores.get(selected).getId() + ".png");
+			} else {
+				centerImage = new Image(Resource.getPath("avatar.png"));
+			}
+		}
+		else{
+			centerImage = new Image(Resource.getPath("avatar.png"));
 		}
 	}
 }

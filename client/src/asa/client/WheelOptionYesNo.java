@@ -15,7 +15,7 @@ public class WheelOptionYesNo {
 		
 		try
 		{
-			this.icon = new Image(Resource.getPath(icon));
+			this.icon = new Image(icon);
 		}
 		catch (SlickException e)
 		{
