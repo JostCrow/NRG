@@ -125,12 +125,13 @@ public class HighscoreState extends ArduinoGameState {
 		graphics.setFont(fontWhite);
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 
+		int topLeftX = (appResWidth - appResWidth / 4 - appResWidth / 200);
+		
 		for (int i = 0; i < 11; i++) {
 			if (topDraw + i >= highscores.size()) {
 				break;
 			}
-
-			int topLeftX = (appResWidth - appResWidth / 4 - appResWidth / 200);
+			
 			int topLeftY = (scoreHeight * i) + scrollDelta;
 			int rank = topDraw + i + 1;
 
@@ -155,15 +156,17 @@ public class HighscoreState extends ArduinoGameState {
 				String singleNumber = pnumber.substring(j, j + 1);
 				graphics.drawString(singleNumber, topLeftX + 96 + (44 * (j + 1)), topLeftY + 37);
 			}
-			overlay_selected.draw(appResWidth - appResWidth / 4 - appResWidth / 8, appResHeight / 2 - overlay_selected.getHeight() / 2);
-
-			getCenterImage();
-			graphics.drawString(decimalFormat.format(highscores.get(selected).getScore()), center.getWidth(), center.getHeight());
-			graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);
-
-			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+			
 		}
+		
+		overlay_selected.draw(appResWidth - appResWidth / 4 - appResWidth / 8, appResHeight / 2 - overlay_selected.getHeight() / 2);
+
+		getCenterImage();
+		graphics.drawString(decimalFormat.format(highscores.get(selected).getScore()), center.getWidth(), center.getHeight());
+		graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);
+
+		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 	}
 
 	@Override
