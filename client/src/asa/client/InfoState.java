@@ -47,7 +47,7 @@ public class InfoState extends ArduinoGameState {
 	Logger logger = Logger.getLogger(this.getClass());
 
 	List<WheelOption> wheelOptions = new ArrayList<WheelOption>();
-	ArrayList<BackgroundImage> backgrounds = new ArrayList<BackgroundImage>();
+//	ArrayList<BackgroundImage> backgrounds = new ArrayList<BackgroundImage>();
 
 	int targetrotation = 0;
 	int tandwielOffset = 30;
@@ -68,6 +68,8 @@ public class InfoState extends ArduinoGameState {
 
 	float position = 1920;
 	boolean slide = false;
+	boolean add = true;
+	int rotationdirection = 0;
 
 	public InfoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -114,7 +116,6 @@ public class InfoState extends ArduinoGameState {
 
 		float offsetDegree = 360/wheelOptions.size();
 		float radius = 313;
-		float targetScale = 1;
 		// Render icons
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float degrees = (360+((rotation + offsetDegree*i) % 360))%360;
@@ -125,10 +126,19 @@ public class InfoState extends ArduinoGameState {
 
 			WheelOption option = wheelOptions.get(i);
 
+			float targetScale = 1;
+
 			if(degrees > 270-(selectionDegrees/2) && degrees <= 270+(selectionDegrees/2)){
 				selectedOption = i;
 				background = option.getBackground();
 				if(selectedOption != oldSelectedOption){
+					if(rotationdirection == 1){
+						add = false;
+						position = -1920;
+					} else {
+						add = true;
+						position = 1920;
+					}
 					slide = true;
 				}
 				oldSelectedOption = selectedOption;
@@ -198,13 +208,20 @@ public class InfoState extends ArduinoGameState {
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
 		spinner.setRotation(rotation);
-		if(slide){
-			position = position - 76.8f;
+		if(slide && add){
+			position = position - 153.6f;
+		} else if (slide && !add){
+			position = position + 153.6f;
 		}
-		if(position <= 0){
+		if(position <= 0 && add){
 			background2 = background;
 			slide = false;
 			position = 1920;
+		}
+		if(position >= 0 && !add){
+			background2 = background;
+			slide = false;
+			position = -1920;
 		}
 	}
 
@@ -213,6 +230,7 @@ public class InfoState extends ArduinoGameState {
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
 			public void wheelEvent(int direction, int speed) {
+				rotationdirection = direction;
 				if(direction == 1){
 					targetrotation += 3*speed;
 				} else {
