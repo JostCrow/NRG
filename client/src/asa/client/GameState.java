@@ -22,6 +22,8 @@ public class GameState extends ArduinoGameState {
 	private Device device;
 	private GameData gameData;
 	private Timer timer;
+	private GameContainer gameContainer;
+	private StateBasedGame stateBasedGame;
 
 	private Image tandwiel1;
 	private Image tandwiel2;
@@ -78,6 +80,8 @@ public class GameState extends ArduinoGameState {
 
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
+		this.stateBasedGame = stateBasedGame;
+		this.gameContainer = gameContainer;
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		overlay = new Image(Resource.getPath(Resource.OVERLAY));
@@ -161,8 +165,8 @@ public class GameState extends ArduinoGameState {
 		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-19, device_voortgang_location);
 		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
 
-		if(countdownActive && !uitleg){
-			count_down.draw(center.getWidth() - count_down.getWidth()/5, center.getHeight() - count_down.getHeight()/2);
+		if(countdownActive){
+			count_down.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth()+65, center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
 		}
 		if(uitleg){
 			overlay.draw(0, 0);
@@ -176,7 +180,7 @@ public class GameState extends ArduinoGameState {
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+9.36363636363636));
 		tandwiel3.setRotation((float) ((float) (rotation*1.818181818181818)+15.36363636363636));
-		count_down.setAlpha((float)(count_down.getAlpha() + 0.02));
+		count_down.setAlpha((float)(count_down.getAlpha() + 0.08));
 		if (gamestarted) {
 			spinner1.setRotation((float) ((float) (rotation * 0.018181818181818) + 14.36363636363636));
 			spinner2.setRotation((float) ((float) (rotation * 0.818181818181818)));
@@ -249,12 +253,12 @@ public class GameState extends ArduinoGameState {
 		}
 	}
 
-	private void startGame(StateBasedGame stateBasedGame){
+	private void startGame(){
 		timer = new Timer();
-		startTimer(timer, stateBasedGame);
+		startTimer(timer);
 	}
 
-	private void startTimer(Timer timer, final StateBasedGame stateBasedGame){
+	private void startTimer(Timer timer){
 		/**
 		 * change the image to the number 2.
 		 */
@@ -311,7 +315,6 @@ public class GameState extends ArduinoGameState {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-//				this.preUpdateState(null, AsaGame.HIGHSCORESTATE);
 				stateBasedGame.enterState(AsaGame.PHOTOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 			}
 		}, 28000);
@@ -334,7 +337,7 @@ public class GameState extends ArduinoGameState {
 			@Override
 			public void buttonEvent(){
 				if(uitleg){
-					startGame(stateBasedGame);
+					startGame();
 					uitleg = false;
 				} else {
 					stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);

@@ -71,7 +71,6 @@ public class AsaGame extends StateBasedGame{
 		this.addState(new GameState(GAMESTATE, this.server, gameData));
 		this.addState(new PhotoState(PHOTOSTATE, this.server, gameData));
 		this.addState(new HighscoreState(HIGHSCORESTATE, this.server, gameData));
-		this.preUpdateState(gameContainer, INFOSTATE);
 		this.preRenderState(gameContainer, gameContainer.getGraphics());
 	}
 
