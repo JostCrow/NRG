@@ -1,38 +1,26 @@
 package asa.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import org.apache.log4j.Logger;
-import org.lwjgl.util.Dimension;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
-import org.newdawn.slick.state.StateBasedGame;
-import service.Device;
-import service.Highscore;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
-import org.newdawn.slick.font.effects.ShadowEffect;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics2D;
 import java.awt.Label;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
+import java.awt.image.ImageObserver;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
@@ -45,13 +33,24 @@ import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.log4j.Logger;
+import org.lwjgl.util.Dimension;
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.font.effects.ShadowEffect;
 import org.newdawn.slick.opengl.EmptyImageData;
 import org.newdawn.slick.opengl.PNGImageData;
 import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.BufferedImageUtil;
+import service.Device;
+import service.Highscore;
 
-public class HighscoreState extends ArduinoGameState {
+public class HighscoreState extends ArduinoGameState implements ImageObserver{
 
 	ServerAdapter server;
 	GameData gameData;
@@ -97,7 +96,6 @@ public class HighscoreState extends ArduinoGameState {
 	float rotationDelta = 0;
 	double rotationEase = 5.0;
 	StateBasedGame basedGame;
-	Component lbl = new Label("hallo");
 	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
 	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
 	List<Highscore> highscores;
@@ -118,9 +116,11 @@ public class HighscoreState extends ArduinoGameState {
 	FrameGrabbingControl frameGrabber;
 	Buffer buffer;
 	java.awt.Image awtFrame;
-	String baseImage = "";
+	BufferedImage baseImage;
+	Image webcamFeed;
 	ShadowEffect effect;
 	Animation lens;
+	private java.awt.Image image;
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -157,6 +157,8 @@ public class HighscoreState extends ArduinoGameState {
 		background_item_highscore_own = new Image(Resource.getPath(Resource.BACKGROUND_ITEM_HIGHSCORE_OWN));
 		overlay_selected = new Image(Resource.getPath(Resource.overlay_selected));
 		tandwiel_vertical = new Image(Resource.getPath(Resource.tandwiel_vertical));
+		
+		webcamFeed = new Image(new EmptyImageData(640, 480));
 
 		centerImage = new Image(new EmptyImageData(97, 97));
 		highscore = new Image(Resource.getPath(Resource.PERSON));
@@ -290,18 +292,6 @@ public class HighscoreState extends ArduinoGameState {
 //			slickImage.draw(center.getHeight(), center.getWidth());					
 ////		videoFrame = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer));
 //		}
-		if (baseImage != null) {
-			InputStream inputstream = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(baseImage));
-			PNGImageData pngImageData = new PNGImageData();
-			Image test = new Image(new EmptyImageData(5, 5));
-			try {
-				pngImageData.loadImage(inputstream);
-				test = new Image(pngImageData);
-			} catch (IOException ex) {
-				System.err.println(ex.getMessage());
-			}
-			test.draw();
-		}
 		
 		graphics.setFont(fontBlack);
 
@@ -358,11 +348,22 @@ public class HighscoreState extends ArduinoGameState {
 			}
 		} else if (mode == 2) {
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
+			if (baseImage != null) {
+
+				Texture texture = null;
+				try{
+					texture = BufferedImageUtil.getTexture("", baseImage);
+				} catch (Exception e){
+					logger.debug(e);
+				}
+
+				webcamFeed.setTexture(texture);
+				webcamFeed.getSubImage(50, 0, 540, 480).draw(center.getWidth()-((640-50)/2)+20, center.getHeight()-(480/2)-20);
+			}
 			lens.draw(center.getWidth() - (550 / 2), center.getHeight() - (550 / 2));
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
-
 		} else if (mode == 3) {
 			tandwiel3.draw(AsaGame.SOURCE_RESOLUTION.width - background_highscore.getWidth() - tandwiel2.getWidth() - tandwiel_vertical.getWidth() / 2 - 38, AsaGame.SOURCE_RESOLUTION.height - tandwiel2.getHeight());
 			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
@@ -376,6 +377,14 @@ public class HighscoreState extends ArduinoGameState {
 			tandwiel_vertical.draw(appResWidth - background_highscore.getWidth() - tandwiel_vertical.getWidth(), highscoreBackgroundHeight - tandwiel_vertical.getHeight());
 			graphics.setFont(fontWhite);
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+			
+			if (selected > highscores.size() - 6) {
+				selected = highscores.size() - 6;
+			}
+			if (selected < 0) {
+				selected = 0;
+			}
+			
 			for (int i = 0; i < 11; i++) {
 				if (topDraw + i >= highscores.size()) {
 					break;
@@ -388,15 +397,17 @@ public class HighscoreState extends ArduinoGameState {
 				int rank = topDraw + i + 1;
 
 				if (rank == lastHighscoreRank) {
-					highscore = new Image(Resource.getPath(Resource.HOOFD));
-//					centerImage = new Image(Resource.getPath(Resource.HOOFD));
 					background_item_highscore_own.draw(topLeftX, topLeftY);
 				} else {
 					background_item_highscore.draw(topLeftX, topLeftY);
-//					centerImage = new Image(Resource.getPath(Resource.PERSON));
-					highscore = new Image(Resource.getPath(Resource.PERSON));
 				}
-				highscore.draw(topLeftX + 12, topLeftY + 5);
+				File f = new File(highscores.get(rank-1).getId() + ".png");
+				if(f.exists()){
+					highscore = new Image(highscores.get(rank-1).getId() + ".png");
+				} else {
+					highscore = new Image(Resource.getPath("avatar.png"));
+				}
+				highscore.getSubImage(((highscore.getWidth()-highscore.getHeight())/2), 0, highscore.getHeight(), highscore.getHeight()).draw(topLeftX + 12, topLeftY + 5, 97, 97);
 				graphics.drawString(rank + "", topLeftX + 12, topLeftY + 68);
 				String pnumber = specialFormat.format(score.getScore());
 				pnumber = pnumber.replace(",", "");
@@ -410,42 +421,17 @@ public class HighscoreState extends ArduinoGameState {
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 //			graphics.drawString("rotation:" + rotation + ", rotationDelta:" + rotationDelta + ", lastHigscoreDelta:" + lastHighscoreDelta, 0, 50);
-			if (selected > highscores.size() - 6) {
-				selected = highscores.size() - 6;
-			}
-			if (selected < 0) {
-				selected = 0;
-			}
 			
-			File file = new File(Resource.getPath("highscorePhotos/" + selected + ".txt"));
-			InputStream i = null;
-			if (file.exists()) {
-				
-				BufferedReader input;
-				try {
-					input = new BufferedReader(new FileReader(Resource.getPath("highscorePhotos/" + selected + ".txt")));
-					i = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(input.readLine()));
-				} catch (FileNotFoundException ex) {
-					java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
-				} catch (IOException ex) {
-					java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
-				}				
+			if (highscores.get(selected).getFoto().equals("yes")) {
+				File f = new File(highscores.get(selected).getId() + ".png");
+				if(f.exists()){
+					centerImage = new Image(highscores.get(selected).getId() + ".png");
+				} else {
+					centerImage = new Image(Resource.getPath("avatar.png"));
+				}
 			}
 			else{
-				try {
-					BufferedReader input = new BufferedReader(new FileReader(Resource.getPath("highscorePhotos/default.txt")));
-					i = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(input.readLine()));
-				} catch (FileNotFoundException e) {
-				} catch (IOException e) {
-				}
-			}			
-
-			PNGImageData pNGImageData = new PNGImageData();
-			try {
-				pNGImageData.loadImage(i);
-				centerImage = new Image(pNGImageData);
-			} catch (IOException ex) {
-				System.err.println(ex.getMessage());
+				centerImage = new Image(Resource.getPath("avatar.png"));
 			}
 			
 			centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
@@ -524,16 +510,19 @@ public class HighscoreState extends ArduinoGameState {
 
 	public void ActivateHighscoreList() {
 		spinnerSouth = "Scrolllist";
-		lastHighscoreId = server.addHighscore(playerScore, "");
-		File f = new File(Resource.getPath("HighscorePhotos/" + lastHighscoreId + ".txt"));
-		try {
-			f.createNewFile();
-			FileWriter fw = new FileWriter(f.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(baseImage);
-			bw.close();
-		} catch (IOException e) {
+		if (baseImage != null) {
+			lastHighscoreId = server.addHighscore(playerScore, "yes");
+			System.err.println(lastHighscoreId);
+			try {
+				File f = new File(lastHighscoreId + ".png");
+				ImageIO.write(baseImage, "png", f);
+			} catch (IOException ex) {
+				System.out.println("fail:" + ex.getMessage());
+			}
 		}
+		else{
+			lastHighscoreId = server.addHighscore(playerScore, "no");
+		}		
 
 		highscores = server.getAllHighscores();
 		lastHighscoreRank = 0;
@@ -559,24 +548,9 @@ public class HighscoreState extends ArduinoGameState {
 			
 			buffer = frameGrabber.grabFrame();
 			awtFrame = new BufferToImage((VideoFormat) buffer.getFormat()).createImage(buffer);
-			
-			BufferedImage awtBuffImg = new BufferedImage(awtFrame.getWidth(null), awtFrame.getHeight(null), BufferedImage.TYPE_INT_RGB);
-//			WritableRaster raster = awtBuffImg.getRaster();
-//			//Cannot cast
-//			DataBufferByte data =  (DataBufferByte) raster.getDataBuffer();
-			
-			try {	
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ImageIO.write( awtBuffImg, "png", baos );
-				baos.flush();
-				byte[] imageInByte = baos.toByteArray();
-				baos.close();
-
-	//			baseImage = DatatypeConverter.printBase64Binary(data.getData());
-				baseImage = DatatypeConverter.printBase64Binary(imageInByte);
-			} catch (IOException ex) {
-				java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			BufferedImage bufferedImage = new BufferedImage(awtFrame.getWidth(null), awtFrame.getHeight(null), BufferedImage.TYPE_INT_RGB);
+			bufferedImage.createGraphics().drawImage(awtFrame, 0, 0, this);
+			baseImage = bufferedImage;
 		}
 	}
 
@@ -603,5 +577,10 @@ public class HighscoreState extends ArduinoGameState {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public boolean imageUpdate(java.awt.Image img, int infoflags, int x, int y, int width, int height) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }
