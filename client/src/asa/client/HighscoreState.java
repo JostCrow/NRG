@@ -7,10 +7,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.media.Buffer;
-import javax.media.CaptureDeviceInfo;
-import javax.media.Player;
-import javax.media.control.FrameGrabbingControl;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.GameContainer;
@@ -20,68 +16,51 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.opengl.EmptyImageData;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.FadeInTransition;
-import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.Transition;
 import service.Highscore;
 
 public class HighscoreState extends ArduinoGameState {
-	List<Highscore> highscores;
-	ServerAdapter server;
-	GameData gameData;
-	Dimension center;
-	Logger logger = Logger.getLogger(this.getClass());
-	UnicodeFont fontBlack;
-	UnicodeFont fontWhite;
+	private List<Highscore> highscores;
+	private ServerAdapter server;
+	private GameData gameData;
+	private Dimension center;
+	private Logger logger = Logger.getLogger(this.getClass());
+	private UnicodeFont fontBlack;
+	private UnicodeFont fontWhite;
 
-	boolean waitingForButton;
+	private boolean waitingForButton;
 
-	String underSpinner;
-	String spinnerSouth = "";
+	private Image tandwiel1;
+	private Image tandwiel2;
+	private Image tandwiel3;
+	private Image background;
+	private Image spinner;
+	private Image background_spinner;
+	private Image spinneroverlay;
+	private Image background_highscore;
+	private Image background_item_highscore;
+	private Image background_item_highscore_own;
+	private Image overlay_selected;
+	private Image tandwiel_vertical;
+	private Image highscore;
+	private Image centerImage;
 
-	Image tandwiel1;
-	Image tandwiel2;
-	Image tandwiel3;
-	Image background;
-	Image spinner;
-	Image background_spinner;
-	Image spinneroverlay;
-	Image background_highscore;
-	Image background_item_highscore;
-	Image background_item_highscore_own;
-	Image overlay_selected;
-	Image tandwiel_vertical;
-	Image highscore;
-	Image centerImage;
+	private int targetrotation = 0;
+	private int tandwielOffset = 30;
+	private int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
+	private int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
+	private int lastHighscoreRank;
+	private int topDraw = 0;
+	private int selected;
+	private int scrollDelta;
+	private int lastHighscoreDelta;
+	private int scoreHeight = (appResHeight / 10);
+	private int highscoreBackgroundHeight = 0;
 
-	int targetrotation = 0;
-	int selectionDegrees = 180;
-	int selectionScaleDistance = 30;
-	int selectedOption = 0;
-	int oldSelectedOption = 0;
-	int tandwielOffset = 30;
-	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
-	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
-	int lastHighscoreRank;
-	int topDraw;
-	int selected;
-	int scrollDelta;
-	int lastHighscoreDelta;
-	int scoreHeight = (appResHeight / 10);
-	int highscoreBackgroundHeight = 0;
+	private float rotation = 0;
+	private float rotationDelta = 0;
 
-
-	float selectedScale = 1.5f;
-	float rotation = 0;
-	float rotationDelta = 0;
-
-	double rotationEase = 5.0;
-	double listSpeedFactor = 3.20;
-
-	CaptureDeviceInfo webcam;
-	Player webcamPlayer;
-	FrameGrabbingControl frameGrabber;
-	Buffer buffer;
+	private double rotationEase = 5.0;
+	private double listSpeedFactor = 3.20;
 
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -91,9 +70,9 @@ public class HighscoreState extends ArduinoGameState {
 
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
-		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
-
 		resetGame();
+
+		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
@@ -118,6 +97,7 @@ public class HighscoreState extends ArduinoGameState {
 
 	@Override
 	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame) {
+		calculateDelta();
 		addListeners(stateBasedGame);
 		ActivateButton();
 	}
@@ -237,9 +217,7 @@ public class HighscoreState extends ArduinoGameState {
 			public void buttonEvent() {
 				if (waitingForButton) {
 					waitingForButton = !waitingForButton;
-					Transition fadeIn = new FadeInTransition();
-					Transition fadeOut = new FadeOutTransition();
-					stateBasedGame.enterState(AsaGame.INFOSTATE, fadeOut, fadeIn);
+					stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 				}
 			}
 		});
@@ -247,8 +225,7 @@ public class HighscoreState extends ArduinoGameState {
 
 	private void resetGame() {
 		arduino.removeAllListeners();
-		spinnerSouth = decimalFormat.format(gameData.getPlayerScore()) + " kWh, ";
-		underSpinner = "";
+		topDraw = 0;
 	}
 
 	private void getCenterImage() throws SlickException {
@@ -266,5 +243,21 @@ public class HighscoreState extends ArduinoGameState {
 			centerImage = new Image(Resource.getPath("avatar.png"));
 			centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
 		}
+	}
+
+	private void calculateDelta() {
+		highscores = server.getAllHighscores();
+		lastHighscoreRank = 0;
+
+		for (Highscore hs : highscores) {
+			lastHighscoreRank++;
+			if (hs.getId() == gameData.getLastHighscoreId()) {
+				System.out.println("lastHighscoreRank:" + lastHighscoreRank);
+				break;
+			}
+		}
+
+		lastHighscoreDelta = (scoreHeight * lastHighscoreRank) - (scoreHeight / 2) - (appResHeight / 2);
+		rotationDelta = (float) (rotation * -1);
 	}
 }

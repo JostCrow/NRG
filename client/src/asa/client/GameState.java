@@ -332,9 +332,7 @@ public class GameState extends ArduinoGameState {
 			@Override
 			public void run() {
 //				this.preUpdateState(null, AsaGame.HIGHSCORESTATE);
-				Transition fadeIn = new FadeInTransition();
-				Transition fadeOut = new FadeOutTransition();
-				stateBasedGame.enterState(AsaGame.PHOTOSTATE, fadeOut, fadeIn);
+				stateBasedGame.enterState(AsaGame.PHOTOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 			}
 		}, 28000);
 	}
@@ -359,9 +357,7 @@ public class GameState extends ArduinoGameState {
 					startGame(stateBasedGame);
 					uitleg = false;
 				} else {
-					Transition fadeIn = new FadeInTransition();
-					Transition fadeOut = new FadeOutTransition();
-					stateBasedGame.enterState(AsaGame.INFOSTATE, fadeOut, fadeIn);
+					stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 				}
 			}
 		});

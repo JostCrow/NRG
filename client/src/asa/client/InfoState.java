@@ -19,16 +19,12 @@ import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
-import java.io.IOException;
-import java.util.logging.Level;
-import org.newdawn.slick.loading.DeferredResource;
-import org.newdawn.slick.loading.LoadingList;
 
 public class InfoState extends ArduinoGameState {
 
 	ServerAdapter server;
 	GameData gameData;
-	
+
 	Image background;
 	Image tandwiel1;
 	Image tandwiel2;
@@ -42,32 +38,32 @@ public class InfoState extends ArduinoGameState {
 	Image label_medium;
 	Image label_hard;
 	Image icons_details;
-	
+
 	UnicodeFont font_label;
 	UnicodeFont font_details;
-	
+
 	Logger logger = Logger.getLogger(this.getClass());
-	
+
 	List<WheelOption> wheelOptions = new ArrayList<WheelOption>();
 	ArrayList<BackgroundImage> backgrounds = new ArrayList<BackgroundImage>();
-	
+
 	int targetrotation = 0;
 	int tandwielOffset = 30;
-	
+
 	float rotation = 0;
 	float spinnerrotation = 0;
 	double rotationEase = 5.0;
-	
+
 	Dimension screenSize;
 	Dimension center;
-	
+
 	int selectionDegrees = 0;
 	int selectionScaleDistance = 180;
 	int selectedOption = 0;
 	float selectedScale = 1.5f;
 	int oldSelectedOption = 0;
 	String lastLoaded = "";
-	
+
 	public InfoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
@@ -99,33 +95,33 @@ public class InfoState extends ArduinoGameState {
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
-		
+
 		background.draw(0, 0);
-		
+
 		for(BackgroundImage background : backgrounds){
 			background.setX(background.getX()+((0-background.getX())/5));
 			background.getImage().draw(background.getX(),0);
 		}
-		
+
 		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
 		tandwiel2.draw(tandwiel1.getWidth()/2-tandwielOffset-40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-	
+
 		// Render icons
 		for(int i = 0; i < wheelOptions.size(); i++){
 			float offsetDegree = 360/wheelOptions.size();
 			float degrees = (360+((rotation + offsetDegree*i) % 360))%360;
 			float rad = (float) (degrees * (Math.PI / 180));
 			float radius = 313;
-			
+
 			float x = (float) (center.getWidth() + radius * Math.cos(rad));
 			float y = (float) (center.getHeight() + radius * Math.sin(rad));
-			
+
 			WheelOption option = wheelOptions.get(i);
 			Image optionIcon = option.getIcon();
-			
+
 			float targetScale = 1;
 			if(degrees > 270-(selectionDegrees/2) && degrees <= 270+(selectionDegrees/2)){
 				selectedOption = i;
@@ -137,7 +133,7 @@ public class InfoState extends ArduinoGameState {
 					}
 					// Switch startposition on edges
 					if(
-						(selectedOption == 0 && oldSelectedOption == wheelOptions.size()-1) || 
+						(selectedOption == 0 && oldSelectedOption == wheelOptions.size()-1) ||
 						(selectedOption == wheelOptions.size()-1 && oldSelectedOption == 0)){
 						startPosition = -startPosition;
 					}
@@ -152,58 +148,58 @@ public class InfoState extends ArduinoGameState {
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
 			x = x - optionIcon.getWidth()*option.getScale()/2;
 			y = y - optionIcon.getHeight()*option.getScale()/2;
-			
+
 			Image icon_background;
 			switch(option.getDifficulty()){
-				case WheelOption.EASY: 
+				case WheelOption.EASY:
 					icon_background = icon_background_easy;
 					break;
-				case WheelOption.MEDIUM: 
+				case WheelOption.MEDIUM:
 					icon_background = icon_background_medium;
 					break;
-				case WheelOption.HARD: 
+				case WheelOption.HARD:
 					icon_background = icon_background_hard;
 					break;
 				default: icon_background = icon_background_medium;
 			}
-			
+
 			icon_background.draw(x, y, option.getScale());
 			option.getIcon().draw(x, y, option.getScale());
-		}		
-		
+		}
+
 		// Draw selected option in center;
 		WheelOption option = wheelOptions.get(selectedOption);
-		
+
 		Image selectedIcon = option.getIcon();
 		selectedIcon.draw(center.getWidth() - selectedIcon.getWidth(), -120 + center.getHeight() - selectedIcon.getHeight(), 2);
-		
+
 		Image label_difficulty;
 		switch(option.getDifficulty()){
-			case WheelOption.EASY: 
+			case WheelOption.EASY:
 				label_difficulty = label_easy;
 				break;
-			case WheelOption.MEDIUM: 
+			case WheelOption.MEDIUM:
 				label_difficulty = label_medium;
 				break;
-			case WheelOption.HARD: 
+			case WheelOption.HARD:
 				label_difficulty = label_hard;
 				break;
 				default: label_difficulty = label_medium;
 		}
-		
+
 		label_difficulty.draw(center.getWidth()-label_difficulty.getWidth()/2, center.getHeight()+1);
-		
+
 		graphics.setFont(font_label);
 		graphics.drawString(option.getDevice().getName(), center.getWidth()-font_label.getWidth(option.getDevice().getName())/2, center.getHeight() - 50);
-		
+
 		icons_details.draw(center.getWidth()-125, center.getHeight()+50);
-		
+
 		graphics.setFont(font_details);
 		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-75, 60+center.getHeight());
 		graphics.drawString("30 sec.", center.getWidth()-75, 60+center.getHeight()+47);
 		graphics.drawString(decimalFormat.format(option.getAverage()) + " Kw.", center.getWidth()-75, 60+center.getHeight()+47*2);
-		
-		
+
+
 		// Cleanup background list
 		if(backgrounds.size() > 2){
 			BackgroundImage background = backgrounds.get(0);
@@ -212,8 +208,8 @@ public class InfoState extends ArduinoGameState {
 			}
 		}
 	}
-	
-	
+
+
 	@Override
 	public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
 		super.update(gameContainer, stateBasedGame, delta);
@@ -222,7 +218,7 @@ public class InfoState extends ArduinoGameState {
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
 		spinner.setRotation(rotation);
 	}
-	
+
 	@Override
 	public void enter(GameContainer gameContainer, final StateBasedGame stateBasedGame){
 		arduino.addListener(new ArduinoAdapter() {
@@ -234,16 +230,14 @@ public class InfoState extends ArduinoGameState {
 					targetrotation -= 3*speed;
 				}
 			}
-			
+
 			@Override
 			public void buttonEvent(){
-				Transition fadeIn = new FadeInTransition();
-				Transition fadeOut = new FadeOutTransition();
-				stateBasedGame.enterState(AsaGame.GAMESTATE, fadeOut, fadeIn);
+				stateBasedGame.enterState(AsaGame.GAMESTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 			}
 		});
 	}
-	
+
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		arduino.removeAllListeners();

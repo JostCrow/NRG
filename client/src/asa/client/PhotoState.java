@@ -32,82 +32,58 @@ import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.opengl.EmptyImageData;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.FadeInTransition;
-import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.Transition;
 import org.newdawn.slick.util.BufferedImageUtil;
-import service.Highscore;
 
 public class PhotoState extends ArduinoGameState implements ImageObserver{
-	StateBasedGame stateBasedGame;
-	List<Highscore> highscores;
-	ServerAdapter server;
-	GameData gameData;
-	Dimension center;
-	Logger logger = Logger.getLogger(this.getClass());
-	List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
-	UnicodeFont fontBlack;
-	UnicodeFont fontWhite;
+	private StateBasedGame stateBasedGame;
+	private ServerAdapter server;
+	private GameData gameData;
+	private Dimension center;
+	private Logger logger = Logger.getLogger(this.getClass());
+	private List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
+	private UnicodeFont fontBlack;
+	private UnicodeFont fontWhite;
 
-	boolean waitingForButton;
-	boolean webcamAvailable = false;
+	private boolean waitingForButton;
+	private boolean webcamAvailable = false;
 
-	String spinnerSouth = "";
-	String underSpinner = "";
+	private String spinnerSouth = "";
+	private String underSpinner = "";
 
-	Image tandwiel1;
-	Image tandwiel2;
-	Image tandwiel3;
-	Image background;
-	Image spinner;
-	Image background_spinner;
-	Image spinneroverlay;
-	Image webcamFeed;
+	private Image tandwiel1;
+	private Image tandwiel2;
+	private Image background;
+	private Image spinner;
+	private Image background_spinner;
+	private Image spinneroverlay;
+	private Image webcamFeed;
 
-	java.awt.Image awtFrame;
-	BufferedImage baseImage;
-	Animation lens;
-	Texture texture = null;
+	private java.awt.Image awtFrame;
+	private BufferedImage baseImage;
+	private Animation lens;
+	private Texture texture = null;
 
-	/**
-	 * mode 1: Able to choose yes or no mode 2: Automaticaly making picture (can
-	 * be skipped) mode 3: Able to scroll through highscorelist
-	 */
-	int mode = 1;
-	int targetrotation = 0;
-	int selectionDegrees = 180;
-	int selectionScaleDistance = 30;
-	int selectedOption = 0;
-	int oldSelectedOption = 0;
-	int tandwielOffset = 30;
-	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
-	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
-	int lastHighscoreId;
-	int lastHighscoreRank;
-	int topDraw;
-	int selected;
-	int scrollDelta;
-	int lastHighscoreDelta;
-	int scoreHeight = (appResHeight / 10);
-	int highscoreBackgroundHeight = 0;
+	private int mode = 1;
+	private int targetrotation = 0;
+	private int selectedOption = 0;
+	private int tandwielOffset = 30;
+	private int lastHighscoreId;
 
+	private float rotation = 0;
+	private float rotationDelta = 0;
 
-	float selectedScale = 1.5f;
-	float rotation = 0;
-	float rotationDelta = 0;
+	private double rotationEase = 5.0;
 
-	double rotationEase = 5.0;
-	double listSpeedFactor = 3.20;
-
-	CaptureDeviceInfo webcam;
-	Player webcamPlayer;
-	FrameGrabbingControl frameGrabber;
-	Buffer buffer;
+	private CaptureDeviceInfo webcam;
+	private Player webcamPlayer;
+	private FrameGrabbingControl frameGrabber;
+	private Buffer buffer;
 
 	public PhotoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
 		this.gameData = gameData;
+
 		wheelOptions.add(new WheelOptionYesNo("Ja", Resource.getPath(Resource.ICON_YES), true));
 		wheelOptions.add(new WheelOptionYesNo("Nee", Resource.getPath(Resource.ICON_NO), false));
 
@@ -127,11 +103,8 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 
 		resetGame();
 
-		selectionDegrees = 360 / wheelOptions.size();
-
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
-		tandwiel3 = new Image(Resource.getPath(Resource.TANDWIEL7));
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
@@ -234,7 +207,6 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 				}
 
 				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
-					oldSelectedOption = selectedOption;
 					selectedOption = i;
 				}
 
@@ -306,12 +278,13 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				ActivateHighscoreList();
+				SaveImage();
+				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 			}
 		}, 9000);
 	}
 
-	public void ActivateHighscoreList() {
+	public void SaveImage() {
 		if (baseImage != null) {
 			lastHighscoreId = server.addHighscore(gameData.getPlayerScore(), "yes");
 			try {
@@ -324,23 +297,8 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		else{
 			lastHighscoreId = server.addHighscore(gameData.getPlayerScore(), "no");
 		}
-		//Make availeble for highscore
-		highscores = server.getAllHighscores();
-		lastHighscoreRank = 0;
 
-		for (Highscore hs : highscores) {
-			lastHighscoreRank++;
-			if (hs.getId() == lastHighscoreId) {
-				System.out.println("lastHighscoreRank:" + lastHighscoreRank);
-				break;
-			}
-		}
-		topDraw = 0;
-		lastHighscoreDelta = (scoreHeight * lastHighscoreRank) - (scoreHeight / 2) - (appResHeight / 2);
-		rotationDelta = (float) (rotation * -1);
-		Transition fadeIn = new FadeInTransition();
-		Transition fadeOut = new FadeOutTransition();
-		stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, fadeOut, fadeIn);
+		gameData.setLastHighscoreId(lastHighscoreId);
 	}
 
 	public void CaptureImage() {
@@ -403,9 +361,8 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 						if (selected.getValue()) {
 							MakePhoto();
 						} else {
-							Transition fadeIn = new FadeInTransition();
-							Transition fadeOut = new FadeOutTransition();
-							stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, fadeOut, fadeIn);
+							SaveImage();
+							stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 						}
 					}
 				}
