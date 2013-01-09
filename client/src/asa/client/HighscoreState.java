@@ -178,7 +178,6 @@ public class HighscoreState extends ArduinoGameState {
 			overlay_selected.draw(appResWidth - appResWidth / 4 - appResWidth / 8, appResHeight / 2 - overlay_selected.getHeight() / 2);
 
 			getCenterImage();
-			centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
 			graphics.drawString(decimalFormat.format(highscores.get(selected).getScore()), center.getWidth(), center.getHeight());
 			graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);
 
@@ -257,12 +256,15 @@ public class HighscoreState extends ArduinoGameState {
 			File f = new File(highscores.get(selected).getId() + ".png");
 			if(f.exists()){
 				centerImage = new Image(highscores.get(selected).getId() + ".png");
+				centerImage.getSubImage(50, 0, 540, 480).draw(center.getWidth()-((640-50)/2)+20, center.getHeight()-(480/2)-20);
 			} else {
 				centerImage = new Image(Resource.getPath("avatar.png"));
+				centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
 			}
 		}
 		else{
 			centerImage = new Image(Resource.getPath("avatar.png"));
+			centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
 		}
 	}
 }
