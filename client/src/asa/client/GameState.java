@@ -25,7 +25,7 @@ public class GameState extends ArduinoGameState {
 	Device device;
 	GameData gameData;
 	Timer timer;
-	
+
 	Image tandwiel1;
 	Image tandwiel2;
 	Image background;
@@ -64,27 +64,27 @@ public class GameState extends ArduinoGameState {
 	int selectedOption = 0;
 	int oldSelectedOption = 0;
 	int voortgangs_start_location = 0;
-	
+
 	int[] playerPositions = new int[7];
 	int[] devicePositions = new int[7];
-	
+
 	float rotation = 0;
 	float spinnerrotation = 0;
 	float player_voortgang_location = 0;
 	float device_voortgang_location = 0;
 	float height_calc = 0;
-	
+
 	double deviceScore = 0;
 	double score = 0;
 	double rotationEase = 5.0;
-	
+
 	Dimension screenSize;
 	Dimension center;
-	
+
 	boolean gamestarted = false;
 	boolean countdownActive = true;
 	boolean uitleg = true;
-	
+
 	Random random;
 
 	public GameState(int stateID, ServerAdapter server, GameData gameData) {
@@ -116,14 +116,14 @@ public class GameState extends ArduinoGameState {
 		spinner1 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		spinner2 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		spinner3 = new Image(Resource.getPath(Resource.GAME_SPINNER));
-		
+
 		voortgangsbalk = new Image(Resource.getPath(Resource.VOORTGANGS_BALK));
 		player_voortgang = new Image(Resource.getPath(Resource.PLAYER_));
 		device_voortgang = new Image(Resource.getPath(Resource.DEVICE_));
 		voortgangs_start_location = voortgangsbalk.getHeight()-50;
 		player_voortgang_location = voortgangsbalk.getHeight()-50;
 		device_voortgang_location = voortgangsbalk.getHeight()-50;
-		
+
 		red_number = new Image(Resource.getPath(Resource.NUMBERS_RED));
 		black_number = new Image(Resource.getPath(Resource.NUMBERS_BLACK));
 		random = new Random();
@@ -149,7 +149,7 @@ public class GameState extends ArduinoGameState {
 		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
 		tandwiel2.draw(center.getWidth()/2-tandwiel2.getWidth()/2-tandwiel2.getWidth()/4, center.getHeight() / 2 - tandwiel2.getHeight()/2);
 		tandwiel3.draw(center.getWidth()/2+tandwiel2.getWidth()/6-3, center.getHeight() / 2 - tandwiel2.getHeight()/3);
-		
+
 		touwtjes.draw(linker_kastje.getWidth()/2+70+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight());
 		spinner1.draw(linker_kastje.getWidth()/2+70+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-spinner1.getHeight()+spinner1.getHeight()/3);
 		spinner2.draw(linker_kastje.getWidth()/2+220+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-spinner2.getHeight()+spinner1.getHeight()/3);
@@ -163,9 +163,9 @@ public class GameState extends ArduinoGameState {
 		red_number.getSubImage(0, startposition-playerPositions[6], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*6+40, startposition);
 		linker_kastje.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight());
 		linker_kastje_boven.draw(360, center.getHeight()*2 - linker_kastje.getHeight()-touwtjes.getHeight()-linker_kastje_boven.getHeight());
-		
+
 		clock.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth(), center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
-		
+
 		black_number.getSubImage(0, startposition-devicePositions[0], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+75, startposition);
 		black_number.getSubImage(0, startposition-devicePositions[1], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()+4, startposition);
 		black_number.getSubImage(0, startposition-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*2+11, startposition);
@@ -175,12 +175,12 @@ public class GameState extends ArduinoGameState {
 		red_number.getSubImage(0, startposition-devicePositions[6], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*6+41, startposition);
 		rechter_kastje.draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6-5, center.getHeight()*2 - rechter_kastje.getHeight());
 		device_icon.draw(center.getWidth()*2 - rechter_kastje.getWidth()/2- device_icon.getWidth()/2+rechter_kastje.getWidth()/6-5, center.getHeight()*2- rechter_kastje.getHeight()/2-rechter_kastje.getHeight()/16);
-		
+
 		voortgangsbalk.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4, 10);
 		player_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4-player_voortgang.getWidth()+18, player_voortgang_location);
 		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-19, device_voortgang_location);
 		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
-		
+
 		if(countdownActive){
 			count_down.draw(center.getWidth() - count_down.getWidth()/5, center.getHeight() - count_down.getHeight()/2);
 		}
@@ -188,7 +188,7 @@ public class GameState extends ArduinoGameState {
 			overlay.draw(0, 0);
 		}
 	}
-	
+
 	@Override
 	public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
 		super.update(gameContainer, stateBasedGame, delta);
@@ -201,7 +201,7 @@ public class GameState extends ArduinoGameState {
 			spinner1.setRotation((float) ((float) (rotation * 0.018181818181818) + 14.36363636363636));
 			spinner2.setRotation((float) ((float) (rotation * 0.818181818181818)));
 			spinner3.setRotation((float) ((float) (rotation * 8.818181818181818) + 14.36363636363636));
-			
+
 			deviceScore = deviceScore + random((float)device.getWattTotal() / device.getDivideBy());
 			String number = specialFormat.format(deviceScore);
 			number = number.replace(",", "");
@@ -227,7 +227,7 @@ public class GameState extends ArduinoGameState {
 				} catch(Exception e){
 				}
 			}
-			
+
 			if(score>height_calc){
 				player_voortgang_location = (float)(voortgangs_start_location - ((score/score))*(voortgangs_start_location));
 				device_voortgang_location = (float)(voortgangs_start_location - ((deviceScore/score))*(voortgangs_start_location));
@@ -235,22 +235,22 @@ public class GameState extends ArduinoGameState {
 				player_voortgang_location = (float)(voortgangs_start_location - ((score/height_calc))*(voortgangs_start_location));
 				device_voortgang_location = (float)(voortgangs_start_location - ((deviceScore/height_calc))*(voortgangs_start_location));
 			}
-			
+
 		}
 	}
-	
+
 	@Override
 	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame){
 		initiateListeners(stateBasedGame);
 		setSelectedDevice();
 	}
-	
+
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		arduino.removeAllListeners();
 		resetGame();
 	}
-	
+
 	private void resetGame(){
 		timer.cancel();
 		gamestarted = false;
@@ -273,7 +273,7 @@ public class GameState extends ArduinoGameState {
 		timer = new Timer();
 		startTimer(timer, stateBasedGame);
 	}
-	
+
 	private void startTimer(Timer timer, final StateBasedGame stateBasedGame){
 		/**
 		 * change the image to the number 2.
@@ -285,7 +285,7 @@ public class GameState extends ArduinoGameState {
 					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
 					count_down.setAlpha(0);
 				} catch (SlickException ex) {
-					
+
 				}
 			}
 		}, 1000);
@@ -299,7 +299,7 @@ public class GameState extends ArduinoGameState {
 					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
 					count_down.setAlpha(0);
 				} catch (SlickException ex) {
-					
+
 				}
 			}
 		}, 2000);
@@ -331,15 +331,16 @@ public class GameState extends ArduinoGameState {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
+//				this.preUpdateState(null, AsaGame.HIGHSCORESTATE);
 				Transition fadeIn = new FadeInTransition();
 				Transition fadeOut = new FadeOutTransition();
-				stateBasedGame.enterState(AsaGame.HIGHSCORESTATE, fadeOut, fadeIn);
+				stateBasedGame.enterState(AsaGame.PHOTOSTATE, fadeOut, fadeIn);
 			}
 		}, 28000);
 	}
 
 	private void initiateListeners(final StateBasedGame stateBasedGame) {
-		
+
 		arduino.addListener(new ArduinoAdapter() {
 			@Override
 			public void wheelEvent(int direction, int speed) {
@@ -382,20 +383,20 @@ public class GameState extends ArduinoGameState {
 		} catch (SlickException ex) {
 		}
 	}
-	
+
 	/**
 	 * takes the device score and randomly generates a new score with a margin of 10%.
-	 * 
-	 * @param deviceAverage 
-	 * @return 
+	 *
+	 * @param deviceAverage
+	 * @return
 	 */
 	private float random(float deviceAverage){
-		
+
 		float min = ((deviceAverage) - (deviceAverage/10));
 		float max = ((deviceAverage) + (deviceAverage/10));
 		int range = (int)(max - min);
 		float number = random.nextInt(range) + min;
-		
+
 		float test = (float)number/100;
 		return test;
 	}
