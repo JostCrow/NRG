@@ -19,6 +19,7 @@ import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
+import java.util.logging.Level;
 
 public class InfoState extends ArduinoGameState {
 
@@ -26,6 +27,7 @@ public class InfoState extends ArduinoGameState {
 	GameData gameData;
 
 	Image background;
+	Image background2;
 	Image tandwiel1;
 	Image tandwiel2;
 	Image spinner;
@@ -64,6 +66,9 @@ public class InfoState extends ArduinoGameState {
 	int oldSelectedOption = 0;
 	String lastLoaded = "";
 
+	float position = 1920;
+	boolean slide = false;
+
 	public InfoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
@@ -76,12 +81,12 @@ public class InfoState extends ArduinoGameState {
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360/wheelOptions.size();
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
+		background2 = new Image(Resource.getPath(Resource.BACKGROUND_KOFFIE));
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
-		background = new Image(Resource.getPath(Resource.BACKGROUND_KOFFIE));
 		icon_background_easy = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		icon_background_medium = new Image(Resource.getPath(Resource.ICON_BACKGROUND_MEDIUM));
 		icon_background_hard = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
@@ -95,12 +100,10 @@ public class InfoState extends ArduinoGameState {
 
 	@Override
 	public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
+		background2.draw(0, 0);
 
-		background.draw(0, 0);
-
-		for(BackgroundImage background : backgrounds){
-			background.setX(background.getX()+((0-background.getX())/5));
-			background.getImage().draw(background.getX(),0);
+		if(slide){
+			background.draw(position, 0);
 		}
 
 		tandwiel1.draw(-tandwiel1.getWidth()/2, AsaGame.SOURCE_RESOLUTION.height/2-tandwiel1.getHeight()/2);
@@ -109,45 +112,32 @@ public class InfoState extends ArduinoGameState {
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 
+		float offsetDegree = 360/wheelOptions.size();
+		float radius = 313;
+		float targetScale = 1;
 		// Render icons
 		for(int i = 0; i < wheelOptions.size(); i++){
-			float offsetDegree = 360/wheelOptions.size();
 			float degrees = (360+((rotation + offsetDegree*i) % 360))%360;
 			float rad = (float) (degrees * (Math.PI / 180));
-			float radius = 313;
 
 			float x = (float) (center.getWidth() + radius * Math.cos(rad));
 			float y = (float) (center.getHeight() + radius * Math.sin(rad));
 
 			WheelOption option = wheelOptions.get(i);
-			Image optionIcon = option.getIcon();
 
-			float targetScale = 1;
 			if(degrees > 270-(selectionDegrees/2) && degrees <= 270+(selectionDegrees/2)){
 				selectedOption = i;
+				background = option.getBackground();
 				if(selectedOption != oldSelectedOption){
-					BackgroundImage background = new BackgroundImage(option.getBackground());
-					int startPosition = 1080;
-					if (selectedOption < oldSelectedOption){
-						startPosition = -startPosition;
-					}
-					// Switch startposition on edges
-					if(
-						(selectedOption == 0 && oldSelectedOption == wheelOptions.size()-1) ||
-						(selectedOption == wheelOptions.size()-1 && oldSelectedOption == 0)){
-						startPosition = -startPosition;
-					}
-					background.setX(startPosition);
-					backgrounds.add(background);
+					slide = true;
 				}
 				oldSelectedOption = selectedOption;
-				background = option.getBackground();
 				gameData.setDeviceId(option.getDevice().getId());
 				targetScale = 1.5f;
 			}
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
-			x = x - optionIcon.getWidth()*option.getScale()/2;
-			y = y - optionIcon.getHeight()*option.getScale()/2;
+			x = x - option.getIcon().getWidth()*option.getScale()/2;
+			y = y - option.getIcon().getHeight()*option.getScale()/2;
 
 			Image icon_background;
 			switch(option.getDifficulty()){
@@ -198,15 +188,6 @@ public class InfoState extends ArduinoGameState {
 		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-75, 60+center.getHeight());
 		graphics.drawString("30 sec.", center.getWidth()-75, 60+center.getHeight()+47);
 		graphics.drawString(decimalFormat.format(option.getAverage()) + " Kw.", center.getWidth()-75, 60+center.getHeight()+47*2);
-
-
-		// Cleanup background list
-		if(backgrounds.size() > 2){
-			BackgroundImage background = backgrounds.get(0);
-			if(background.getX() < 0.05){
-				backgrounds.remove(background);
-			}
-		}
 	}
 
 
@@ -217,6 +198,14 @@ public class InfoState extends ArduinoGameState {
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
 		spinner.setRotation(rotation);
+		if(slide){
+			position = position - 76.8f;
+		}
+		if(position <= 0){
+			background2 = background;
+			slide = false;
+			position = 1920;
+		}
 	}
 
 	@Override
@@ -245,6 +234,7 @@ public class InfoState extends ArduinoGameState {
 
 	private void loadWheelOptions() {
 		List<Device> deviceList = server.getAllDevices();
+
 		for(Device device : deviceList){
 			wheelOptions.add(new WheelOption(device));
 		}
