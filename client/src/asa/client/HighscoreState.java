@@ -261,6 +261,7 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		mode = 1;
 		arduino.removeAllListeners();
+		baseImage = null;
 		if (player != null) {
 			player.close();
 			player.deallocate();
@@ -294,12 +295,11 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 //		}
 		
 		graphics.setFont(fontBlack);
-
-
+		
 		if (mode == 1) {
+			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 			for (int i = 0; i < wheelOptions.size(); i++) {
 				float offsetDegree = 360 / wheelOptions.size();
 				float degrees = (270 + ((rotation + rotationDelta) % 360 + offsetDegree * i) % 360) % 360;
@@ -348,7 +348,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			}
 		} else if (mode == 2) {
 			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
-			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
 			if (baseImage != null) {
 
 				Texture texture = null;
@@ -364,11 +363,9 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			lens.draw(center.getWidth() - (550 / 2), center.getHeight() - (550 / 2));
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
 		} else if (mode == 3) {
 			tandwiel3.draw(AsaGame.SOURCE_RESOLUTION.width - background_highscore.getWidth() - tandwiel2.getWidth() - tandwiel_vertical.getWidth() / 2 - 38, AsaGame.SOURCE_RESOLUTION.height - tandwiel2.getHeight());
-			graphics.drawString(spinnerSouth, (center.getWidth() - 13), center.getHeight() + 160);
-			//underSpinner = highscores.size() + ", " + topDraw + ", " + rotation + ", " + scoreHeight + ", " + scrollDelta;
-			//graphics.drawString(underSpinner, center.getWidth(), center.getHeight() + 400);
 			background_highscore.draw(appResWidth - background_highscore.getWidth(), highscoreBackgroundHeight);
 			tandwiel_vertical.draw(appResWidth - background_highscore.getWidth() - tandwiel_vertical.getWidth(), highscoreBackgroundHeight);
 			background_highscore.draw(appResWidth - background_highscore.getWidth(), highscoreBackgroundHeight + background_highscore.getHeight());
@@ -391,7 +388,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 				}
 				Highscore score = highscores.get(topDraw + i);
 
-
 				int topLeftX = (appResWidth - appResWidth / 4 - appResWidth / 200);
 				int topLeftY = (scoreHeight * i) + scrollDelta;
 				int rank = topDraw + i + 1;
@@ -401,13 +397,15 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 				} else {
 					background_item_highscore.draw(topLeftX, topLeftY);
 				}
+				
 				File f = new File(highscores.get(rank-1).getId() + ".png");
 				if(f.exists()){
 					highscore = new Image(highscores.get(rank-1).getId() + ".png");
 				} else {
 					highscore = new Image(Resource.getPath("avatar.png"));
-				}
+				}				
 				highscore.getSubImage(((highscore.getWidth()-highscore.getHeight())/2), 0, highscore.getHeight(), highscore.getHeight()).draw(topLeftX + 12, topLeftY + 5, 97, 97);
+				
 				graphics.drawString(rank + "", topLeftX + 12, topLeftY + 68);
 				String pnumber = specialFormat.format(score.getScore());
 				pnumber = pnumber.replace(",", "");
@@ -415,12 +413,8 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 					String singleNumber = pnumber.substring(j, j + 1);
 					graphics.drawString(singleNumber, topLeftX + 96 + (44 * (j + 1)), topLeftY + 37);
 				}
-//				graphics.drawString(rank + ": " + decimalFormat.format(score.getScore()), topLeftX, topLeftY + (scoreHeight/2));
 			}
 			overlay_selected.draw(appResWidth - appResWidth / 4 - appResWidth / 8, appResHeight / 2 - overlay_selected.getHeight() / 2);
-			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
-//			graphics.drawString("rotation:" + rotation + ", rotationDelta:" + rotationDelta + ", lastHigscoreDelta:" + lastHighscoreDelta, 0, 50);
 			
 			if (highscores.get(selected).getFoto().equals("yes")) {
 				File f = new File(highscores.get(selected).getId() + ".png");
@@ -436,7 +430,10 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			
 			centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
 			graphics.drawString(decimalFormat.format(highscores.get(selected).getScore()), center.getWidth(), center.getHeight());
-			graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);
+			graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);			
+			
+			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);	
 		}
 	}
 
@@ -533,7 +530,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			if (hs.getId() == lastHighscoreId) {
 				System.out.println("lastHighscoreRank:" + lastHighscoreRank);
 				break;
-			} else {
 			}
 		}
 		topDraw = 0;
@@ -561,7 +557,7 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 			public void run() {
 				waitingForButton = true;
 			}
-		}, 750);
+		}, 500);
 	}
 
 	private void caclulateSelected() {
@@ -569,7 +565,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 		for (int i = 0; i < wheelOptions.size(); i++) {
 			int min = i * selectionAreaSize;
 			int max = (i + 1) * selectionAreaSize;
-//			int degrees = min + (selectionAreaSize/2);
 			System.out.println(i + ": " + min + ", " + max);
 			if (min <= 0 && max > 0) {
 				selectedOption = i;
