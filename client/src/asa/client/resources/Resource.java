@@ -40,6 +40,8 @@ public class Resource {
 	public static final String ICON_PRINTER = "icon_printer.png";
 	public static final String ICON_AUTOMAAT = "icon_automaat.png";
 	public static final String ICON_BEAMER = "icon_beamer.png";
+	public static final String ICON_YES = "icon_ja.png";
+	public static final String ICON_NO = "icon_nee.png";
 	
 	public static final String ICONS_DETAILS = "icons_details.png";
 	

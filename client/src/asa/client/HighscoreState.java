@@ -3,26 +3,15 @@ package asa.client;
 import asa.client.DTO.GameData;
 import asa.client.resources.Resource;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Label;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
-import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.media.Buffer;
 import javax.media.CaptureDeviceInfo;
@@ -32,7 +21,6 @@ import javax.media.Player;
 import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.Animation;
@@ -41,34 +29,28 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
-import org.newdawn.slick.font.effects.ShadowEffect;
 import org.newdawn.slick.opengl.EmptyImageData;
-import org.newdawn.slick.opengl.PNGImageData;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.util.BufferedImageUtil;
-import service.Device;
 import service.Highscore;
 
 public class HighscoreState extends ArduinoGameState implements ImageObserver{
-
+	List<Highscore> highscores;
 	ServerAdapter server;
 	GameData gameData;
-	double playerScore;
-	double deviceScore;
-	Device device;
+	Dimension center;
 	Logger logger = Logger.getLogger(this.getClass());
 	List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
 	UnicodeFont fontBlack;
 	UnicodeFont fontWhite;
-	/**
-	 * mode 1: Able to choose yes or no mode 2: Automaticaly making picture (can
-	 * be skipped) mode 3: Able to scroll through highscorelist
-	 */
-	int mode;
+
 	boolean waitingForButton;
+	boolean webcamAvailable = false;
+	
 	String underSpinner;
 	String spinnerSouth = "";
+	
 	Image tandwiel1;
 	Image tandwiel2;
 	Image tandwiel3;
@@ -76,7 +58,7 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	Image spinner;
 	Image background_spinner;
 	Image spinneroverlay;
-	Image icon_background;
+//	Image icon_background;
 	Image background_highscore;
 	Image background_item_highscore;
 	Image background_item_highscore_own;
@@ -84,21 +66,25 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	Image tandwiel_vertical;
 	Image highscore;
 	Image centerImage;
-	Dimension center;
+	Image webcamFeed;
+	
+	java.awt.Image awtFrame;
+	BufferedImage baseImage;
+	Animation lens;
+
+	/**
+	 * mode 1: Able to choose yes or no mode 2: Automaticaly making picture (can
+	 * be skipped) mode 3: Able to scroll through highscorelist
+	 */
+	int mode;
 	int targetrotation = 0;
 	int selectionDegrees = 180;
 	int selectionScaleDistance = 30;
 	int selectedOption = 0;
-	float selectedScale = 1.5f;
 	int oldSelectedOption = 0;
 	int tandwielOffset = 30;
-	float rotation = 0;
-	float rotationDelta = 0;
-	double rotationEase = 5.0;
-	StateBasedGame basedGame;
 	int appResWidth = AsaGame.SOURCE_RESOLUTION.width;
 	int appResHeight = AsaGame.SOURCE_RESOLUTION.height;
-	List<Highscore> highscores;
 	int lastHighscoreId;
 	int lastHighscoreRank;
 	int topDraw;
@@ -106,43 +92,42 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	int scrollDelta;
 	int lastHighscoreDelta;
 	int scoreHeight = (appResHeight / 10);
-	double listSpeedFactor = 3.20;
 	int highscoreBackgroundHeight = 0;
+
+	
+	float selectedScale = 1.5f;
+	float rotation = 0;
+	float rotationDelta = 0;
+	
+	double rotationEase = 5.0;
+	double listSpeedFactor = 3.20;
+
 	CaptureDeviceInfo webcam;
-	boolean webcamAvailable = false;
-	Player player;
-	Component video;
-	Graphics liveVideo;
+	Player webcamPlayer;
 	FrameGrabbingControl frameGrabber;
 	Buffer buffer;
-	java.awt.Image awtFrame;
-	BufferedImage baseImage;
-	Image webcamFeed;
-	ShadowEffect effect;
-	Animation lens;
-	private java.awt.Image image;
-
+	
 	public HighscoreState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
 		this.server = server;
 		this.gameData = gameData;
-		Vector devices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
-		System.out.println("devices:" + devices.size());
-		if (devices.size()>0)
+		
+		wheelOptions.add(new WheelOptionYesNo("Ja", Resource.getPath(Resource.ICON_YES), true));
+		wheelOptions.add(new WheelOptionYesNo("Nee", Resource.getPath(Resource.ICON_NO), false));
+		
+		Vector videoDevices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
+		if (videoDevices.size()>0)
 		{
-			webcam = (CaptureDeviceInfo) devices.get(0);
+			webcam = (CaptureDeviceInfo) videoDevices.get(0);
 			webcamAvailable = true;
 		}
 	}
 
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
-
-		wheelOptions.add(new WheelOptionYesNo("Ja", "icon_beamer.png", true));
-		wheelOptions.add(new WheelOptionYesNo("Nee", "icon_automaat.png", false));
-
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		selectionDegrees = 360 / wheelOptions.size();
+		
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		tandwiel3 = new Image(Resource.getPath(Resource.TANDWIEL7));
@@ -150,7 +135,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
-		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 
 		background_highscore = new Image(Resource.getPath(Resource.background_highscore));
 		background_item_highscore = new Image(Resource.getPath(Resource.background_item_highscore));
@@ -165,10 +149,6 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 
 		fontBlack = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
 		fontWhite = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.WHITE);
-		effect = new ShadowEffect();
-		effect.setColor(Color.yellow);
-		effect.setXDistance(5);
-		effect.setYDistance(5);
 
 		lens = new Animation();
 		lens.setLooping(false);
@@ -183,87 +163,21 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	}
 
 	@Override
-	public void enter(GameContainer gameContainer, final StateBasedGame stateBasedGame) {
-
-		mode = 1;
-		basedGame = stateBasedGame;
-//		rotationDelta = (rotation*-1);
-		this.playerScore = gameData.getPlayerScore();
-		this.deviceScore = gameData.getDeviceScore();
-		this.device = server.getDeviceById(gameData.getDeviceId());
-
-		spinnerSouth = decimalFormat.format(playerScore) + " kWh, ";
-		underSpinner = "Foto maken bij behaalde score?";
-		
-		if (webcamAvailable) {
-			try {
-				player = Manager.createRealizedPlayer(webcam.getLocator());
-				System.out.println("start Player");
-				player.start();
-//			System.out.println("get Video");
-//			video = player.getVisualComponent();
-				Timer timer = new Timer();
-				timer.schedule(new TimerTask() {
-					@Override
-					public void run() {
-						System.out.println("Getting Framegrabber");
-						frameGrabber = (FrameGrabbingControl) player.getControl("javax.media.control.FrameGrabbingControl");
-						System.out.println("Got FrameGrabber");
-					}
-				}, 2500);
-			} catch (Exception e) {
-				System.out.println("Failed to get webcam feed: " + e.getMessage());
-			}
-//			} catch (IOException ex) {
-//				java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
-//			} catch (NoPlayerException ex) {
-//				java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
-//			} catch (CannotRealizeException ex) {
-//				java.util.logging.Logger.getLogger(HighscoreState.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-		} else {
-			System.out.println("No webcam available");
-		}
-
+	public void enter(GameContainer gameContainer, StateBasedGame stateBasedGame) {		
+		initWebcam();
 		caclulateSelected();
-
-		arduino.addListener(new ArduinoAdapter() {
-			@Override
-			public void wheelEvent(int direction, int speed) {
-				if (direction == 1) {
-					targetrotation += 3 * speed;
-				} else {
-					targetrotation -= 3 * speed;
-				}
-			}
-
-			@Override
-			public void buttonEvent() {
-				if (waitingForButton) {
-					waitingForButton = !waitingForButton;
-					if (mode == 1) {
-						WheelOptionYesNo selected = wheelOptions.get(selectedOption);
-						if (selected.getValue()) {
-							MakePhoto();
-						} else if (!selected.getValue()) {
-							ActivateHighscoreList();
-						}
-					} else if (mode == 3) {
-						stateBasedGame.enterState(AsaGame.INFOSTATE);
-					}
-				}
-			}
-		});
+		addListeners(stateBasedGame);
 		ActivateButton();
 	}
 
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		resetGame();
 		mode = 1;
 		arduino.removeAllListeners();
-		if (player != null) {
-			player.close();
-			player.deallocate();
+		if (webcamPlayer != null) {
+			webcamPlayer.close();
+			webcamPlayer.deallocate();
 		}
 	}
 
@@ -323,14 +237,14 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
 					x = x - (float) (optionIcon.getWidth() * 1.3 / 2);
 					y = y - (float) (optionIcon.getHeight() * 1.3 / 2);
-					icon_background.draw(x, y, (float) 1.3);
-					graphics.drawString(option.getDescription(), x + icon_background.getWidth() / 2 - 15 * (option.getDescription().length() / 2), y + icon_background.getHeight() / 2);
+					option.getIcon().draw(x, y, (float) 1.3);
+					graphics.drawString(option.getDescription(), x + option.getIcon().getWidth() / 2 - 15 * (option.getDescription().length() / 2), y + option.getIcon().getHeight() / 2);
 //					effect.draw(null, null, font, null);
 				} else {
 					x = x - (float) (optionIcon.getWidth() * 1 / 2);
 					y = y - (float) (optionIcon.getHeight() * 1 / 2);
-					icon_background.draw(x, y);
-					graphics.drawString(option.getDescription(), x + icon_background.getWidth() / 3 - 15 * (option.getDescription().length() / 2), y + icon_background.getHeight() / 3);
+					option.getIcon().draw(x, y);
+					graphics.drawString(option.getDescription(), x + option.getIcon().getWidth() / 3 - 15 * (option.getDescription().length() / 2), y + option.getIcon().getHeight() / 3);
 				}
 
 				if (degrees >= 270 - (offsetDegree / 2) && degrees < biggerThanDegrees) {
@@ -582,5 +496,61 @@ public class HighscoreState extends ArduinoGameState implements ImageObserver{
 	@Override
 	public boolean imageUpdate(java.awt.Image img, int infoflags, int x, int y, int width, int height) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	private void addListeners(final StateBasedGame stateBasedGame) {
+		arduino.addListener(new ArduinoAdapter() {
+			@Override
+			public void wheelEvent(int direction, int speed) {
+				if (direction == 1) {
+					targetrotation += 3 * speed;
+				} else {
+					targetrotation -= 3 * speed;
+				}
+			}
+
+			@Override
+			public void buttonEvent() {
+				if (waitingForButton) {
+					waitingForButton = !waitingForButton;
+					if (mode == 1) {
+						WheelOptionYesNo selected = wheelOptions.get(selectedOption);
+						if (selected.getValue()) {
+							MakePhoto();
+						} else if (!selected.getValue()) {
+							ActivateHighscoreList();
+						}
+					} else if (mode == 3) {
+						stateBasedGame.enterState(AsaGame.INFOSTATE);
+					}
+				}
+			}
+		});
+	}
+
+	private void resetGame() {
+		spinnerSouth = decimalFormat.format(gameData.getPlayerScore()) + " kWh, ";
+		underSpinner = "Foto maken bij behaalde score?";
+	}
+
+	private void initWebcam() {
+		if (webcamAvailable) {
+			try {
+				webcamPlayer = Manager.createRealizedPlayer(webcam.getLocator());
+				webcamPlayer.start();
+				
+				Timer timer = new Timer();
+				timer.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						frameGrabber = (FrameGrabbingControl) webcamPlayer.getControl("javax.media.control.FrameGrabbingControl");
+					}
+				}, 2500);
+			} catch (Exception e) {
+				logger.error("Failed to get webcam feed: " + e.getMessage());
+			}
+		} else {
+			logger.error("No webcam available");
+		}
 	}
 }
