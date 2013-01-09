@@ -13,79 +13,62 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.FadeInTransition;
-import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.Transition;
 import service.Device;
 
 public class GameState extends ArduinoGameState {
 
-	Logger logger = Logger.getLogger(this.getClass());
-	ServerAdapter server;
-	Device device;
-	GameData gameData;
-	Timer timer;
+	private Logger logger = Logger.getLogger(this.getClass());
+	private ServerAdapter server;
+	private Device device;
+	private GameData gameData;
+	private Timer timer;
 
-	Image tandwiel1;
-	Image tandwiel2;
-	Image background;
-	Image wires;
-	Image tandwiel3;
-	Image tandwiel4;
-	Image background_spinner;
-	Image spinneroverlay;
-	Image icon_background;
-	Image count_down1;
-	Image count_down2;
-	Image start;
-	Image count_down;
-	Image device_icon;
-	Image linker_kastje;
-	Image rechter_kastje;
-	Image touwtjes;
-	Image spinner1;
-	Image spinner2;
-	Image spinner3;
-	Image linker_kastje_boven;
-	Image voortgangsbalk;
-	Image player_voortgang;
-	Image device_voortgang;
-	Image overlay;
-	Image red_number;
-	Image black_number;
+	private Image tandwiel1;
+	private Image tandwiel2;
+	private Image background;
+	private Image wires;
+	private Image tandwiel3;
+	private Image count_down;
+	private Image device_icon;
+	private Image linker_kastje;
+	private Image rechter_kastje;
+	private Image touwtjes;
+	private Image spinner1;
+	private Image spinner2;
+	private Image spinner3;
+	private Image linker_kastje_boven;
+	private Image voortgangsbalk;
+	private Image player_voortgang;
+	private Image device_voortgang;
+	private Image overlay;
+	private Image red_number;
+	private Image black_number;
 
-	Animation clock;
+	private Animation clock;
 
-	int image = 3;
-	int startposition;
-	int targetrotation = 0;
-	int tandwielOffset = 30;
-	int selectionDegrees = 45;
-	int selectedOption = 0;
-	int oldSelectedOption = 0;
-	int voortgangs_start_location = 0;
+	private int startposition;
+	private int targetrotation = 0;
+	private int voortgangs_start_location = 0;
 
-	int[] playerPositions = new int[7];
-	int[] devicePositions = new int[7];
+	private int[] playerPositions = new int[7];
+	private int[] devicePositions = new int[7];
 
-	float rotation = 0;
-	float spinnerrotation = 0;
-	float player_voortgang_location = 0;
-	float device_voortgang_location = 0;
-	float height_calc = 0;
+	private float rotation = 0;
+	private float player_voortgang_location = 0;
+	private float device_voortgang_location = 0;
+	private float height_calc = 0;
 
-	double deviceScore = 0;
-	double score = 0;
-	double rotationEase = 5.0;
+	private double deviceScore = 0;
+	private double score = 0;
+	private double rotationEase = 5.0;
 
-	Dimension screenSize;
-	Dimension center;
+	private Dimension center;
 
-	boolean gamestarted = false;
-	boolean countdownActive = true;
-	boolean uitleg = true;
+	private boolean gamestarted = false;
+	private boolean countdownActive = true;
+	private boolean uitleg = true;
 
-	Random random;
+	private Random random;
 
 	public GameState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -102,12 +85,9 @@ public class GameState extends ArduinoGameState {
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		tandwiel3 = new Image(Resource.getPath(Resource.TANDWIEL6));
-		tandwiel4 = new Image(Resource.getPath(Resource.TANDWIEL6));
+		count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
+		count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
 		count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
-		count_down1 = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
-		count_down2 = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
-		start = new Image(Resource.getPath(Resource.START_GAME));
-		icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
 		device_icon = new Image(Resource.getPath(Resource.ICON_KOFFIE));
 		linker_kastje = new Image(Resource.getPath(Resource.KASTJE_LINKS));
 		linker_kastje_boven = new Image(Resource.getPath(Resource.KASTJE_LINKS_BOVEN));
@@ -181,7 +161,7 @@ public class GameState extends ArduinoGameState {
 		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-19, device_voortgang_location);
 		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
 
-		if(countdownActive){
+		if(countdownActive && !uitleg){
 			count_down.draw(center.getWidth() - count_down.getWidth()/5, center.getHeight() - count_down.getHeight()/2);
 		}
 		if(uitleg){
@@ -366,18 +346,6 @@ public class GameState extends ArduinoGameState {
 	private void setSelectedDevice() {
 		device = server.getDeviceById(gameData.getDeviceId());
 		height_calc = (float)((device.getWattTotal()/device.getDivideBy())*20);
-		System.out.println(height_calc);
-		try {
-			if((device.getWattTotal()/device.getDivideBy()) > 300){
-				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_HARD));
-			} else if ((device.getWattTotal()/device.getDivideBy()) > 100){
-				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_MEDIUM));
-			} else {
-				icon_background = new Image(Resource.getPath(Resource.ICON_BACKGROUND_EASY));
-			}
-			device_icon = new Image(Resource.getPath(device.getLogoUrl()));
-		} catch (SlickException ex) {
-		}
 	}
 
 	/**
