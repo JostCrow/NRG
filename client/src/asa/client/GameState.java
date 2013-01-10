@@ -22,7 +22,6 @@ public class GameState extends ArduinoGameState {
 	private Device device;
 	private GameData gameData;
 	private Timer timer;
-	private GameContainer gameContainer;
 	private StateBasedGame stateBasedGame;
 
 	private Image tandwiel1;
@@ -31,6 +30,8 @@ public class GameState extends ArduinoGameState {
 	private Image wires;
 	private Image tandwiel3;
 	private Image count_down;
+	private Image count_down1;
+	private Image count_down2;
 	private Image device_icon;
 	private Image linker_kastje;
 	private Image rechter_kastje;
@@ -81,7 +82,6 @@ public class GameState extends ArduinoGameState {
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
 		this.stateBasedGame = stateBasedGame;
-		this.gameContainer = gameContainer;
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		overlay = new Image(Resource.getPath(Resource.OVERLAY));
@@ -89,8 +89,8 @@ public class GameState extends ArduinoGameState {
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
 		tandwiel2 = new Image(Resource.getPath(Resource.TANDWIEL6));
 		tandwiel3 = new Image(Resource.getPath(Resource.TANDWIEL6));
-		count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
-		count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
+		count_down1 = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
+		count_down2 = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
 		count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
 		device_icon = new Image(Resource.getPath(Resource.ICON_KOFFIE));
 		linker_kastje = new Image(Resource.getPath(Resource.KASTJE_LINKS));
@@ -196,6 +196,7 @@ public class GameState extends ArduinoGameState {
 						devicePositions[i] = startposition;
 					}
 				} catch(Exception e){
+					logger.error("Could not convert devicescore to ints: " + e.getMessage());
 				}
 			}
 			String pnumber = specialFormat.format(score);
@@ -208,6 +209,7 @@ public class GameState extends ArduinoGameState {
 						playerPositions[i] = startposition;
 					}
 				} catch(Exception e){
+					logger.error("Could not convert playerscore to ints: " + e.getMessage());
 				}
 			}
 
@@ -249,6 +251,7 @@ public class GameState extends ArduinoGameState {
 		try {
 			count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN3));
 		} catch (SlickException ex) {
+			logger.error("Could not load CountdownImage3: " + ex.getMessage());
 		}
 	}
 
@@ -267,7 +270,7 @@ public class GameState extends ArduinoGameState {
 				try {
 					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
 				} catch (SlickException ex) {
-
+					logger.error("Could not load CountdownImage2: " + ex.getMessage());
 				}
 			}
 		}, 1000);
@@ -280,7 +283,7 @@ public class GameState extends ArduinoGameState {
 				try {
 					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
 				} catch (SlickException ex) {
-
+					logger.error("Could not load CountdownImage1: " + ex.getMessage());
 				}
 			}
 		}, 2000);
@@ -312,9 +315,13 @@ public class GameState extends ArduinoGameState {
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				stateBasedGame.enterState(AsaGame.PHOTOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
+				if(score > 0){
+					stateBasedGame.enterState(AsaGame.PHOTOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
+				} else {
+					stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
+				}
 			}
-		}, 28000);
+		}, 26000);
 	}
 
 	private void initiateListeners(final StateBasedGame stateBasedGame) {
@@ -336,7 +343,7 @@ public class GameState extends ArduinoGameState {
 				if(uitleg){
 					startGame();
 					uitleg = false;
-				} else {
+				} else if(gamestarted) {
 					stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 				}
 			}
@@ -344,7 +351,13 @@ public class GameState extends ArduinoGameState {
 	}
 
 	private void setSelectedDevice() {
+		System.out.println(gameData.getDeviceId());
 		device = server.getDeviceById(gameData.getDeviceId());
+		try {
+			device_icon = new Image(Resource.getPath(device.getLogoUrl()));
+		} catch (SlickException ex) {
+			logger.error("Could not load deviceIcon: " + ex.getMessage());
+		}
 		height_calc = (float)((device.getWattTotal()/device.getDivideBy())*20);
 	}
 
@@ -358,8 +371,8 @@ public class GameState extends ArduinoGameState {
 
 		float min = ((deviceAverage) - (deviceAverage/10));
 		float max = ((deviceAverage) + (deviceAverage/10));
-		int range = (int)(max - min);
-		float number = random.nextInt(range) + min;
+		int range = (int)((max - min)*1000) ;
+		float number = (random.nextInt(range)/1000) + min;
 
 		float test = (float)number/100;
 		return test;

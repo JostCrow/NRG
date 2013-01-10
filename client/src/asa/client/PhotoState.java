@@ -42,10 +42,12 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 	private Logger logger = Logger.getLogger(this.getClass());
 	private List<WheelOptionYesNo> wheelOptions = new ArrayList<WheelOptionYesNo>();
 	private UnicodeFont fontBlack;
-	private UnicodeFont fontWhite;
+	private Timer liveFeed;
 
 	private boolean waitingForButton;
 	private boolean webcamAvailable = false;
+	private boolean updateCamera = false;
+	private boolean makePhoto = false;
 
 	private String spinnerSouth = "";
 	private String underSpinner = "";
@@ -113,7 +115,6 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		webcamFeed = new Image(new EmptyImageData(640, 480));
 
 		fontBlack = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
-		fontWhite = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.WHITE);
 
 		lens = new Animation();
 		lens.setLooping(false);
@@ -133,6 +134,13 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		caclulateSelected();
 		addListeners(stateBasedGame);
 		ActivateButton();
+		liveFeed = new Timer();
+		liveFeed.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				updateCamera = true;
+			}
+		}, 0, 250);
 	}
 
 	@Override
@@ -150,30 +158,14 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		tandwiel1.draw(-tandwiel1.getWidth() / 2, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel1.getHeight() / 2);
 		tandwiel2.draw(tandwiel1.getWidth() / 2 - tandwielOffset - 40, AsaGame.SOURCE_RESOLUTION.height / 2 - tandwiel2.getHeight());
 
-//		if (frameGrabber!=null)
-//		{
-//			// trying to get live feed from camera here. Buffering images in render will lead to OutOfMemoryException so far.
-////		System.out.println("GrabFrame");
-//			buffer = frameGrabber.grabFrame();
-//			awtFrame = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer);
-//			// tot hier moet werken
-//			BufferedImage awtBuffImg = new BufferedImage(awtFrame.getWidth(null), awtFrame.getHeight(null), BufferedImage.TYPE_INT_RGB);
-//			Texture texture = null;
-//			try{
-//				texture = BufferedImageUtil.getTexture("", awtBuffImg);
-//			} catch (Exception e){
-//				logger.debug(e);
-//			}
-//			Image slickImage = new Image(texture.getImageWidth(), texture.getImageHeight() );
-//			slickImage.setTexture(texture) ;
-//			slickImage.draw(center.getHeight(), center.getWidth());
-////		videoFrame = new BufferToImage((VideoFormat)buffer.getFormat()).createImage(buffer));
-//		}
-
 		graphics.setFont(fontBlack);
+		
+		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
+		if (baseImage != null) {
+			webcamFeed.getSubImage(80, 0, 480, 480).draw(center.getWidth()-((500)/2), center.getHeight()-(500/2), 500, 500);
+		}
 
 		if (mode == 1) {
-			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			for (int i = 0; i < wheelOptions.size(); i++) {
@@ -216,19 +208,6 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 				graphics.drawString(underSpinner, (center.getWidth() - ((questionLength) * 13)), center.getHeight() + 400);
 			}
 		} else {
-			background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
-			if (baseImage != null) {
-
-				try{
-					if(texture == null){
-						texture = BufferedImageUtil.getTexture("", baseImage);
-						webcamFeed.setTexture(texture);
-					}
-				} catch (IOException e){
-					logger.error(e);
-				}
-				webcamFeed.getSubImage(50, 0, 540, 480).draw(center.getWidth()-((640-50)/2)+20, center.getHeight()-(480/2)-20);
-			}
 			lens.draw(center.getWidth() - (550 / 2), center.getHeight() - (550 / 2));
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
@@ -243,9 +222,26 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation * 1.818181818181818) + 16.36363636363636));
 		spinner.setRotation(rotation);
+		
+		if (frameGrabber != null && updateCamera) {
+
+			buffer = frameGrabber.grabFrame();
+			awtFrame = new BufferToImage((VideoFormat) buffer.getFormat()).createImage(buffer);
+			BufferedImage bufferedImage = new BufferedImage(awtFrame.getWidth(null), awtFrame.getHeight(null), BufferedImage.TYPE_INT_RGB);
+			bufferedImage.createGraphics().drawImage(awtFrame, 0, 0, this);
+			baseImage = bufferedImage;
+			try{
+				texture = BufferedImageUtil.getTexture("", baseImage);
+				webcamFeed.setTexture(texture);
+			} catch (IOException e){
+				logger.error(e);
+			}
+			updateCamera = false;
+		}
 	}
 
 	private void MakePhoto() {
+		makePhoto = true;
 		mode = 2;
 		spinnerSouth = "";
 		Timer timer = new Timer();
@@ -264,15 +260,16 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
+				liveFeed.cancel();
 				spinnerSouth = "1";
 			}
 		}, 3000);
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
+				updateCamera = true;
 				spinnerSouth = "";
 				lens.restart();
-				CaptureImage();
 			}
 		}, 4000);
 		timer.schedule(new TimerTask() {
@@ -285,7 +282,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 	}
 
 	public void SaveImage() {
-		if (baseImage != null) {
+		if (makePhoto) {
 			lastHighscoreId = server.addHighscore(gameData.getPlayerScore(), "yes");
 			try {
 				File f = new File(lastHighscoreId + ".png");
@@ -299,17 +296,6 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		}
 
 		gameData.setLastHighscoreId(lastHighscoreId);
-	}
-
-	public void CaptureImage() {
-		if (frameGrabber != null) {
-
-			buffer = frameGrabber.grabFrame();
-			awtFrame = new BufferToImage((VideoFormat) buffer.getFormat()).createImage(buffer);
-			BufferedImage bufferedImage = new BufferedImage(awtFrame.getWidth(null), awtFrame.getHeight(null), BufferedImage.TYPE_INT_RGB);
-			bufferedImage.createGraphics().drawImage(awtFrame, 0, 0, this);
-			baseImage = bufferedImage;
-		}
 	}
 
 	public void ActivateButton() {
@@ -371,10 +357,13 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 	}
 
 	private void resetGame() {
+		mode = 1;
+		makePhoto = false;
 		arduino.removeAllListeners();
 		spinnerSouth = "";
 		baseImage = null;
 		texture = null;
+		webcamFeed = new Image(new EmptyImageData(1, 1));
 	}
 
 	private void initWebcam() {
@@ -389,7 +378,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 					public void run() {
 						frameGrabber = (FrameGrabbingControl) webcamPlayer.getControl("javax.media.control.FrameGrabbingControl");
 					}
-				}, 2500);
+				}, 2000);
 			} catch (Exception e) {
 				logger.error("Failed to get webcam feed: " + e.getMessage());
 			}
