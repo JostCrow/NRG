@@ -2,6 +2,7 @@ package asa.client.resources;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -14,9 +15,10 @@ import org.newdawn.slick.font.effects.ColorEffect;
 public class Resource {
 
 	private static Logger logger = Logger.getLogger(Resource.class);
+	private static File directory = new File (".");
 	
 	public static final String RESOURCE_PATH = "/asa/client/resources/";
-	
+
 	public static final String LOGCONFIG = "log4j.properties";
 
 	public static final String TANDWIEL1 = "tandwiel1.png";
@@ -92,15 +94,21 @@ public class Resource {
 	}
 	
 	public static String getPath(String path){
+		boolean found = false;
+		
+		// Try loading the resource from classpath
 		String filepath = "";
 		try {
 			String resource = Resource.class.getResource(RESOURCE_PATH + path).getFile();
 			filepath = URLDecoder.decode(resource, "UTF-8").toString();
-		} catch (UnsupportedEncodingException ex) {
-			logger.error("Unable to locate resource " + path);
-		} catch (NullPointerException ex){
-			logger.error("NullPointer: Unable to locate resource " + RESOURCE_PATH + path);
+			found = true;
+		} catch (Exception e) {
+			found = false;
+			logger.debug("Unable to find resource using getResource");
 		}
+		
+		// Try loading the resource from directory
+		if(!found) filepath = directory.getAbsolutePath() + "/resources/" + path;
 		return filepath;
 	}
 	

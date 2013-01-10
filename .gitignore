@@ -6,3 +6,5 @@ server/bin
 /server/nbproject/
 /server/build/
 /server/build.xml
+client/build
+client/dist
