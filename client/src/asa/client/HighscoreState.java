@@ -126,14 +126,17 @@ public class HighscoreState extends ArduinoGameState {
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 
 		int topLeftX = (appResWidth - appResWidth / 4 - appResWidth / 200);
-		
+
 		for (int i = 0; i < 11; i++) {
 			if (topDraw + i >= highscores.size()) {
 				break;
 			}
-			
+
 			int topLeftY = (scoreHeight * i) + scrollDelta;
 			int rank = topDraw + i + 1;
+			if((topLeftY > 440 && topLeftY < 550)){
+				selected = rank -1;
+			}
 
 			if (rank == lastHighscoreRank) {
 				background_item_highscore_own.draw(topLeftX, topLeftY);
@@ -148,7 +151,6 @@ public class HighscoreState extends ArduinoGameState {
 				highscore = new Image(Resource.getPath("avatar.png"));
 			}
 			highscore.getSubImage(((highscore.getWidth()-highscore.getHeight())/2), 0, highscore.getHeight(), highscore.getHeight()).draw(topLeftX + 12, topLeftY + 5, 97, 97);
-
 			graphics.drawString(rank + "", topLeftX + 12, topLeftY + 68);
 			String pnumber = specialFormat.format(highscores.get(topDraw + i).getScore());
 			pnumber = pnumber.replace(",", "");
@@ -156,15 +158,14 @@ public class HighscoreState extends ArduinoGameState {
 				String singleNumber = pnumber.substring(j, j + 1);
 				graphics.drawString(singleNumber, topLeftX + 96 + (44 * (j + 1)), topLeftY + 37);
 			}
-			
+
 		}
-		
+
 		overlay_selected.draw(appResWidth - appResWidth / 4 - appResWidth / 8, appResHeight / 2 - overlay_selected.getHeight() / 2);
 
 		getCenterImage();
 		graphics.drawString(decimalFormat.format(highscores.get(selected).getScore()), center.getWidth(), center.getHeight());
 		graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);
-
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 	}
@@ -179,12 +180,7 @@ public class HighscoreState extends ArduinoGameState {
 
 		float listRotation = (float) (((-rotation - rotationDelta) * listSpeedFactor) - lastHighscoreDelta);
 		int possibleTopDraw = (int) ((listRotation * -1) / scoreHeight);
-		selected = possibleTopDraw + 5;
-		if (selected > highscores.size() - 6) {
-			selected = highscores.size() - 6;
-		}else if (selected < 0) {
-			selected = 0;
-		}
+
 		if (possibleTopDraw >= 0) {
 			scrollDelta = (int) (listRotation % scoreHeight);
 			topDraw = possibleTopDraw;

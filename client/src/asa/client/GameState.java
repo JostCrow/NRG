@@ -180,7 +180,6 @@ public class GameState extends ArduinoGameState {
 		tandwiel1.setRotation(rotation);
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+9.36363636363636));
 		tandwiel3.setRotation((float) ((float) (rotation*1.818181818181818)+15.36363636363636));
-		count_down.setAlpha((float)(count_down.getAlpha() + 0.08));
 		if (gamestarted) {
 			spinner1.setRotation((float) ((float) (rotation * 0.018181818181818) + 14.36363636363636));
 			spinner2.setRotation((float) ((float) (rotation * 0.818181818181818)));
@@ -267,7 +266,6 @@ public class GameState extends ArduinoGameState {
 			public void run() {
 				try {
 					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN2));
-					count_down.setAlpha(0);
 				} catch (SlickException ex) {
 
 				}
@@ -281,7 +279,6 @@ public class GameState extends ArduinoGameState {
 			public void run() {
 				try {
 					count_down = new Image(Resource.getPath(Resource.COUNT_DOUWN1));
-					count_down.setAlpha(0);
 				} catch (SlickException ex) {
 
 				}
