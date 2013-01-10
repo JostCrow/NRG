@@ -1,9 +1,10 @@
 package asa.client;
 
+import asa.client.DTO.GameData;
+import asa.client.resources.Resource;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.GameContainer;
@@ -12,64 +13,47 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.FadeInTransition;
-import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.Transition;
-
 import service.Device;
-import asa.client.DTO.GameData;
-import asa.client.resources.Resource;
-import java.util.logging.Level;
 
 public class InfoState extends ArduinoGameState {
 
-	ServerAdapter server;
-	GameData gameData;
+	private ServerAdapter server;
+	private GameData gameData;
+	private Logger logger = Logger.getLogger(this.getClass());
+	private List<WheelOption> wheelOptions = new ArrayList<WheelOption>();
+	private double rotationEase = 5.0;
+	private Dimension center;
 
-	Image background;
-	Image background2;
-	Image tandwiel1;
-	Image tandwiel2;
-	Image spinner;
-	Image background_spinner;
-	Image spinneroverlay;
-	Image icon_background_easy;
-	Image icon_background_medium;
-	Image icon_background_hard;
-	Image label_easy;
-	Image label_medium;
-	Image label_hard;
-	Image icons_details;
+	private Image background;
+	private Image background2;
+	private Image tandwiel1;
+	private Image tandwiel2;
+	private Image spinner;
+	private Image background_spinner;
+	private Image spinneroverlay;
+	private Image icon_background_easy;
+	private Image icon_background_medium;
+	private Image icon_background_hard;
+	private Image label_easy;
+	private Image label_medium;
+	private Image label_hard;
+	private Image icons_details;
 
-	UnicodeFont font_label;
-	UnicodeFont font_details;
+	private UnicodeFont font_label;
+	private UnicodeFont font_details;
 
-	Logger logger = Logger.getLogger(this.getClass());
+	private int targetrotation = 0;
+	private int tandwielOffset = 30;
+	private int rotationdirection = 0;
+	private int selectionDegrees = 0;
+	private int selectedOption = 0;
+	private int oldSelectedOption = 0;
 
-	List<WheelOption> wheelOptions = new ArrayList<WheelOption>();
-//	ArrayList<BackgroundImage> backgrounds = new ArrayList<BackgroundImage>();
+	private float rotation = 0;
+	private float position = 1920;
 
-	int targetrotation = 0;
-	int tandwielOffset = 30;
-
-	float rotation = 0;
-	float spinnerrotation = 0;
-	double rotationEase = 5.0;
-
-	Dimension screenSize;
-	Dimension center;
-
-	int selectionDegrees = 0;
-	int selectionScaleDistance = 180;
-	int selectedOption = 0;
-	float selectedScale = 1.5f;
-	int oldSelectedOption = 0;
-	String lastLoaded = "";
-
-	float position = 1920;
-	boolean slide = false;
-	boolean add = true;
-	int rotationdirection = 0;
+	private boolean slide = false;
+	private boolean add = true;
 
 	public InfoState(int stateID, ServerAdapter server, GameData gameData) {
 		super(stateID);
@@ -148,7 +132,7 @@ public class InfoState extends ArduinoGameState {
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
 			x = x - option.getIcon().getWidth()*option.getScale()/2;
 			y = y - option.getIcon().getHeight()*option.getScale()/2;
-
+			
 			Image icon_background;
 			switch(option.getDifficulty()){
 				case WheelOption.EASY:
@@ -196,8 +180,8 @@ public class InfoState extends ArduinoGameState {
 
 		graphics.setFont(font_details);
 		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-75, 60+center.getHeight());
-		graphics.drawString("30 sec.", center.getWidth()-75, 60+center.getHeight()+47);
-		graphics.drawString(decimalFormat.format(option.getAverage()) + " Kw.", center.getWidth()-75, 60+center.getHeight()+47*2);
+		graphics.drawString("20 sec.", center.getWidth()-75, 60+center.getHeight()+47);
+		graphics.drawString(decimalFormat.format(option.getAverage()) + " Watt.", center.getWidth()-75, 60+center.getHeight()+47*2);
 	}
 
 

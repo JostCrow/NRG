@@ -27,9 +27,15 @@ public class WheelOption {
 	public WheelOption(Device device){
 		this.device = device;
 		
-		// TODO: calculate proper difficulty;
-		Random random = new Random();
-		this.difficulty = random.nextInt(3) + 1;
+		// T11ODO: calculate proper difficulty;
+		double average = device.getWattTotal()/device.getDivideBy();
+		if(average < 20){
+			this.difficulty = 1;
+		} else if (average < 60){
+			this.difficulty = 2;
+		} else{
+			this.difficulty = 3;
+		}
 		
 		try {
 			this.background = new Image(Resource.getPath(device.getBackgroundUrl()));

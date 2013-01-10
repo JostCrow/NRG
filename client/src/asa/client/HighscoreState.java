@@ -232,15 +232,15 @@ public class HighscoreState extends ArduinoGameState {
 			File f = new File(highscores.get(selected).getId() + ".png");
 			if(f.exists()){
 				centerImage = new Image(highscores.get(selected).getId() + ".png");
-				centerImage.getSubImage(50, 0, 540, 480).draw(center.getWidth()-((640-50)/2)+20, center.getHeight()-(480/2)-20);
+				centerImage.getSubImage(80, 0, 480, 480).draw(center.getWidth()-((500)/2), center.getHeight()-(500/2), 500, 500);
 			} else {
-				centerImage = new Image(Resource.getPath("avatar.png"));
-				centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
+				centerImage = new Image(Resource.getPath("avatarBig.png"));
+				centerImage.draw(center.getWidth()-((500)/2), center.getHeight()-(500/2));
 			}
 		}
 		else{
-			centerImage = new Image(Resource.getPath("avatar.png"));
-			centerImage.draw(center.getWidth() - centerImage.getWidth() / 2, center.getHeight() - centerImage.getHeight());
+			centerImage = new Image(Resource.getPath("avatarBig.png"));
+			centerImage.draw(center.getWidth()-((500)/2), center.getHeight()-(500/2));
 		}
 	}
 
