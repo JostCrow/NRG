@@ -206,9 +206,9 @@ public class HighscoreState extends ArduinoGameState {
 			@Override
 			public void wheelEvent(int direction, int speed) {
 				if (direction == 1) {
-					targetrotation += 3 * speed;
+					targetrotation += speed/2;
 				} else {
-					targetrotation -= 3 * speed;
+					targetrotation -= speed/2;
 				}
 			}
 

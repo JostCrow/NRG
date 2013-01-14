@@ -1,6 +1,7 @@
 // Rotery encoder pins
-int ENCODER_A = 2;
-int ENCODER_B = 3;
+const int ENCODER_A = 2;
+const int ENCODER_B = 3;
+const int ButtonPin = 4;
 
 // Led pins
 int LED_YELLOW= 10;
@@ -16,6 +17,7 @@ volatile long lastIntervalEncoderValue = 0;
 // Vars for direction
 boolean clockWiseDirection = false;
 boolean change = true;
+boolean update = true;
 
 // Speed
 int rotaryPosition = 0;
@@ -24,10 +26,14 @@ int lastRotaryPosition = 0;
 // MessageControl
 boolean showMessage = true;
 
+// ButtonState
+int buttonState = 0;
+
 void setup() {
   Serial.begin (9600);
   pinMode(ENCODER_A, INPUT); 
   pinMode(ENCODER_B, INPUT);
+  pinMode(ButtonPin, INPUT);
   digitalWrite(ENCODER_A, HIGH);
   digitalWrite(ENCODER_B, HIGH);
   attachInterrupt(0, updateEncoder, CHANGE); 
@@ -48,6 +54,15 @@ void loop(){
   rotaryPosition = encoderValue;
   int rotarySpeed = abs(rotaryPosition - lastRotaryPosition);
   lastRotaryPosition = rotaryPosition;
+  
+  buttonState = digitalRead(ButtonPin);
+  if (buttonState == HIGH && update) {        
+    Serial.println("{buttonevent: true}");
+    update = false;
+  }
+  else if (buttonState == LOW && !update){
+    update = true;
+  }
   
   // Calculate speed led brightness
   analogWrite(LED_RED, rotarySpeed);

@@ -216,9 +216,9 @@ public class InfoState extends ArduinoGameState {
 			public void wheelEvent(int direction, int speed) {
 				rotationdirection = direction;
 				if(direction == 1){
-					targetrotation += 3*speed;
+					targetrotation += speed/2;
 				} else {
-					targetrotation -= 3*speed;
+					targetrotation -= speed/2;
 				}
 			}
 
