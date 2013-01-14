@@ -41,6 +41,7 @@ public class Arduino implements Runnable, SerialPortEventListener {
 	
 	private static String KEY_SPEED = "speed";
 	private static String KEY_DIRECTION = "direction";
+	private static String KEY_BUTTON = "buttonevent";
 	
 	public static Arduino getInstance(){
 		if(Arduino._instance == null){
@@ -148,6 +149,10 @@ public class Arduino implements Runnable, SerialPortEventListener {
 			int direction = Integer.valueOf(hashMap.get(KEY_DIRECTION));
 			int speed = Integer.valueOf(hashMap.get(KEY_SPEED));
 			dispatchWheelEvent(direction, speed);
+		}
+		
+		if(hashMap.containsKey(KEY_BUTTON)){
+			dispatchButtonEvent();
 		}
 	}
 	
