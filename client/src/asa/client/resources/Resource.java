@@ -50,6 +50,7 @@ public class Resource {
 	public static final String SPINNER = "spinner.png";
 	public static final String SPINNER_OVERLAY = "spinneroverlay.png";
 	public static final String BACKGROUND_SPINNER = "background_spinner.png";
+	public static final String BACKGROUND_SPINNER_HALF = "blauw.png";
 	
 	public static final String GAME_BACKGROUND = "game_background.png";
 	public static final String COUNT_DOUWN1 = "1.png";
@@ -76,6 +77,8 @@ public class Resource {
 	public static final String tandwiel_vertical = "tandwiel_vertical.png";
 	public static final String PERSON = "person.png";
 	public static final String HOOFD = "Hoofd.jpg";
+	public static final String ARROW_UP = "1.png";
+	public static final String ARROW_DOWN = "2.png";
 	
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";

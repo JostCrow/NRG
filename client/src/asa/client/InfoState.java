@@ -176,12 +176,11 @@ public class InfoState extends ArduinoGameState {
 		graphics.setFont(font_label);
 		graphics.drawString(option.getDevice().getName(), center.getWidth()-font_label.getWidth(option.getDevice().getName())/2, center.getHeight() - 50);
 
-		icons_details.draw(center.getWidth()-125, center.getHeight()+50);
+		icons_details.draw(center.getWidth()-125, center.getHeight()+70);
 
 		graphics.setFont(font_details);
-		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-75, 60+center.getHeight());
-		graphics.drawString("20 sec.", center.getWidth()-75, 60+center.getHeight()+47);
-		graphics.drawString(decimalFormat.format(option.getAverage()) + " Watt.", center.getWidth()-75, 60+center.getHeight()+47*2);
+		graphics.drawString(option.getDevice().getLocation(), center.getWidth()-75, 80+center.getHeight());
+		graphics.drawString(decimalFormat.format(option.getAverage()) + " Watt.", center.getWidth()-75, 80+center.getHeight()+47);
 	}
 
 
@@ -193,9 +192,9 @@ public class InfoState extends ArduinoGameState {
 		tandwiel2.setRotation((float) ((float) -(rotation*1.818181818181818)+16.36363636363636));
 		spinner.setRotation(rotation);
 		if(slide && add){
-			position = position - 153.6f;
+			position = position - 307.2f;
 		} else if (slide && !add){
-			position = position + 153.6f;
+			position = position + 307.2f;
 		}
 		if(position <= 0 && add){
 			background2 = background;
@@ -216,9 +215,9 @@ public class InfoState extends ArduinoGameState {
 			public void wheelEvent(int direction, int speed) {
 				rotationdirection = direction;
 				if(direction == 1){
-					targetrotation += speed/2;
+					targetrotation += speed * 1.145;
 				} else {
-					targetrotation -= speed/2;
+					targetrotation -= speed * 1.145;
 				}
 			}
 

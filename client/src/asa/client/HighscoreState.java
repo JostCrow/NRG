@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.GameContainer;
@@ -28,6 +29,8 @@ public class HighscoreState extends ArduinoGameState {
 	private UnicodeFont fontWhite;
 
 	private boolean waitingForButton;
+	private boolean drawArrowUp;
+	private boolean drawArrowDown;
 
 	private Image tandwiel1;
 	private Image tandwiel2;
@@ -43,6 +46,13 @@ public class HighscoreState extends ArduinoGameState {
 	private Image tandwiel_vertical;
 	private Image highscore;
 	private Image centerImage;
+	private Image player_icon;
+	private Image device_icon;
+	private Image device_icon_background;
+	private Image black_number;
+	private Image red_number;
+	private Image arrow_up;
+	private Image arrow_down;
 
 	private int targetrotation = 0;
 	private int tandwielOffset = 30;
@@ -55,6 +65,11 @@ public class HighscoreState extends ArduinoGameState {
 	private int lastHighscoreDelta;
 	private int scoreHeight = (appResHeight / 10);
 	private int highscoreBackgroundHeight = 0;
+	private int startposition;
+	private int startposition_device;
+	
+	private int[] playerPositions = new int[7];
+	private int[] devicePositions = new int[7];
 
 	private float rotation = 0;
 	private float rotationDelta = 0;
@@ -79,18 +94,29 @@ public class HighscoreState extends ArduinoGameState {
 		tandwiel3 = new Image(Resource.getPath(Resource.TANDWIEL7));
 		spinner = new Image(Resource.getPath(Resource.SPINNER));
 		spinneroverlay = new Image(Resource.getPath(Resource.SPINNER_OVERLAY));
-		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER));
+		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER_HALF));
+		background_spinner.setAlpha(0.7f);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
+		
+		player_icon = new Image(Resource.getPath(Resource.PLAYER_));
+		device_icon_background = new Image(Resource.getPath(Resource.DEVICE_));
+		device_icon_background.rotate(180);
+		
+		red_number = new Image(Resource.getPath(Resource.NUMBERS_RED));
+		black_number = new Image(Resource.getPath(Resource.NUMBERS_BLACK));
 
 		background_highscore = new Image(Resource.getPath(Resource.background_highscore));
 		background_item_highscore = new Image(Resource.getPath(Resource.background_item_highscore));
 		background_item_highscore_own = new Image(Resource.getPath(Resource.BACKGROUND_ITEM_HIGHSCORE_OWN));
 		overlay_selected = new Image(Resource.getPath(Resource.overlay_selected));
 		tandwiel_vertical = new Image(Resource.getPath(Resource.tandwiel_vertical));
+		arrow_up = new Image(Resource.getPath(Resource.ARROW_UP));
+		arrow_down = new Image(Resource.getPath(Resource.ARROW_DOWN));
 
 		centerImage = new Image(new EmptyImageData(97, 97));
 		highscore = new Image(new EmptyImageData(97, 97));
-
+		startposition = center.getHeight() + 20 + 45;
+		startposition_device = center.getHeight() + 91 + 45;
 		fontBlack = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
 		fontWhite = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.WHITE);
 	}
@@ -100,6 +126,7 @@ public class HighscoreState extends ArduinoGameState {
 		calculateDelta();
 		addListeners(stateBasedGame);
 		ActivateButton();
+		calculateNumberHeight();
 	}
 
 	@Override
@@ -123,7 +150,6 @@ public class HighscoreState extends ArduinoGameState {
 		background_highscore.draw(appResWidth - background_highscore.getWidth(), highscoreBackgroundHeight - background_highscore.getHeight());
 		tandwiel_vertical.draw(appResWidth - background_highscore.getWidth() - tandwiel_vertical.getWidth(), highscoreBackgroundHeight - tandwiel_vertical.getHeight());
 		graphics.setFont(fontWhite);
-		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 
 		int topLeftX = (appResWidth - appResWidth / 4 - appResWidth / 200);
 
@@ -146,7 +172,11 @@ public class HighscoreState extends ArduinoGameState {
 
 			File f = new File(highscores.get(topDraw + i).getId() + ".png");
 			if(f.exists()){
-				highscore = new Image(highscores.get(topDraw + i).getId() + ".png");
+				try{
+					highscore = new Image(highscores.get(topDraw + i).getId() + ".png");
+				} catch(Exception e){
+					highscore = new Image(Resource.getPath("avatar.png"));
+				}
 			} else {
 				highscore = new Image(Resource.getPath("avatar.png"));
 			}
@@ -160,12 +190,37 @@ public class HighscoreState extends ArduinoGameState {
 			}
 
 		}
+		
+		if (drawArrowDown) {
+			arrow_down.draw(appResWidth-(background_highscore.getWidth()/2)-(arrow_down.getWidth()/2), center.getHeight()-(arrow_down.getHeight()/2) + 200);
+		}
+		else if (drawArrowUp) {
+			arrow_up.draw(appResWidth-(background_highscore.getWidth()/2)-(arrow_up.getWidth()/2), center.getHeight()-(arrow_up.getHeight()/2) - 200);
+		}
 
 		overlay_selected.draw(appResWidth - appResWidth / 4 - appResWidth / 8, appResHeight / 2 - overlay_selected.getHeight() / 2);
 
 		getCenterImage();
-		graphics.drawString(decimalFormat.format(highscores.get(selected).getScore()), center.getWidth(), center.getHeight());
-		graphics.drawString(decimalFormat.format(gameData.getDeviceScore()), center.getWidth(), center.getHeight() + 100);
+		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() + 45);
+		player_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 5 + 45);
+		device_icon_background.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45);
+		device_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45, 0.7f);
+		
+		black_number.getSubImage(0, startposition-playerPositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105, startposition, 30, 43);
+		black_number.getSubImage(0, startposition-playerPositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+30+4, startposition, 30, 43);
+		black_number.getSubImage(0, startposition-playerPositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*2, startposition, 30, 43);
+		black_number.getSubImage(0, startposition-playerPositions[3], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*3, startposition, 30, 43);
+		black_number.getSubImage(0, startposition-playerPositions[4], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*4, startposition, 30, 43);
+		red_number.getSubImage(0, startposition-playerPositions[5], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*5, startposition, 30, 43);
+		red_number.getSubImage(0, startposition-playerPositions[6], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*6, startposition, 30, 43);
+		
+		black_number.getSubImage(0, startposition_device-devicePositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105, startposition_device, 30, 43);
+		black_number.getSubImage(0, startposition_device-devicePositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+30+4, startposition_device, 30, 43);
+		black_number.getSubImage(0, startposition_device-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*2, startposition_device, 30, 43);
+		black_number.getSubImage(0, startposition_device-devicePositions[3], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*3, startposition_device, 30, 43);
+		black_number.getSubImage(0, startposition_device-devicePositions[4], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*4, startposition_device, 30, 43);
+		red_number.getSubImage(0, startposition_device-devicePositions[5], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*5, startposition_device, 30, 43);
+		red_number.getSubImage(0, startposition_device-devicePositions[6], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*6, startposition_device, 30, 43);
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 	}
@@ -189,6 +244,17 @@ public class HighscoreState extends ArduinoGameState {
 		}
 		tandwiel3.setRotation((float) ((float) listRotation * 0.31255 - 6.7));
 		highscoreBackgroundHeight = (int) ((listRotation) % background_highscore.getHeight());
+		
+		if (scrollDelta > appResHeight-scoreHeight) {
+			drawArrowDown = true;
+		}
+		else if (topDraw > highscores.size()-2) {
+			drawArrowUp = true;
+		}
+		else {
+			drawArrowUp = false;
+			drawArrowDown = false;
+		}
 	}
 
 	public void ActivateButton() {
@@ -206,9 +272,9 @@ public class HighscoreState extends ArduinoGameState {
 			@Override
 			public void wheelEvent(int direction, int speed) {
 				if (direction == 1) {
-					targetrotation += speed/2;
+					targetrotation += speed * 1.145;
 				} else {
-					targetrotation -= speed/2;
+					targetrotation -= speed * 1.145;
 				}
 			}
 
@@ -231,8 +297,13 @@ public class HighscoreState extends ArduinoGameState {
 		if (highscores.get(selected).getFoto().equals("yes")) {
 			File f = new File(highscores.get(selected).getId() + ".png");
 			if(f.exists()){
-				centerImage = new Image(highscores.get(selected).getId() + ".png");
-				centerImage.getSubImage(80, 0, 480, 480).draw(center.getWidth()-((500)/2), center.getHeight()-(500/2), 500, 500);
+				try{
+					centerImage = new Image(highscores.get(selected).getId() + ".png");
+					centerImage.getSubImage(80, 0, 480, 480).draw(center.getWidth()-((500)/2), center.getHeight()-(500/2), 500, 500);
+				} catch(Exception e){
+					centerImage = new Image(Resource.getPath("avatarBig.png"));
+					centerImage.draw(center.getWidth()-((500)/2), center.getHeight()-(500/2));
+				}
 			} else {
 				centerImage = new Image(Resource.getPath("avatarBig.png"));
 				centerImage.draw(center.getWidth()-((500)/2), center.getHeight()-(500/2));
@@ -241,6 +312,20 @@ public class HighscoreState extends ArduinoGameState {
 		else{
 			centerImage = new Image(Resource.getPath("avatarBig.png"));
 			centerImage.draw(center.getWidth()-((500)/2), center.getHeight()-(500/2));
+		}
+		
+		String pnumber = specialFormat.format(highscores.get(selected).getScore());
+		pnumber = pnumber.replace(",", "");
+		for(int i = 0; i < playerPositions.length; i++){
+			try{
+				int test = Integer.parseInt(pnumber.substring(i, i+1));
+				playerPositions[i] = startposition - (test*73);
+				if(playerPositions[i] < (startposition -(73*9))){
+					playerPositions[i] = startposition;
+				}
+			} catch(Exception e){
+				logger.error("Could not convert playerscore to ints: " + e.getMessage());
+			}
 		}
 	}
 
@@ -258,5 +343,26 @@ public class HighscoreState extends ArduinoGameState {
 
 		lastHighscoreDelta = (scoreHeight * lastHighscoreRank) - (scoreHeight / 2) - (appResHeight / 2);
 		rotationDelta = (float) (rotation * -1);
+	}
+
+	private void calculateNumberHeight() {
+		try {
+			device_icon = new Image(Resource.getPath(server.getDeviceById(gameData.getDeviceId()).getLogoUrl()));
+		} catch (SlickException ex) {
+			device_icon = new Image(new EmptyImageData(1, 1));
+		}
+		String number = specialFormat.format(gameData.getDeviceScore());
+		number = number.replace(",", "");
+		for(int i = 0; i < devicePositions.length; i++){
+			try{
+				int test = Integer.parseInt(number.substring(i, i+1));
+				devicePositions[i] = startposition_device - (test*73);
+				if(devicePositions[i] < (startposition_device -(73*9))){
+					devicePositions[i] = startposition_device;
+				}
+			} catch(Exception e){
+				logger.error("Could not convert devicescore to ints: " + e.getMessage());
+			}
+		}
 	}
 }
