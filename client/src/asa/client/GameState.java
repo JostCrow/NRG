@@ -46,6 +46,7 @@ public class GameState extends ArduinoGameState {
 	private Image overlay;
 	private Image red_number;
 	private Image black_number;
+	private Image get_ready;
 
 	private Animation clock;
 
@@ -100,6 +101,7 @@ public class GameState extends ArduinoGameState {
 		spinner1 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		spinner2 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		spinner3 = new Image(Resource.getPath(Resource.GAME_SPINNER));
+		get_ready = new Image(Resource.getPath(Resource.SPIN));
 
 		voortgangsbalk = new Image(Resource.getPath(Resource.VOORTGANGS_BALK));
 		player_voortgang = new Image(Resource.getPath(Resource.PLAYER_));
@@ -166,6 +168,7 @@ public class GameState extends ArduinoGameState {
 		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
 
 		if(countdownActive){
+			get_ready.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth()-5, center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()-30);
 			count_down.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth()+65, center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
 		}
 		if(uitleg){
