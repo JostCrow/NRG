@@ -38,6 +38,7 @@ public class InfoState extends ArduinoGameState {
 	private Image label_medium;
 	private Image label_hard;
 	private Image icons_details;
+	private Image choose_device;
 
 	private UnicodeFont font_label;
 	private UnicodeFont font_details;
@@ -80,6 +81,7 @@ public class InfoState extends ArduinoGameState {
 		label_medium = new Image(Resource.getPath(Resource.LABEL_MEDIUM));
 		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
 		icons_details = new Image(Resource.getPath(Resource.ICONS_DETAILS));
+		choose_device = new Image(Resource.getPath(Resource.CHOOSE_DEVICE));
 		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 35, Color.BLACK);
 		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 25, Color.WHITE);
 	}
@@ -97,6 +99,7 @@ public class InfoState extends ArduinoGameState {
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() - background_spinner.getHeight() / 2);
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
+		choose_device.draw(center.getWidth()/2-20, 60);
 
 		float offsetDegree = 360/wheelOptions.size();
 		float radius = 313;
@@ -132,7 +135,7 @@ public class InfoState extends ArduinoGameState {
 			option.setScale(option.getScale() + (targetScale - option.getScale())/5);
 			x = x - option.getIcon().getWidth()*option.getScale()/2;
 			y = y - option.getIcon().getHeight()*option.getScale()/2;
-			
+
 			Image icon_background;
 			switch(option.getDifficulty()){
 				case WheelOption.EASY:

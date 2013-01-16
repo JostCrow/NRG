@@ -16,7 +16,7 @@ public class Resource {
 
 	private static Logger logger = Logger.getLogger(Resource.class);
 	private static File directory = new File (".");
-	
+
 	public static final String RESOURCE_PATH = "/asa/client/resources/";
 
 	public static final String LOGCONFIG = "log4j.properties";
@@ -28,30 +28,30 @@ public class Resource {
 	public static final String TANDWIEL5 = "tandwiel5.png";
 	public static final String TANDWIEL6 = "tandwiel6.png";
 	public static final String TANDWIEL7 = "tandwiel7.png";
-	
+
 	public static final String BACKGROUND_KOFFIE = "background_koffie.png";
 	public static final String BACKGROUND_PRINTER = "background_printer.png";
 	public static final String BACKGROUND_AUTOMAAT = "background_cola.png";
 	public static final String BACKGROUND_BEAMER = "background_beamert.png";
-	
+
 	public static final String ICON_BACKGROUND_EASY = "icon_background_easy.png";
 	public static final String ICON_BACKGROUND_MEDIUM = "icon_background_medium.png";
 	public static final String ICON_BACKGROUND_HARD = "icon_background_hard.png";
-	
+
 	public static final String ICON_KOFFIE = "icon_koffie.png";
 	public static final String ICON_PRINTER = "icon_printer.png";
 	public static final String ICON_AUTOMAAT = "icon_automaat.png";
 	public static final String ICON_BEAMER = "icon_beamer.png";
 	public static final String ICON_YES = "icon_ja.png";
 	public static final String ICON_NO = "icon_nee.png";
-	
+
 	public static final String ICONS_DETAILS = "icons_details.png";
-	
+
 	public static final String SPINNER = "spinner.png";
 	public static final String SPINNER_OVERLAY = "spinneroverlay.png";
 	public static final String BACKGROUND_SPINNER = "background_spinner.png";
 	public static final String BACKGROUND_SPINNER_HALF = "blauw.png";
-	
+
 	public static final String GAME_BACKGROUND = "game_background.png";
 	public static final String COUNT_DOUWN1 = "1.png";
 	public static final String COUNT_DOUWN2 = "2.png";
@@ -69,7 +69,11 @@ public class Resource {
 	public static final String DEVICE_ = "voortgangrechts.png";
 	public static final String VOORTGANGS_BALK = "voortgangsbalk.png";
 	public static final String OVERLAY = "overlayspel1.png";
-	
+	public static final String CHOOSE_DEVICE = "02_kies apparaat.png";
+	public static final String SPIN = "03_draaien.png";
+	public static final String SAVE_SCORE = "04_score-opslaan.png";
+	public static final String GET_READY = "02_get-ready.png";
+
 	public static final String background_highscore = "background_highscore.png";
 	public static final String background_item_highscore = "background_item_highscore.png";
 	public static final String BACKGROUND_ITEM_HIGHSCORE_OWN = "background_item_highscore_own.png";
@@ -79,13 +83,13 @@ public class Resource {
 	public static final String HOOFD = "Hoofd.jpg";
 	public static final String ARROW_UP = "1.png";
 	public static final String ARROW_DOWN = "2.png";
-	
+
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";
 	public static final String LABEL_HARD = "label_hard.png";
-	
-	public static final String FONT_SANCHEZ = "Sanchezregular.tff";	
-	
+
+	public static final String FONT_SANCHEZ = "Sanchezregular.tff";
+
 	public static URL getURL(String path) {
 		URL resourceUrl = null;
 		try {
@@ -95,10 +99,10 @@ public class Resource {
 		}
 		return resourceUrl;
 	}
-	
+
 	public static String getPath(String path){
 		boolean found = false;
-		
+
 		// Try loading the resource from classpath
 		String filepath = "";
 		try {
@@ -109,12 +113,12 @@ public class Resource {
 			found = false;
 			logger.debug("Unable to find resource using getResource");
 		}
-		
+
 		// Try loading the resource from directory
 		if(!found) filepath = directory.getAbsolutePath() + "/resources/" + path;
 		return filepath;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static UnicodeFont getFont(String path, int fontSize, Color color){
 		UnicodeFont font = new UnicodeFont(new Font(path, Font.PLAIN, fontSize));

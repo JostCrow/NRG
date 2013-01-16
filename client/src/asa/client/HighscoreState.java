@@ -67,7 +67,7 @@ public class HighscoreState extends ArduinoGameState {
 	private int highscoreBackgroundHeight = 0;
 	private int startposition;
 	private int startposition_device;
-	
+
 	private int[] playerPositions = new int[7];
 	private int[] devicePositions = new int[7];
 
@@ -97,11 +97,11 @@ public class HighscoreState extends ArduinoGameState {
 		background_spinner = new Image(Resource.getPath(Resource.BACKGROUND_SPINNER_HALF));
 		background_spinner.setAlpha(0.7f);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
-		
+
 		player_icon = new Image(Resource.getPath(Resource.PLAYER_));
 		device_icon_background = new Image(Resource.getPath(Resource.DEVICE_));
 		device_icon_background.rotate(180);
-		
+
 		red_number = new Image(Resource.getPath(Resource.NUMBERS_RED));
 		black_number = new Image(Resource.getPath(Resource.NUMBERS_BLACK));
 
@@ -190,7 +190,7 @@ public class HighscoreState extends ArduinoGameState {
 			}
 
 		}
-		
+
 		if (drawArrowDown) {
 			arrow_down.draw(appResWidth-(background_highscore.getWidth()/2)-(arrow_down.getWidth()/2), center.getHeight()-(arrow_down.getHeight()/2) + 200);
 		}
@@ -205,7 +205,7 @@ public class HighscoreState extends ArduinoGameState {
 		player_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 5 + 45);
 		device_icon_background.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45);
 		device_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45, 0.7f);
-		
+
 		black_number.getSubImage(0, startposition-playerPositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105, startposition, 30, 43);
 		black_number.getSubImage(0, startposition-playerPositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+30+4, startposition, 30, 43);
 		black_number.getSubImage(0, startposition-playerPositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*2, startposition, 30, 43);
@@ -213,7 +213,7 @@ public class HighscoreState extends ArduinoGameState {
 		black_number.getSubImage(0, startposition-playerPositions[4], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*4, startposition, 30, 43);
 		red_number.getSubImage(0, startposition-playerPositions[5], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*5, startposition, 30, 43);
 		red_number.getSubImage(0, startposition-playerPositions[6], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*6, startposition, 30, 43);
-		
+
 		black_number.getSubImage(0, startposition_device-devicePositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105, startposition_device, 30, 43);
 		black_number.getSubImage(0, startposition_device-devicePositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+30+4, startposition_device, 30, 43);
 		black_number.getSubImage(0, startposition_device-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*2, startposition_device, 30, 43);
@@ -244,7 +244,7 @@ public class HighscoreState extends ArduinoGameState {
 		}
 		tandwiel3.setRotation((float) ((float) listRotation * 0.31255 - 6.7));
 		highscoreBackgroundHeight = (int) ((listRotation) % background_highscore.getHeight());
-		
+
 		if (scrollDelta > appResHeight-scoreHeight) {
 			drawArrowDown = true;
 		}
@@ -313,7 +313,7 @@ public class HighscoreState extends ArduinoGameState {
 			centerImage = new Image(Resource.getPath("avatarBig.png"));
 			centerImage.draw(center.getWidth()-((500)/2), center.getHeight()-(500/2));
 		}
-		
+
 		String pnumber = specialFormat.format(highscores.get(selected).getScore());
 		pnumber = pnumber.replace(",", "");
 		for(int i = 0; i < playerPositions.length; i++){
