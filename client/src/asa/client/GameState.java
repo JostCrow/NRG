@@ -47,6 +47,7 @@ public class GameState extends ArduinoGameState {
 	private Image red_number;
 	private Image black_number;
 	private Image get_ready;
+	private Image stop;
 
 	private Animation clock;
 
@@ -102,6 +103,7 @@ public class GameState extends ArduinoGameState {
 		spinner2 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		spinner3 = new Image(Resource.getPath(Resource.GAME_SPINNER));
 		get_ready = new Image(Resource.getPath(Resource.SPIN));
+		stop = new Image(Resource.getPath(Resource.STOP));
 
 		voortgangsbalk = new Image(Resource.getPath(Resource.VOORTGANGS_BALK));
 		player_voortgang = new Image(Resource.getPath(Resource.PLAYER_));
@@ -166,7 +168,9 @@ public class GameState extends ArduinoGameState {
 		player_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4-player_voortgang.getWidth()+18, player_voortgang_location);
 		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-19, device_voortgang_location);
 		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
-
+		if(gamestarted){
+			stop.draw(stop.getWidth()*0.3f, center.getHeight()*2 - stop.getHeight()*1.6f);
+		}
 		if(countdownActive){
 			get_ready.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth()-5, center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()-30);
 			count_down.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth()+65, center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()/3);
