@@ -63,6 +63,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 	private Image webcamFeed;
 	private Image countdown;
 	private Image selectImage;
+	private Image choise;
 
 	private java.awt.Image awtFrame;
 	private BufferedImage baseImage;
@@ -113,6 +114,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		background_spinner_half.setAlpha(0.7f);
 		background = new Image(Resource.getPath(Resource.GAME_BACKGROUND));
 		selectImage = new Image(Resource.getPath(Resource.SAVE_SCORE));
+		choise = new Image(Resource.getPath(Resource.MAKE_YOUR_CHOISE));
 
 		webcamFeed = new Image(new EmptyImageData(640, 480));
 		countdown = new Image(new EmptyImageData(1,1));
@@ -169,6 +171,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			selectImage.draw(center.getWidth()/2-20, 60);
+			choise.draw(choise.getWidth()*0.15f, center.getHeight()*2 - choise.getHeight()*1.6f);
 			for (int i = 0; i < wheelOptions.size(); i++) {
 				float offsetDegree = 360 / wheelOptions.size();
 				float degrees = (270 + ((rotation + rotationDelta) % 360 + offsetDegree * i) % 360) % 360;
