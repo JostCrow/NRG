@@ -289,7 +289,10 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 			}
 		}
 		else{
-			liveFeed.cancel();
+			if (liveFeed != null)
+			{
+				liveFeed.cancel();
+			}			
 			lastHighscoreId = server.addHighscore(gameData.getPlayerScore(), "no");
 		}
 
