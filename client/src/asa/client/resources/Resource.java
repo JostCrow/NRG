@@ -84,8 +84,8 @@ public class Resource {
 	public static final String tandwiel_vertical = "tandwiel_vertical.png";
 	public static final String PERSON = "person.png";
 	public static final String HOOFD = "Hoofd.jpg";
-	public static final String ARROW_UP = "1.png";
-	public static final String ARROW_DOWN = "2.png";
+	public static final String ARROW_UP = "arrow_up.png";
+	public static final String ARROW_DOWN = "arrow_down.png";
 
 	public static final String LABEL_EASY = "label_easy.png";
 	public static final String LABEL_MEDIUM = "label_medium.png";
