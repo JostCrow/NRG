@@ -33,7 +33,7 @@ public class AsaGame extends StateBasedGame{
 
 	private Logger logger = Logger.getLogger(AsaGame.class);
 
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	private GameData gameData;
 
