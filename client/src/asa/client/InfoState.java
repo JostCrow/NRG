@@ -39,6 +39,7 @@ public class InfoState extends ArduinoGameState {
 	private Image label_hard;
 	private Image icons_details;
 	private Image choose_device;
+	private Image choise;
 
 	private UnicodeFont font_label;
 	private UnicodeFont font_details;
@@ -82,6 +83,7 @@ public class InfoState extends ArduinoGameState {
 		label_hard = new Image(Resource.getPath(Resource.LABEL_HARD));
 		icons_details = new Image(Resource.getPath(Resource.ICONS_DETAILS));
 		choose_device = new Image(Resource.getPath(Resource.CHOOSE_DEVICE));
+		choise = new Image(Resource.getPath(Resource.MAKE_YOUR_CHOISE));
 		font_label = Resource.getFont(Resource.FONT_SANCHEZ, 35, Color.BLACK);
 		font_details = Resource.getFont(Resource.FONT_SANCHEZ, 25, Color.WHITE);
 	}
@@ -100,6 +102,7 @@ public class InfoState extends ArduinoGameState {
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		choose_device.draw(center.getWidth()/2-20, 60);
+		choise.draw(choise.getWidth()*0.15f, center.getHeight()*2 - choise.getHeight()*1.6f);
 
 		float offsetDegree = 360/wheelOptions.size();
 		float radius = 313;

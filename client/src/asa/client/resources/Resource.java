@@ -73,6 +73,9 @@ public class Resource {
 	public static final String SPIN = "03_draaien.png";
 	public static final String SAVE_SCORE = "04_score-opslaan.png";
 	public static final String GET_READY = "02_get-ready.png";
+	public static final String MAKE_YOUR_CHOISE = "maakjekeuze.png";
+	public static final String STOP = "stopspel.png";
+	public static final String BACK = "terug.png";
 
 	public static final String background_highscore = "background_highscore.png";
 	public static final String background_item_highscore = "background_item_highscore.png";

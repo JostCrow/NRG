@@ -53,6 +53,7 @@ public class HighscoreState extends ArduinoGameState {
 	private Image red_number;
 	private Image arrow_up;
 	private Image arrow_down;
+	private Image terug;
 
 	private int targetrotation = 0;
 	private int tandwielOffset = 30;
@@ -112,6 +113,7 @@ public class HighscoreState extends ArduinoGameState {
 		tandwiel_vertical = new Image(Resource.getPath(Resource.tandwiel_vertical));
 		arrow_up = new Image(Resource.getPath(Resource.ARROW_UP));
 		arrow_down = new Image(Resource.getPath(Resource.ARROW_DOWN));
+		terug = new Image(Resource.getPath(Resource.BACK));
 
 		centerImage = new Image(new EmptyImageData(97, 97));
 		highscore = new Image(new EmptyImageData(97, 97));
@@ -205,6 +207,8 @@ public class HighscoreState extends ArduinoGameState {
 		player_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 5 + 45);
 		device_icon_background.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45);
 		device_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45, 0.7f);
+
+		terug.draw(terug.getWidth()*0.185f, center.getHeight()*2 - terug.getHeight()*1.6f);
 
 		black_number.getSubImage(0, startposition-playerPositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105, startposition, 30, 43);
 		black_number.getSubImage(0, startposition-playerPositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+30+4, startposition, 30, 43);
