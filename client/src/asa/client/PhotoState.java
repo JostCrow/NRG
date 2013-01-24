@@ -354,6 +354,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 				} else {
 					targetrotation -= speed * 1.145;
 				}
+				secondsIdle = 0;
 			}
 
 			@Override
