@@ -107,18 +107,17 @@ public class Resource {
 		boolean found = false;
 
 		// Try loading the resource from classpath
-		String filepath = "";
-		try {
-			String resource = Resource.class.getResource(RESOURCE_PATH + path).getFile();
-			filepath = URLDecoder.decode(resource, "UTF-8").toString();
-			found = true;
-		} catch (Exception e) {
-			found = false;
-			logger.debug("Unable to find resource using getResource");
+		String filepath = directory.getAbsolutePath() + "/resources/" + path;
+		File file = new File(filepath);
+		if(!file.exists()){
+			try {
+				String resource = Resource.class.getResource(RESOURCE_PATH + path).getFile();
+				filepath = URLDecoder.decode(resource, "UTF-8").toString();
+			}catch (Exception e) {
+				logger.debug("Unable to find resource using getResource");
+			}
 		}
 
-		// Try loading the resource from directory
-		if(!found) filepath = directory.getAbsolutePath() + "/resources/" + path;
 		return filepath;
 	}
 
