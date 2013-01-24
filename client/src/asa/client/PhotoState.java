@@ -72,6 +72,9 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 	private int selectedOption = 0;
 	private int tandwielOffset = 30;
 	private int lastHighscoreId;
+	private int secondsIdle;
+	
+	private Timer clock;
 
 	private float rotation = 0;
 	private float rotationDelta = 0;
@@ -99,7 +102,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		this.stateBasedGame = stateBasedGame;
 
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
-
+		
 		resetGame();
 
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
@@ -140,11 +143,25 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 				updateCamera = true;
 			}
 		}, 0, 250);
+		
+		clock = new Timer();
+		clock.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				secondsIdle++;
+				if (secondsIdle > 120)
+				{
+					secondsIdle = 0;
+					enterHighscoreState();
+				}
+			}
+		}, 0, 1000);
 	}
 
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		resetGame();
+		clock.cancel();
 	}
 
 	@Override
@@ -417,5 +434,9 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		} catch (SlickException ex) {
 			logger.error("Could not get countdownImage " + count + ".png: " + ex.getMessage());
 		}
+	}
+	
+	private void enterHighscoreState() {
+		stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 	}
 }

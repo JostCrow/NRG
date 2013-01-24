@@ -20,6 +20,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import service.Highscore;
 
 public class HighscoreState extends ArduinoGameState {
+	private StateBasedGame stateBasedGame;
 	private List<Highscore> highscores;
 	private ServerAdapter server;
 	private GameData gameData;
@@ -68,6 +69,9 @@ public class HighscoreState extends ArduinoGameState {
 	private int highscoreBackgroundHeight = 0;
 	private int startposition;
 	private int startposition_device;
+	private int secondsIdle;
+	
+	private Timer clock;
 
 	private int[] playerPositions = new int[7];
 	private int[] devicePositions = new int[7];
@@ -86,6 +90,7 @@ public class HighscoreState extends ArduinoGameState {
 
 	@Override
 	public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
+		this.stateBasedGame = stateBasedGame;
 		resetGame();
 
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
@@ -129,11 +134,25 @@ public class HighscoreState extends ArduinoGameState {
 		addListeners(stateBasedGame);
 		ActivateButton();
 		calculateNumberHeight();
+		
+		clock = new Timer();
+		clock.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				secondsIdle++;
+				if (secondsIdle > 120)
+				{
+					secondsIdle = 0;
+					enterHighscoreState();
+				}
+			}
+		}, 0, 1000);
 	}
 
 	@Override
 	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
 		resetGame();
+		clock.cancel();
 	}
 
 	@Override
@@ -280,13 +299,14 @@ public class HighscoreState extends ArduinoGameState {
 				} else {
 					targetrotation -= speed * 1.145;
 				}
+				secondsIdle = 0;
 			}
 
 			@Override
 			public void buttonEvent() {
 				if (waitingForButton) {
 					waitingForButton = !waitingForButton;
-					stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
+					enterHighscoreState();
 				}
 			}
 		});
@@ -368,5 +388,9 @@ public class HighscoreState extends ArduinoGameState {
 				logger.error("Could not convert devicescore to ints: " + e.getMessage());
 			}
 		}
+	}
+	
+	private void enterHighscoreState() {
+		stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 	}
 }
