@@ -144,9 +144,9 @@ public class GameState extends ArduinoGameState {
 		spinner3.draw(linker_kastje.getWidth()/2+363+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight()-spinner3.getHeight()+spinner1.getHeight()/3);
 		black_number.getSubImage(0, startposition-playerPositions[0], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+82, startposition);
 		black_number.getSubImage(0, startposition-playerPositions[1], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()+4, startposition);
-		black_number.getSubImage(0, startposition-playerPositions[2], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*2+11, startposition);
-		black_number.getSubImage(0, startposition-playerPositions[3], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*3+18, startposition);
-		black_number.getSubImage(0, startposition-playerPositions[4], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*4+26, startposition);
+		red_number.getSubImage(0, startposition-playerPositions[2], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*2+11, startposition);
+		red_number.getSubImage(0, startposition-playerPositions[3], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*3+18, startposition);
+		red_number.getSubImage(0, startposition-playerPositions[4], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*4+26, startposition);
 		red_number.getSubImage(0, startposition-playerPositions[5], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*5+33, startposition);
 		red_number.getSubImage(0, startposition-playerPositions[6], black_number.getWidth(), 73).draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+85+black_number.getWidth()*6+40, startposition);
 		linker_kastje.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16, center.getHeight()*2 - linker_kastje.getHeight());
@@ -156,9 +156,9 @@ public class GameState extends ArduinoGameState {
 
 		black_number.getSubImage(0, startposition-devicePositions[0], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+75, startposition);
 		black_number.getSubImage(0, startposition-devicePositions[1], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()+4, startposition);
-		black_number.getSubImage(0, startposition-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*2+11, startposition);
-		black_number.getSubImage(0, startposition-devicePositions[3], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*3+19, startposition);
-		black_number.getSubImage(0, startposition-devicePositions[4], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*4+27, startposition);
+		red_number.getSubImage(0, startposition-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*2+11, startposition);
+		red_number.getSubImage(0, startposition-devicePositions[3], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*3+19, startposition);
+		red_number.getSubImage(0, startposition-devicePositions[4], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*4+27, startposition);
 		red_number.getSubImage(0, startposition-devicePositions[5], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*5+34, startposition);
 		red_number.getSubImage(0, startposition-devicePositions[6], black_number.getWidth(), 73).draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6+78+black_number.getWidth()*6+41, startposition);
 		rechter_kastje.draw(center.getWidth()*2 - rechter_kastje.getWidth()+rechter_kastje.getWidth()/6-5, center.getHeight()*2 - rechter_kastje.getHeight());
@@ -169,7 +169,7 @@ public class GameState extends ArduinoGameState {
 		device_voortgang.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-19, device_voortgang_location);
 		device_icon.draw(center.getWidth()+voortgangsbalk.getWidth()*2+voortgangsbalk.getWidth()/4+voortgangsbalk.getWidth()-4, device_voortgang_location, 0.7f);
 		if(gamestarted){
-			stop.draw(stop.getWidth()*0.3f, center.getHeight()*2 - stop.getHeight()*1.6f);
+			stop.draw(stop.getWidth()*0.3f, center.getHeight()*2 - stop.getHeight()*1.6f, pulseScale);
 		}
 		if(countdownActive){
 			get_ready.draw(linker_kastje.getWidth()/2+linker_kastje.getWidth()/16+linker_kastje.getWidth()-5, center.getHeight()*2 - linker_kastje.getHeight()-linker_kastje.getHeight()-30);
@@ -192,7 +192,7 @@ public class GameState extends ArduinoGameState {
 			spinner2.setRotation((float) ((float) (rotation * 0.818181818181818)));
 			spinner3.setRotation((float) ((float) (rotation * 8.818181818181818) + 14.36363636363636));
 
-			deviceScore = deviceScore + random((float)device.getWattTotal() / device.getDivideBy());
+			deviceScore = deviceScore + random(((float)device.getWattTotal() / device.getDivideBy())/3600);
 			String number = specialFormat.format(deviceScore);
 			number = number.replace(",", "");
 			for(int i = 0; i < devicePositions.length; i++){
@@ -229,6 +229,7 @@ public class GameState extends ArduinoGameState {
 			}
 
 		}
+		calculatePulse();
 	}
 
 	@Override
@@ -342,7 +343,7 @@ public class GameState extends ArduinoGameState {
 					targetrotation -= 3 * speed;
 				}
 				if (gamestarted) {
-					score = score + (((double)speed/100));
+					score = score + (((double)speed/100)/3600);
 				}
 			}
 			@Override
@@ -365,7 +366,7 @@ public class GameState extends ArduinoGameState {
 		} catch (SlickException ex) {
 			logger.error("Could not load deviceIcon: " + ex.getMessage());
 		}
-		height_calc = (float)((device.getWattTotal()/device.getDivideBy())*20);
+		height_calc = (float)(((device.getWattTotal()/device.getDivideBy())/3600)*20);
 	}
 
 	/**
@@ -378,8 +379,8 @@ public class GameState extends ArduinoGameState {
 
 		float min = ((deviceAverage) - (deviceAverage/10));
 		float max = ((deviceAverage) + (deviceAverage/10));
-		int range = (int)((max - min)*1000) ;
-		float number = (random.nextInt(range)/1000) + min;
+		int range = (int)((max - min)*1000000) ;
+		float number = (random.nextInt(range)/1000000) + min;
 
 		float test = (float)number/100;
 		return test;

@@ -14,17 +14,19 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public abstract class ArduinoGameState extends BasicGameState {
 
-	int stateID = -1;
-	int speed = 1;
-	DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00", new DecimalFormatSymbols(Locale.GERMAN));
-	DecimalFormat specialFormat = new DecimalFormat("00000.00", new DecimalFormatSymbols(Locale.GERMAN));
-	
+	protected int stateID = -1;
+	protected int speed = 1;
+	protected float pulseScale = 1;
+	protected boolean pulseInhance = false;
+	protected DecimalFormat decimalFormat = new DecimalFormat("###,###,##0.00", new DecimalFormatSymbols(Locale.GERMAN));
+	protected DecimalFormat specialFormat = new DecimalFormat("00.00000", new DecimalFormatSymbols(Locale.GERMAN));
+
 	Arduino arduino = Arduino.getInstance();
-	
+
 	public ArduinoGameState(int stateID){
 		this.stateID = stateID;
 	}
-	
+
 	@Override
 	public int getID() {
 		return stateID;
@@ -43,8 +45,22 @@ public abstract class ArduinoGameState extends BasicGameState {
 			arduino.dispatchButtonEvent();
 		}
 	}
-	
+
 	protected void setFont(Graphics graphics) throws SlickException{
 		graphics.setFont(new AngelCodeFont(Resource.getPath("OnzeFont2.fnt"), Resource.getPath("OnzeFont2_0.tga")));
+	}
+
+	protected void calculatePulse(){
+		if(pulseScale >= 1.05){
+			pulseInhance = true;
+		} else if (pulseScale <= 1) {
+			pulseInhance = false;
+		}
+
+		if(pulseInhance){
+			pulseScale -= 0.001f;
+		} else {
+			pulseScale += 0.001f;
+		}
 	}
 }

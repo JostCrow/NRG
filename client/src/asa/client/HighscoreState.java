@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.Dimension;
 import org.newdawn.slick.GameContainer;
@@ -70,7 +69,7 @@ public class HighscoreState extends ArduinoGameState {
 	private int startposition;
 	private int startposition_device;
 	private int secondsIdle;
-	
+
 	private Timer clock;
 
 	private int[] playerPositions = new int[7];
@@ -122,8 +121,8 @@ public class HighscoreState extends ArduinoGameState {
 
 		centerImage = new Image(new EmptyImageData(97, 97));
 		highscore = new Image(new EmptyImageData(97, 97));
-		startposition = center.getHeight() + 20 + 45;
-		startposition_device = center.getHeight() + 91 + 45;
+		startposition = center.getHeight() + 20 + 35;
+		startposition_device = center.getHeight() + 91 + 35;
 		fontBlack = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.BLACK);
 		fontWhite = Resource.getFont(Resource.FONT_SANCHEZ, 30, Color.WHITE);
 	}
@@ -134,7 +133,7 @@ public class HighscoreState extends ArduinoGameState {
 		addListeners(stateBasedGame);
 		ActivateButton();
 		calculateNumberHeight();
-		
+
 		clock = new Timer();
 		clock.scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -223,27 +222,30 @@ public class HighscoreState extends ArduinoGameState {
 
 		getCenterImage();
 		background_spinner.draw(center.getWidth() - background_spinner.getWidth() / 2, center.getHeight() + 45);
-		player_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 5 + 45);
-		device_icon_background.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45);
-		device_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 15, center.getHeight() + 81 + 45, 0.7f);
+		player_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 5, center.getHeight() + 5 + 45, 0.8f);
+		device_icon_background.draw(center.getWidth() - background_spinner.getWidth() / 3-10, center.getHeight() + 65 + 45, 0.8f);
+		device_icon.draw(center.getWidth() - background_spinner.getWidth() / 3 + 5, center.getHeight() + 81 + 45, 0.55f);
 
-		terug.draw(terug.getWidth()*0.185f, center.getHeight()*2 - terug.getHeight()*1.6f);
+		terug.draw(terug.getWidth()*0.185f, center.getHeight()*2 - terug.getHeight()*1.6f, pulseScale);
 
-		black_number.getSubImage(0, startposition-playerPositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105, startposition, 30, 43);
-		black_number.getSubImage(0, startposition-playerPositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+30+4, startposition, 30, 43);
-		black_number.getSubImage(0, startposition-playerPositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*2, startposition, 30, 43);
-		black_number.getSubImage(0, startposition-playerPositions[3], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*3, startposition, 30, 43);
-		black_number.getSubImage(0, startposition-playerPositions[4], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*4, startposition, 30, 43);
-		red_number.getSubImage(0, startposition-playerPositions[5], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*5, startposition, 30, 43);
-		red_number.getSubImage(0, startposition-playerPositions[6], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*6, startposition, 30, 43);
+		black_number.getSubImage(0, startposition-playerPositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85, startposition, 30, 43);
+		black_number.getSubImage(0, startposition-playerPositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+30+4, startposition, 30, 43);
+		red_number.getSubImage(0, startposition-playerPositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*2, startposition, 30, 43);
+		red_number.getSubImage(0, startposition-playerPositions[3], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*3, startposition, 30, 43);
+		red_number.getSubImage(0, startposition-playerPositions[4], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*4, startposition, 30, 43);
+		red_number.getSubImage(0, startposition-playerPositions[5], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*5, startposition, 30, 43);
+		red_number.getSubImage(0, startposition-playerPositions[6], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*6, startposition, 30, 43);
+		graphics.drawString("Wh", center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*7, startposition);
 
-		black_number.getSubImage(0, startposition_device-devicePositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105, startposition_device, 30, 43);
-		black_number.getSubImage(0, startposition_device-devicePositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+30+4, startposition_device, 30, 43);
-		black_number.getSubImage(0, startposition_device-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*2, startposition_device, 30, 43);
-		black_number.getSubImage(0, startposition_device-devicePositions[3], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*3, startposition_device, 30, 43);
-		black_number.getSubImage(0, startposition_device-devicePositions[4], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*4, startposition_device, 30, 43);
-		red_number.getSubImage(0, startposition_device-devicePositions[5], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*5, startposition_device, 30, 43);
-		red_number.getSubImage(0, startposition_device-devicePositions[6], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+105+(30+4)*6, startposition_device, 30, 43);
+		black_number.getSubImage(0, startposition_device-devicePositions[0], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85, startposition_device, 30, 43);
+		black_number.getSubImage(0, startposition_device-devicePositions[1], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+30+4, startposition_device, 30, 43);
+		red_number.getSubImage(0, startposition_device-devicePositions[2], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*2, startposition_device, 30, 43);
+		red_number.getSubImage(0, startposition_device-devicePositions[3], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*3, startposition_device, 30, 43);
+		red_number.getSubImage(0, startposition_device-devicePositions[4], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*4, startposition_device, 30, 43);
+		red_number.getSubImage(0, startposition_device-devicePositions[5], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*5, startposition_device, 30, 43);
+		red_number.getSubImage(0, startposition_device-devicePositions[6], black_number.getWidth(), 73).draw(center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*6, startposition_device, 30, 43);
+		graphics.drawString("Wh", center.getWidth() - background_spinner.getWidth() / 3+85+(30+4)*7, startposition_device);
+
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 	}
@@ -278,6 +280,7 @@ public class HighscoreState extends ArduinoGameState {
 			drawArrowUp = false;
 			drawArrowDown = false;
 		}
+		calculatePulse();
 	}
 
 	public void ActivateButton() {
@@ -389,7 +392,7 @@ public class HighscoreState extends ArduinoGameState {
 			}
 		}
 	}
-	
+
 	private void enterHighscoreState() {
 		stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 	}

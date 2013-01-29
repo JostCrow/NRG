@@ -102,7 +102,7 @@ public class InfoState extends ArduinoGameState {
 		spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 		choose_device.draw(center.getWidth()/2-20, 60);
-		choise.draw(choise.getWidth()*0.15f, center.getHeight()*2 - choise.getHeight()*1.6f);
+		choise.draw(choise.getWidth()*0.15f, center.getHeight()*2 - choise.getHeight()*1.6f, pulseScale);
 
 		float offsetDegree = 360/wheelOptions.size();
 		float radius = 313;
@@ -212,6 +212,8 @@ public class InfoState extends ArduinoGameState {
 			slide = false;
 			position = -1920;
 		}
+
+		calculatePulse();
 	}
 
 	@Override

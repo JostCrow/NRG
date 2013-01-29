@@ -73,7 +73,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 	private int tandwielOffset = 30;
 	private int lastHighscoreId;
 	private int secondsIdle;
-	
+
 	private Timer clock;
 
 	private float rotation = 0;
@@ -102,7 +102,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		this.stateBasedGame = stateBasedGame;
 
 		center = new Dimension(AsaGame.SOURCE_RESOLUTION.width / 2 - 100, AsaGame.SOURCE_RESOLUTION.height / 2);
-		
+
 		resetGame();
 
 		tandwiel1 = new Image(Resource.getPath(Resource.TANDWIEL5));
@@ -143,7 +143,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 				updateCamera = true;
 			}
 		}, 0, 250);
-		
+
 		clock = new Timer();
 		clock.scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -184,7 +184,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 			spinner.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			spinneroverlay.draw(center.getWidth() - spinner.getWidth() / 2, center.getHeight() - spinner.getHeight() / 2);
 			selectImage.draw(center.getWidth()/2-20, 60);
-			choise.draw(choise.getWidth()*0.15f, center.getHeight()*2 - choise.getHeight()*1.6f);
+			choise.draw(choise.getWidth()*0.15f, center.getHeight()*2 - choise.getHeight()*1.6f, pulseScale);
 			for (int i = 0; i < wheelOptions.size(); i++) {
 				float offsetDegree = 360 / wheelOptions.size();
 				float degrees = (270 + ((rotation + rotationDelta) % 360 + offsetDegree * i) % 360) % 360;
@@ -252,6 +252,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 				logger.error(e);
 			}
 		}
+		calculatePulse();
 	}
 
 	private void MakePhoto() {
@@ -309,7 +310,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 			if (liveFeed != null)
 			{
 				liveFeed.cancel();
-			}			
+			}
 			lastHighscoreId = server.addHighscore(gameData.getPlayerScore(), "no");
 		}
 
@@ -436,7 +437,7 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 			logger.error("Could not get countdownImage " + count + ".png: " + ex.getMessage());
 		}
 	}
-	
+
 	private void enterHighscoreState() {
 		stateBasedGame.enterState(AsaGame.INFOSTATE, AsaGame.FADEOUT, AsaGame.FADEIN);
 	}
