@@ -16,8 +16,10 @@ import javax.imageio.ImageIO;
 import javax.media.Buffer;
 import javax.media.CaptureDeviceInfo;
 import javax.media.CaptureDeviceManager;
+import javax.media.Format;
 import javax.media.Manager;
 import javax.media.Player;
+import javax.media.control.FormatControl;
 import javax.media.control.FrameGrabbingControl;
 import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
@@ -392,8 +394,30 @@ public class PhotoState extends ArduinoGameState implements ImageObserver{
 		Vector videoDevices = CaptureDeviceManager.getDeviceList(new VideoFormat(null));
 		if (videoDevices.size()>0){
 			webcam = (CaptureDeviceInfo) videoDevices.get(0);
+			Format[] formats = webcam.getFormats();
+			Format selectedFormat = null;
+			
+			try {
+				for(Format f : formats) {
+					if(f.toString().contains("640") && f.toString().contains("480")) {
+						selectedFormat = f;
+						break;
+					}
+				}
+			}
+			catch(Exception e)
+			{
+				logger.error("Failed to get required webcam resolution (640x480). Taking default format: " + e.getMessage());
+				selectedFormat = formats[0];
+			}
+			
 			try {
 				webcamPlayer = Manager.createRealizedPlayer(webcam.getLocator());
+				
+				FormatControl fc = (FormatControl)webcamPlayer.getControl("javax.media.control.FormatControl");
+				System.out.println("Selected webcam format: " + selectedFormat.toString());
+				fc.setFormat(selectedFormat);
+				
 				webcamPlayer.start();
 
 				webcamAvailable = true;
